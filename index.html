@@ -3,146 +3,382 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitPro - Antrenman Rehberi</title>
+  <title>FitPro - Antrenman & Rehber</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
-    :root { --primary: #d9534f; --accent: #0275d8; --bg: #f8f9fa; --card-bg: #ffffff; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: #333; margin: 0; padding: 15px; padding-bottom: 80px; }
-    h1 { color: var(--primary); text-align: center; font-size: 1.5rem; margin-bottom: 5px; }
-    .subtitle { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 20px; }
-    .card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    h2 { color: var(--accent); font-size: 1.2rem; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 0; }
-    ul, ol { padding-left: 20px; font-size: 0.95rem; }
-    li { margin-bottom: 8px; }
-    .ex-list { list-style: none; padding: 0; }
-    .ex-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-    .ex-item:last-child { border-bottom: none; }
-    .ex-info { font-weight: 600; font-size: 0.95rem; }
-    .ex-meta { font-size: 0.8rem; color: #777; font-weight: normal; margin-top: 3px; }
-    .timer-btn { background: var(--accent); color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .timer-btn:active { opacity: 0.8; }
+    :root { 
+      --primary: #d9534f; 
+      --accent: #0275d8; 
+      --bg: #f4f6f8; 
+      --card-bg: #ffffff; 
+      --text: #2c3e50;
+    }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      margin: 0; 
+      padding: 15px; 
+      padding-bottom: 90px; 
+    }
+    h1 { color: var(--primary); text-align: center; font-size: 1.6rem; margin-bottom: 4px; }
+    .subtitle { text-align: center; font-size: 0.85rem; color: #7f8c8d; margin-bottom: 20px; font-weight: 500; }
     
+    .card { 
+      background: var(--card-bg); 
+      border-radius: 14px; 
+      padding: 16px; 
+      margin-bottom: 20px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    }
+    h2 { 
+      color: var(--accent); 
+      font-size: 1.15rem; 
+      border-bottom: 2px solid #edf2f7; 
+      padding-bottom: 10px; 
+      margin-top: 0; 
+    }
+    ul { padding-left: 18px; font-size: 0.9rem; line-height: 1.5; }
+    li { margin-bottom: 6px; }
+
+    /* Egzersiz Listesi */
+    .ex-list { list-style: none; padding: 0; margin: 0; }
+    .ex-item { 
+      border-bottom: 1px solid #edf2f7; 
+      padding: 12px 0; 
+    }
+    .ex-item:last-child { border-bottom: none; }
+    .ex-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .ex-title { font-weight: 700; font-size: 0.95rem; color: #2d3748; }
+    .ex-meta { font-size: 0.8rem; color: #718096; margin-top: 2px; }
+    
+    .actions { display: flex; gap: 6px; margin-top: 8px; }
+    
+    .btn {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
+    .btn-img { background: #fefcbf; color: #744210; border: 1px solid #faf089; }
+    .btn:active { transform: scale(0.96); }
+
+    /* Görsel Alanı */
+    .img-container {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      background: #f7fafc;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px dashed #cbd5e0;
+    }
+    .img-container img {
+      max-width: 100%;
+      height: auto;
+      max-height: 220px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
     /* Alt Sayaç Barı */
-    #timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: white; padding: 12px; text-align: center; display: none; justify-content: space-between; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); }
-    #timer-display { font-size: 1.2rem; font-weight: bold; color: #5cb85c; }
-    .stop-btn { background: #d9534f; border: none; color: white; padding: 5px 10px; border-radius: 5px; }
+    #timer-bar { 
+      position: fixed; 
+      bottom: 0; left: 0; right: 0; 
+      background: #1a202c; 
+      color: white; 
+      padding: 12px 20px; 
+      display: none; 
+      justify-content: space-between; 
+      align-items: center; 
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.15); 
+      z-index: 1000;
+    }
+    #timer-display { font-size: 1.3rem; font-weight: bold; color: #48bb78; }
+    .stop-btn { background: var(--primary); border: none; color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; }
   </style>
 </head>
 <body>
 
   <h1>HIZLI KAS GELİŞİMİ</h1>
-  <div class="subtitle">2 Gün Çalışma + 1 Gün Dinlenme</div>
+  <div class="subtitle">2 Gün Çalışma + 1 Gün Dinlenme Routine</div>
 
   <div class="card">
-    <h2>Gelişim & Beslenme Stratejileri</h2>
+    <h2>Önemli Kurallar</h2>
     <ul>
-      <li><strong>Progressive Overload:</strong> Her hafta ağırlık veya tekrar artırın.</li>
-      <li><strong>Kardiyo:</strong> 20-25 dk orta tempo kardiyoyu antrenman sonrasına bırakın.</li>
-      <li><strong>Su & Uyku:</strong> Günde 3.5-4L su ve 7-8 saat kaliteli uyku.</li>
-      <li><strong>Protein:</strong> Kilo başına 1.8 - 2g protein alın.</li>
-      <li><strong>Negatif Tekrarlar:</strong> Ağırlığı 2-3 saniyede yavaşça indirerek kası uyarın.</li>
+      <li><strong>Progressive Overload:</strong> Her hafta ağırlık veya tekrarı kademeli artırın.</li>
+      <li><strong>Kardiyo:</strong> Ağırlık antrenmanı bittikten sonra 20-25 dk orta tempo.</li>
+      <li><strong>Form & Hız:</strong> Ağırlığı kaldırırken direnç gösterin, indirirken 2-3 sn yavaş indirin.</li>
     </ul>
   </div>
 
+  <!-- GÜN 1 -->
   <div class="card">
     <h2>GÜN 1: PUSH (Göğüs, Omuz, Arka Kol)</h2>
     <ul class="ex-list">
+      
       <li class="ex-item">
-        <div class="ex-info">1. Barbell Bench Press<div class="ex-meta">3 x 10-12 | Barbell + Düz Sehpa</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">1. Barbell Bench Press</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a1')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a1" class="img-container">
+          <img src="a1.png" alt="Barbell Bench Press" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">2. Dumbbell Incline Press<div class="ex-meta">3 x 10-12 | Dumbbell + Eğimli Sehpa</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">2. Dumbbell Incline Press</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a2')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a2" class="img-container">
+          <img src="a2.png" alt="Incline Press" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">3. Pec Deck / Butterfly<div class="ex-meta">3 x 12-15 | Kelebek Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">3. Pec Deck / Butterfly Makinesi</div>
+        <div class="ex-meta">3 Set x 12-15 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a3')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a3" class="img-container">
+          <img src="a3.png" alt="Pec Deck" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">4. Dumbbell Seated Shoulder Press<div class="ex-meta">3 x 10-12 | Dik Sehpa</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">4. Dumbbell Seated Shoulder Press</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a4')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a4" class="img-container">
+          <img src="a4.png" alt="Shoulder Press" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">5. Lateral Raise Makinesi<div class="ex-meta">3 x 15 | Omuz Açma Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">5. Lateral Raise Makinesi</div>
+        <div class="ex-meta">3 Set x 15 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a5')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a5" class="img-container">
+          <img src="a5.png" alt="Lateral Raise" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">6. Cable Face Pull<div class="ex-meta">3 x 15 | Kablo + Halat</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">6. Cable Face Pull</div>
+        <div class="ex-meta">3 Set x 15 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a6')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a6" class="img-container">
+          <img src="a6.png" alt="Cable Face Pull" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">7. Triceps Pushdown<div class="ex-meta">3 x 12-15 | Kablo + İp/Bar</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">7. Triceps Pushdown</div>
+        <div class="ex-meta">3 Set x 12-15 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a7')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a7" class="img-container">
+          <img src="a7.png" alt="Triceps Pushdown" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">8. Dumbbell Overhead Triceps Ext.<div class="ex-meta">3 x 12 | Tek Dumbbell</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">8. Dumbbell Overhead Triceps Extension</div>
+        <div class="ex-meta">3 Set x 12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-a8')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-a8" class="img-container">
+          <img src="a8.png" alt="Overhead Triceps" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
     </ul>
   </div>
 
+  <!-- GÜN 2 -->
   <div class="card">
     <h2>GÜN 2: PULL & LEGS (Sırt, Bacak, Ön Kol, Karın)</h2>
     <ul class="ex-list">
+
       <li class="ex-item">
-        <div class="ex-info">1. Lat Pulldown<div class="ex-meta">3 x 10-12 | Lat Pulldown Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">1. Lat Pulldown Makinesi</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-1')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-1" class="img-container">
+          <img src="1.png" alt="Lat Pulldown" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">2. Seated Cable Row<div class="ex-meta">3 x 10-12 | Kablo Row Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">2. Seated Cable Row</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-2')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-2" class="img-container">
+          <img src="2.png" alt="Cable Row" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">3. Dumbbell One Arm Row<div class="ex-meta">3 x 10-12 | Dumbbell + Sehpa</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">3. Dumbbell One Arm Row</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-3')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-3" class="img-container">
+          <img src="3.png" alt="Dumbbell Row" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">4. Leg Press Makinesi<div class="ex-meta">3 x 10-12 | Leg Press</div></div>
-        <button class="timer-btn" onclick="startTimer(90)">90sn</button>
+        <div class="ex-title">4. Leg Press Makinesi</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 90sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-4')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-4" class="img-container">
+          <img src="4.png" alt="Leg Press" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">5. Leg Extension<div class="ex-meta">3 x 12 | Ön Bacak Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">5. Leg Extension Makinesi</div>
+        <div class="ex-meta">3 Set x 12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-5')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-5" class="img-container">
+          <img src="5.png" alt="Leg Extension" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">6. Leg Curl<div class="ex-meta">3 x 12 | Arka Bacak Makinesi</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">6. Leg Curl Makinesi</div>
+        <div class="ex-meta">3 Set x 12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-6')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-6" class="img-container">
+          <img src="6.png" alt="Leg Curl" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">7. Barbell Biceps Curl<div class="ex-meta">3 x 10-12 | Barbell / EZ-Bar</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">7. Barbell Biceps Curl</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-7')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-7" class="img-container">
+          <img src="7.png" alt="Barbell Curl" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">8. Dumbbell Hammer Curl<div class="ex-meta">3 x 10-12 | Dumbbell</div></div>
-        <button class="timer-btn" onclick="startTimer(60)">60sn</button>
+        <div class="ex-title">8. Dumbbell Hammer Curl</div>
+        <div class="ex-meta">3 Set x 10-12 Tekrar | Dinlenme: 60sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-8')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-8" class="img-container">
+          <img src="8.png" alt="Hammer Curl" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">9. Cable Crunch<div class="ex-meta">3 x 15-20 | Kablo + Halat</div></div>
-        <button class="timer-btn" onclick="startTimer(45)">45sn</button>
+        <div class="ex-title">9. Cable Crunch (Karın)</div>
+        <div class="ex-meta">3 Set x 15-20 Tekrar | Dinlenme: 45sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(45)">⏱ 45sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-9')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-9" class="img-container">
+          <img src="9.png" alt="Cable Crunch" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
       <li class="ex-item">
-        <div class="ex-info">10. Plank<div class="ex-meta">3 x Maksimum | Mat</div></div>
-        <button class="timer-btn" onclick="startTimer(45)">45sn</button>
+        <div class="ex-title">10. Plank</div>
+        <div class="ex-meta">3 Set x Maksimum Süre | Dinlenme: 45sn</div>
+        <div class="actions">
+          <button class="btn btn-timer" onclick="startTimer(45)">⏱ 45sn Sayaç</button>
+          <button class="btn btn-img" onclick="toggleImg('img-10')">🖼 Görsel Göster</button>
+        </div>
+        <div id="img-10" class="img-container">
+          <img src="10.png" alt="Plank" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1566241142559-40e1dab266c6?auto=format&fit=crop&w=500&q=80';">
+        </div>
       </li>
+
     </ul>
   </div>
 
+  <!-- ALT SAYAÇ BAR'I -->
   <div id="timer-bar">
-    <span>Dinlenme Süresi:</span>
-    <span id="timer-display">00:00</span>
+    <div>
+      <div style="font-size:0.75rem; color:#a0aec0;">DİNLENME SÜRESİ</div>
+      <div id="timer-display">00:00</div>
+    </div>
     <button class="stop-btn" onclick="stopTimer()">Kapat</button>
   </div>
 
   <script>
-    // PWA Service Worker Kaydı
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
 
-    // Dinlenme Kronometresi Mantığı
+    // Görsel Aç / Kapat Fonksiyonu
+    function toggleImg(id) {
+      const el = document.getElementById(id);
+      if (el.style.display === "block") {
+        el.style.display = "none";
+      } else {
+        el.style.display = "block";
+      }
+    }
+
+    // Dinlenme Kronometresi
     let timerInterval;
     function startTimer(seconds) {
       clearInterval(timerInterval);
@@ -158,7 +394,7 @@
         display.textContent = timeLeft + " sn";
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
-          display.textContent = "Süre Bitti! Hazırlan.";
+          display.textContent = "Süre Bitti! 🔥";
           if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
         }
       }, 1000);
