@@ -12,6 +12,7 @@
       --primary: #d9534f; 
       --accent: #0275d8; 
       --success: #28a745;
+      --warning: #f0ad4e;
       --bg: #f4f6f8; 
       --card-bg: #ffffff; 
       --text: #2c3e50;
@@ -41,16 +42,18 @@
     .stat-num { font-size: 1.4rem; font-weight: bold; }
     .stat-label { font-size: 0.7rem; opacity: 0.9; }
 
-    .tab-container { display: flex; gap: 8px; margin-bottom: 15px; }
+    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; }
     .tab-btn {
       flex: 1;
-      padding: 10px;
+      padding: 10px 6px;
       background: #e2e8f0;
       border: none;
       border-radius: 8px;
       font-weight: bold;
+      font-size: 0.75rem;
       color: #4a5568;
       cursor: pointer;
+      white-space: nowrap;
     }
     .tab-btn.active { background: var(--primary); color: white; }
 
@@ -75,8 +78,10 @@
     .ex-list { list-style: none; padding: 0; margin: 0; }
     .ex-item { border-bottom: 1px solid #edf2f7; padding: 12px 0; }
     .ex-item:last-child { border-bottom: none; }
+    .ex-header { display: flex; justify-content: space-between; align-items: center; }
     .ex-title { font-weight: 700; font-size: 0.95rem; color: #1a202c; }
-    
+    .pr-badge { font-size: 0.7rem; background: #fefcbf; color: #b7791f; border: 1px solid #f6e05e; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+
     .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
     
     .btn {
@@ -115,6 +120,17 @@
       cursor: pointer;
     }
 
+    .note-input {
+      width: 100%;
+      margin-top: 6px;
+      padding: 6px;
+      border: 1px dashed #cbd5e0;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      box-sizing: border-box;
+      background: #fafafa;
+    }
+
     .gif-container {
       display: none;
       margin-top: 8px;
@@ -133,7 +149,10 @@
     }
 
     .calc-box { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
-    .calc-input { width: 60px; padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; }
+    .calc-input { width: 70px; padding: 6px; border: 1px solid #cbd5e0; border-radius: 6px; }
+
+    .history-item { border-bottom: 1px solid #e2e8f0; padding: 8px 0; font-size: 0.8rem; }
+    .history-date { font-weight: bold; color: var(--accent); }
 
     #timer-bar { 
       position: fixed; 
@@ -170,180 +189,190 @@
   <div class="tab-container">
     <button class="tab-btn active" onclick="switchTab('day1', event)">GÜN 1: PUSH</button>
     <button class="tab-btn" onclick="switchTab('day2', event)">GÜN 2: PULL & LEGS</button>
+    <button class="tab-btn" onclick="switchTab('history', event)">📜 GEÇMİŞ</button>
     <button class="tab-btn" onclick="switchTab('tools', event)">🛠 ARAÇLAR</button>
   </div>
 
+  <!-- GÜN 1 -->
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>GÜN 1: PUSH (Göğüs, Omuz, Arka Kol)</h2>
       <ul class="ex-list">
         
+        <!-- 1. Bench Press -->
         <li class="ex-item">
-          <div class="ex-title">1. Barbell / Dumbbell Bench Press</div>
+          <div class="ex-header">
+            <div class="ex-title">1. Bench Press</div>
+            <span class="pr-badge" id="pr-ex1">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d1')">🏋️ Dumbbell</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m1')">⚙️ Makine</button>
           </div>
-          <div id="gif-d1" class="gif-container">
-            <img src="d1.gif" onerror="this.src='d1.png'" alt="Dumbbell Bench Press">
-          </div>
-          <div id="gif-m1" class="gif-container">
-            <img src="m1.gif" onerror="this.src='m1.png'" alt="Machine Bench Press">
-          </div>
+          <div id="gif-d1" class="gif-container"><img src="d1.gif" onerror="this.src='d1.png'" alt="Dumbbell Bench Press"></div>
+          <div id="gif-m1" class="gif-container"><img src="m1.gif" onerror="this.src='m1.png'" alt="Machine Bench Press"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex1-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex1-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex1-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex1-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex1-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex1-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex1-s1-w" onchange="checkPR('ex1', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex1-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex1-s2-w" onchange="checkPR('ex1', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex1-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex1-s3-w" onchange="checkPR('ex1', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex1-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex1-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex1-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 2. Incline Press -->
         <li class="ex-item">
-          <div class="ex-title">2. Incline Press (Üst Göğüs)</div>
+          <div class="ex-header">
+            <div class="ex-title">2. Incline Press</div>
+            <span class="pr-badge" id="pr-ex2">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d2')">🏋️ Dumbbell</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m2')">⚙️ Makine</button>
           </div>
-          <div id="gif-d2" class="gif-container">
-            <img src="d2.gif" onerror="this.src='d2.png'" alt="Incline Dumbbell Press">
-          </div>
-          <div id="gif-m2" class="gif-container">
-            <img src="m2.gif" onerror="this.src='m2.png'" alt="Incline Machine Press">
-          </div>
+          <div id="gif-d2" class="gif-container"><img src="d2.gif" onerror="this.src='d2.png'" alt="Incline Dumbbell Press"></div>
+          <div id="gif-m2" class="gif-container"><img src="m2.gif" onerror="this.src='m2.png'" alt="Incline Machine Press"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex2-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex2-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex2-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex2-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex2-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex2-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex2-s1-w" onchange="checkPR('ex2', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex2-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex2-s2-w" onchange="checkPR('ex2', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex2-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex2-s3-w" onchange="checkPR('ex2', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex2-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex2-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex2-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 3. Pec Deck / Fly -->
         <li class="ex-item">
-          <div class="ex-title">3. Fly / Pec Deck</div>
+          <div class="ex-header">
+            <div class="ex-title">3. Fly / Pec Deck</div>
+            <span class="pr-badge" id="pr-ex3">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d3')">🏋️ Dumbbell Fly</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m3')">⚙️ Pec Deck Makine</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m3')">⚙️ Pec Deck</button>
           </div>
-          <div id="gif-d3" class="gif-container">
-            <img src="d3.gif" onerror="this.src='d3.png'" alt="Dumbbell Fly">
-          </div>
-          <div id="gif-m3" class="gif-container">
-            <img src="m3.gif" onerror="this.src='m3.png'" alt="Pec Deck Machine">
-          </div>
+          <div id="gif-d3" class="gif-container"><img src="d3.gif" onerror="this.src='d3.png'" alt="Dumbbell Fly"></div>
+          <div id="gif-m3" class="gif-container"><img src="m3.gif" onerror="this.src='m3.png'" alt="Pec Deck Machine"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex3-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex3-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex3-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex3-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex3-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex3-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex3-s1-w" onchange="checkPR('ex3', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex3-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex3-s2-w" onchange="checkPR('ex3', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex3-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex3-s3-w" onchange="checkPR('ex3', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex3-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex3-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex3-note" placeholder="📌 Koltuk yükseklik ayarı..." onchange="saveData()">
         </li>
 
+        <!-- 4. Shoulder Press -->
         <li class="ex-item">
-          <div class="ex-title">4. Shoulder Press (Omuz Pres)</div>
+          <div class="ex-header">
+            <div class="ex-title">4. Shoulder Press</div>
+            <span class="pr-badge" id="pr-ex4">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d4')">🏋️ Dumbbell</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m4')">⚙️ Makine</button>
           </div>
-          <div id="gif-d4" class="gif-container">
-            <img src="d4.gif" onerror="this.src='d4.png'" alt="Dumbbell Shoulder Press">
-          </div>
-          <div id="gif-m4" class="gif-container">
-            <img src="m4.gif" onerror="this.src='m4.png'" alt="Machine Shoulder Press">
-          </div>
+          <div id="gif-d4" class="gif-container"><img src="d4.gif" onerror="this.src='d4.png'" alt="Dumbbell Shoulder Press"></div>
+          <div id="gif-m4" class="gif-container"><img src="m4.gif" onerror="this.src='m4.png'" alt="Machine Shoulder Press"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex4-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex4-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex4-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex4-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex4-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex4-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex4-s1-w" onchange="checkPR('ex4', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex4-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex4-s2-w" onchange="checkPR('ex4', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex4-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex4-s3-w" onchange="checkPR('ex4', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex4-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex4-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex4-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 5. Lateral Raise -->
         <li class="ex-item">
-          <div class="ex-title">5. Lateral Raise (Yan Omuz)</div>
+          <div class="ex-header">
+            <div class="ex-title">5. Lateral Raise</div>
+            <span class="pr-badge" id="pr-ex5">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d5')">🏋️ Dumbbell</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m5')">⚙️ Makine/Kablo</button>
           </div>
-          <div id="gif-d5" class="gif-container">
-            <img src="d5.gif" onerror="this.src='d5.png'" alt="Dumbbell Lateral Raise">
-          </div>
-          <div id="gif-m5" class="gif-container">
-            <img src="m5.gif" onerror="this.src='m5.png'" alt="Machine Lateral Raise">
-          </div>
+          <div id="gif-d5" class="gif-container"><img src="d5.gif" onerror="this.src='d5.png'" alt="Dumbbell Lateral Raise"></div>
+          <div id="gif-m5" class="gif-container"><img src="m5.gif" onerror="this.src='m5.png'" alt="Machine Lateral Raise"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex5-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex5-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex5-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex5-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex5-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex5-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex5-s1-w" onchange="checkPR('ex5', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex5-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex5-s2-w" onchange="checkPR('ex5', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex5-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex5-s3-w" onchange="checkPR('ex5', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex5-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex5-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex5-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 6. Face Pull -->
         <li class="ex-item">
-          <div class="ex-title">6. Rear Delt / Face Pull (Arka Omuz)</div>
+          <div class="ex-header">
+            <div class="ex-title">6. Face Pull / Rear Delt</div>
+            <span class="pr-badge" id="pr-ex6">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d6')">🏋️ Dumbbell Rear Delt</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m6')">⚙️ Cable Face Pull</button>
           </div>
-          <div id="gif-d6" class="gif-container">
-            <img src="d6.gif" onerror="this.src='d6.png'" alt="Dumbbell Rear Delt Fly">
-          </div>
-          <div id="gif-m6" class="gif-container">
-            <img src="m6.gif" onerror="this.src='m6.png'" alt="Cable Face Pull">
-          </div>
+          <div id="gif-d6" class="gif-container"><img src="d6.gif" onerror="this.src='d6.png'" alt="Dumbbell Rear Delt Fly"></div>
+          <div id="gif-m6" class="gif-container"><img src="m6.gif" onerror="this.src='m6.png'" alt="Cable Face Pull"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex6-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex6-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex6-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex6-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex6-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex6-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex6-s1-w" onchange="checkPR('ex6', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex6-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex6-s2-w" onchange="checkPR('ex6', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex6-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex6-s3-w" onchange="checkPR('ex6', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex6-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex6-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex6-note" placeholder="📌 Makara yükseklik ayarı..." onchange="saveData()">
         </li>
 
+        <!-- 7. Triceps Pushdown -->
         <li class="ex-item">
-          <div class="ex-title">7. Triceps Pushdown / Kickback (Arka Kol)</div>
+          <div class="ex-header">
+            <div class="ex-title">7. Triceps Pushdown</div>
+            <span class="pr-badge" id="pr-ex7">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d7')">🏋️ Dumbbell Kickback</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m7')">⚙️ Cable Pushdown</button>
           </div>
-          <div id="gif-d7" class="gif-container">
-            <img src="d7.gif" onerror="this.src='d7.png'" alt="Dumbbell Kickback">
-          </div>
-          <div id="gif-m7" class="gif-container">
-            <img src="m7.gif" onerror="this.src='m7.png'" alt="Cable Pushdown">
-          </div>
+          <div id="gif-d7" class="gif-container"><img src="d7.gif" onerror="this.src='d7.png'" alt="Dumbbell Kickback"></div>
+          <div id="gif-m7" class="gif-container"><img src="m7.gif" onerror="this.src='m7.png'" alt="Cable Pushdown"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex7-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex7-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex7-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex7-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex7-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex7-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex7-s1-w" onchange="checkPR('ex7', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex7-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex7-s2-w" onchange="checkPR('ex7', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex7-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex7-s3-w" onchange="checkPR('ex7', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex7-s3-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex7-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex7-note" placeholder="📌 Halat veya düz bar notu..." onchange="saveData()">
         </li>
 
+        <!-- 8. Overhead Triceps -->
         <li class="ex-item">
-          <div class="ex-title">8. Overhead Triceps Extension</div>
+          <div class="ex-header">
+            <div class="ex-title">8. Overhead Triceps</div>
+            <span class="pr-badge" id="pr-ex8">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d8')">🏋️ Dumbbell Overhead</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m8')">⚙️ Cable Overhead</button>
           </div>
-          <div id="gif-d8" class="gif-container">
-            <img src="d8.gif" onerror="this.src='d8.png'" alt="Dumbbell Overhead Triceps">
-          </div>
-          <div id="gif-m8" class="gif-container">
-            <img src="m8.gif" onerror="this.src='m8.png'" alt="Cable Overhead Triceps">
-          </div>
+          <div id="gif-d8" class="gif-container"><img src="d8.gif" onerror="this.src='d8.png'" alt="Dumbbell Overhead Triceps"></div>
+          <div id="gif-m8" class="gif-container"><img src="m8.gif" onerror="this.src='m8.png'" alt="Cable Overhead Triceps"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex8-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex8-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex8-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex8-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex8-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex8-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex8-s1-w" onchange="checkPR('ex8', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex8-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex8-s2-w" onchange="checkPR('ex8', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex8-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex8-s3-w" onchange="checkPR('ex8', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex8-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex8-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex8-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
       </ul>
@@ -351,198 +380,208 @@
     </div>
   </div>
 
+  <!-- GÜN 2 -->
   <div id="day2" class="tab-content">
     <div class="card">
       <h2>GÜN 2: PULL & LEGS (Sırt, Bacak, Biceps, Karın)</h2>
       <ul class="ex-list">
 
+        <!-- 9. Lat Pulldown -->
         <li class="ex-item">
-          <div class="ex-title">1. Lat Pulldown / Dambıl Çekiş</div>
+          <div class="ex-header">
+            <div class="ex-title">1. Lat Pulldown</div>
+            <span class="pr-badge" id="pr-ex9">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d9')">🏋️ Dumbbell Pullover</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m9')">⚙️ Lat Pulldown</button>
           </div>
-          <div id="gif-d9" class="gif-container">
-            <img src="d9.gif" onerror="this.src='d9.png'" alt="Dumbbell Pullover">
-          </div>
-          <div id="gif-m9" class="gif-container">
-            <img src="m9.gif" onerror="this.src='m9.png'" alt="Lat Pulldown">
-          </div>
+          <div id="gif-d9" class="gif-container"><img src="d9.gif" onerror="this.src='d9.png'" alt="Dumbbell Pullover"></div>
+          <div id="gif-m9" class="gif-container"><img src="m9.gif" onerror="this.src='m9.png'" alt="Lat Pulldown"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex9-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex9-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex9-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex9-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex9-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex9-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex9-s1-w" onchange="checkPR('ex9', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex9-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex9-s2-w" onchange="checkPR('ex9', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex9-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex9-s3-w" onchange="checkPR('ex9', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex9-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex9-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex9-note" placeholder="📌 Diz süngeri kilit seviyesi..." onchange="saveData()">
         </li>
 
+        <!-- 10. Cable Row -->
         <li class="ex-item">
-          <div class="ex-title">2. Row (Sırt Çekiş)</div>
+          <div class="ex-header">
+            <div class="ex-title">2. Seated Cable Row</div>
+            <span class="pr-badge" id="pr-ex10">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d10')">🏋️ Dumbbell Row</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m10')">⚙️ Seated Cable Row</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m10')">⚙️ Cable Row</button>
           </div>
-          <div id="gif-d10" class="gif-container">
-            <img src="d10.gif" onerror="this.src='d10.png'" alt="Dumbbell Row">
-          </div>
-          <div id="gif-m10" class="gif-container">
-            <img src="m10.gif" onerror="this.src='m10.png'" alt="Seated Cable Row">
-          </div>
+          <div id="gif-d10" class="gif-container"><img src="d10.gif" onerror="this.src='d10.png'" alt="Dumbbell Row"></div>
+          <div id="gif-m10" class="gif-container"><img src="m10.gif" onerror="this.src='m10.png'" alt="Seated Cable Row"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex10-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex10-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex10-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex10-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex10-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex10-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex10-s1-w" onchange="checkPR('ex10', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex10-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex10-s2-w" onchange="checkPR('ex10', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex10-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex10-s3-w" onchange="checkPR('ex10', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex10-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex10-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex10-note" placeholder="📌 Tutar aparatı notu..." onchange="saveData()">
         </li>
 
+        <!-- 11. One Arm Row -->
         <li class="ex-item">
-          <div class="ex-title">3. Tek Kol Çekiş</div>
+          <div class="ex-header">
+            <div class="ex-title">3. Tek Kol Çekiş</div>
+            <span class="pr-badge" id="pr-ex11">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-db" onclick="toggleGif('gif-d11')">🏋️ One Arm Dumbbell Row</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m11')">⚙️ Single Arm Cable Row</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d11')">🏋️ Dumbbell Row</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m11')">⚙️ Cable Row</button>
           </div>
-          <div id="gif-d11" class="gif-container">
-            <img src="d11.gif" onerror="this.src='d11.png'" alt="One Arm Dumbbell Row">
-          </div>
-          <div id="gif-m11" class="gif-container">
-            <img src="m11.gif" onerror="this.src='m11.png'" alt="Single Arm Cable Row">
-          </div>
+          <div id="gif-d11" class="gif-container"><img src="d11.gif" onerror="this.src='d11.png'" alt="One Arm Dumbbell Row"></div>
+          <div id="gif-m11" class="gif-container"><img src="m11.gif" onerror="this.src='m11.png'" alt="Single Arm Cable Row"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex11-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex11-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex11-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex11-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex11-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex11-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex11-s1-w" onchange="checkPR('ex11', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex11-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex11-s2-w" onchange="checkPR('ex11', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex11-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex11-s3-w" onchange="checkPR('ex11', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex11-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex11-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex11-note" placeholder="📌 Sehpa açısı notu..." onchange="saveData()">
         </li>
 
+        <!-- 12. Leg Press -->
         <li class="ex-item">
-          <div class="ex-title">4. Bacak İtme / Squat</div>
+          <div class="ex-header">
+            <div class="ex-title">4. Leg Press / Squat</div>
+            <span class="pr-badge" id="pr-ex12">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d12')">🏋️ Goblet Squat</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m12')">⚙️ Leg Press</button>
           </div>
-          <div id="gif-d12" class="gif-container">
-            <img src="d12.gif" onerror="this.src='d12.png'" alt="Dumbbell Goblet Squat">
-          </div>
-          <div id="gif-m12" class="gif-container">
-            <img src="m12.gif" onerror="this.src='m12.png'" alt="Leg Press Machine">
-          </div>
+          <div id="gif-d12" class="gif-container"><img src="d12.gif" onerror="this.src='d12.png'" alt="Dumbbell Goblet Squat"></div>
+          <div id="gif-m12" class="gif-container"><img src="m12.gif" onerror="this.src='m12.png'" alt="Leg Press Machine"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex12-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex12-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex12-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex12-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex12-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex12-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex12-s1-w" onchange="checkPR('ex12', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex12-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex12-s2-w" onchange="checkPR('ex12', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex12-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex12-s3-w" onchange="checkPR('ex12', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex12-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex12-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex12-note" placeholder="📌 Sırt yatmama açısı..." onchange="saveData()">
         </li>
 
+        <!-- 13. Leg Extension -->
         <li class="ex-item">
-          <div class="ex-title">5. Ön Bacak (Extension / Lunge)</div>
+          <div class="ex-header">
+            <div class="ex-title">5. Ön Bacak (Extension)</div>
+            <span class="pr-badge" id="pr-ex13">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d13')">🏋️ Dumbbell Lunge</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m13')">⚙️ Leg Extension</button>
           </div>
-          <div id="gif-d13" class="gif-container">
-            <img src="d13.gif" onerror="this.src='d13.png'" alt="Dumbbell Lunge">
-          </div>
-          <div id="gif-m13" class="gif-container">
-            <img src="m13.gif" onerror="this.src='m13.png'" alt="Leg Extension">
-          </div>
+          <div id="gif-d13" class="gif-container"><img src="d13.gif" onerror="this.src='d13.png'" alt="Dumbbell Lunge"></div>
+          <div id="gif-m13" class="gif-container"><img src="m13.gif" onerror="this.src='m13.png'" alt="Leg Extension"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex13-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex13-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex13-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex13-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex13-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex13-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex13-s1-w" onchange="checkPR('ex13', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex13-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex13-s2-w" onchange="checkPR('ex13', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex13-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex13-s3-w" onchange="checkPR('ex13', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex13-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex13-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex13-note" placeholder="📌 Ayak ve koltuk mesafesi..." onchange="saveData()">
         </li>
 
+        <!-- 14. Leg Curl -->
         <li class="ex-item">
-          <div class="ex-title">6. Arka Bacak (Curl / RDL)</div>
+          <div class="ex-header">
+            <div class="ex-title">6. Arka Bacak (Leg Curl)</div>
+            <span class="pr-badge" id="pr-ex14">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
             <button class="btn btn-db" onclick="toggleGif('gif-d14')">🏋️ Dumbbell RDL</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m14')">⚙️ Leg Curl Makinesi</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m14')">⚙️ Leg Curl</button>
           </div>
-          <div id="gif-d14" class="gif-container">
-            <img src="d14.gif" onerror="this.src='d14.png'" alt="Dumbbell RDL">
-          </div>
-          <div id="gif-m14" class="gif-container">
-            <img src="m14.gif" onerror="this.src='m14.png'" alt="Leg Curl Machine">
-          </div>
+          <div id="gif-d14" class="gif-container"><img src="d14.gif" onerror="this.src='d14.png'" alt="Dumbbell RDL"></div>
+          <div id="gif-m14" class="gif-container"><img src="m14.gif" onerror="this.src='m14.png'" alt="Leg Curl Machine"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex14-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex14-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex14-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex14-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex14-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex14-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex14-s1-w" onchange="checkPR('ex14', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex14-s1-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex14-s2-w" onchange="checkPR('ex14', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex14-s2-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex14-s3-w" onchange="checkPR('ex14', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex14-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex14-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex14-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 15. Biceps Curl -->
         <li class="ex-item">
-          <div class="ex-title">7. Ön Kol (Biceps Curl)</div>
+          <div class="ex-header">
+            <div class="ex-title">7. Biceps Curl</div>
+            <span class="pr-badge" id="pr-ex15">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-db" onclick="toggleGif('gif-d15')">🏋️ Dumbbell Curl</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m15')">⚙️ Cable Biceps Curl</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d15')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m15')">⚙️ Cable Curl</button>
           </div>
-          <div id="gif-d15" class="gif-container">
-            <img src="d15.gif" onerror="this.src='d15.png'" alt="Dumbbell Biceps Curl">
-          </div>
-          <div id="gif-m15" class="gif-container">
-            <img src="m15.gif" onerror="this.src='m15.png'" alt="Cable Biceps Curl">
-          </div>
+          <div id="gif-d15" class="gif-container"><img src="d15.gif" onerror="this.src='d15.png'" alt="Dumbbell Biceps Curl"></div>
+          <div id="gif-m15" class="gif-container"><img src="m15.gif" onerror="this.src='m15.png'" alt="Cable Biceps Curl"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex15-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex15-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex15-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex15-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex15-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex15-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex15-s1-w" onchange="checkPR('ex15', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex15-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex15-s2-w" onchange="checkPR('ex15', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex15-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex15-s3-w" onchange="checkPR('ex15', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex15-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex15-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex15-note" placeholder="📌 Z-Bar veya dambıl notu..." onchange="saveData()">
         </li>
 
+        <!-- 16. Hammer Curl -->
         <li class="ex-item">
-          <div class="ex-title">8. Hammer Curl (Çekiç Ön Kol)</div>
+          <div class="ex-header">
+            <div class="ex-title">8. Hammer Curl</div>
+            <span class="pr-badge" id="pr-ex16">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-db" onclick="toggleGif('gif-d16')">🏋️ Dumbbell Hammer</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m16')">⚙️ Cable Rope Hammer</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d16')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m16')">⚙️ Cable Rope</button>
           </div>
-          <div id="gif-d16" class="gif-container">
-            <img src="d16.gif" onerror="this.src='d16.png'" alt="Dumbbell Hammer Curl">
-          </div>
-          <div id="gif-m16" class="gif-container">
-            <img src="m16.gif" onerror="this.src='m16.png'" alt="Cable Rope Hammer Curl">
-          </div>
+          <div id="gif-d16" class="gif-container"><img src="d16.gif" onerror="this.src='d16.png'" alt="Dumbbell Hammer Curl"></div>
+          <div id="gif-m16" class="gif-container"><img src="m16.gif" onerror="this.src='m16.png'" alt="Cable Rope Hammer Curl"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex16-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex16-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex16-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex16-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex16-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex16-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex16-s1-w" onchange="checkPR('ex16', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex16-s1-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex16-s2-w" onchange="checkPR('ex16', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex16-s2-r" placeholder="10" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s2-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex16-s3-w" onchange="checkPR('ex16', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex16-s3-r" placeholder="12" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex16-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex16-note" placeholder="📌 Makine ayarı veya not ekle..." onchange="saveData()">
         </li>
 
+        <!-- 17. Cable Crunch -->
         <li class="ex-item">
-          <div class="ex-title">9. Karın (Crunch / Leg Raise)</div>
+          <div class="ex-header">
+            <div class="ex-title">9. Karın (Crunch)</div>
+            <span class="pr-badge" id="pr-ex17">PR: - kg</span>
+          </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(45)">⏱ 45sn Sayaç</button>
-            <button class="btn btn-db" onclick="toggleGif('gif-d17')">🏋️ Mat / Leg Raise</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d17')">🏋️ Leg Raise</button>
             <button class="btn btn-mac" onclick="toggleGif('gif-m17')">⚙️ Cable Crunch</button>
           </div>
-          <div id="gif-d17" class="gif-container">
-            <img src="d17.gif" onerror="this.src='d17.png'" alt="Lying Leg Raise">
-          </div>
-          <div id="gif-m17" class="gif-container">
-            <img src="m17.gif" onerror="this.src='m17.png'" alt="Cable Crunch">
-          </div>
+          <div id="gif-d17" class="gif-container"><img src="d17.gif" onerror="this.src='d17.png'" alt="Lying Leg Raise"></div>
+          <div id="gif-m17" class="gif-container"><img src="m17.gif" onerror="this.src='m17.png'" alt="Cable Crunch"></div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
-            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex17-s1-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex17-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s1-c" onchange="saveData()"></td></tr>
-            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex17-s2-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex17-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s2-c" onchange="saveData()"></td></tr>
-            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex17-s3-w" onchange="saveData()"></td><td><input type="number" class="set-input" id="ex17-s3-r" placeholder="20" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s3-c" onchange="saveData()"></td></tr>
+            <tr><td>1. Set</td><td><input type="number" class="set-input" id="ex17-s1-w" onchange="checkPR('ex17', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex17-s1-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>2. Set</td><td><input type="number" class="set-input" id="ex17-s2-w" onchange="checkPR('ex17', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex17-s2-r" placeholder="15" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s1-c" onchange="saveData()"></td></tr>
+            <tr><td>3. Set</td><td><input type="number" class="set-input" id="ex17-s3-w" onchange="checkPR('ex17', this.value); saveData()"></td><td><input type="number" class="set-input" id="ex17-s3-r" placeholder="20" onchange="saveData()"></td><td><input type="checkbox" class="set-check" id="ex17-s3-c" onchange="saveData()"></td></tr>
           </table>
+          <input type="text" class="note-input" id="ex17-note" placeholder="📌 Diz çökme matı notu..." onchange="saveData()">
         </li>
 
       </ul>
@@ -550,10 +589,33 @@
     </div>
   </div>
 
+  <!-- GEÇMİŞ SEKMESİ -->
+  <div id="history" class="tab-content">
+    <div class="card">
+      <h2>📜 Tamamlanan Antrenman Geçmişi</h2>
+      <div id="history-list" style="margin-top: 10px;">
+        <p style="font-size: 0.8rem; color: #a0aec0; text-align: center;">Henüz kaydedilmiş antrenman geçmişi yok.</p>
+      </div>
+      <button class="btn" style="background: #e53e3e; color: white; margin-top: 15px; width: 100%;" onclick="clearHistory()">Geçmişi Temizle</button>
+    </div>
+  </div>
+
+  <!-- ARAÇLAR SEKMESİ -->
   <div id="tools" class="tab-content">
     <div class="card">
+      <h2>💪 1RM (Maksimum Tekrar) Hesaplayıcı</h2>
+      <p style="font-size: 0.8rem; color: #718096;">Bastığın ağırlık ve tekrar sayısına göre tek seferde basabileceğin teorik maksimum ağırlığı hesapla:</p>
+      <div class="calc-box">
+        <input type="number" id="rm-weight" class="calc-input" placeholder="Ağırlık (kg)">
+        <input type="number" id="rm-reps" class="calc-input" placeholder="Tekrar">
+        <button class="btn btn-timer" onclick="calculate1RM()">Hesapla</button>
+      </div>
+      <div id="rm-result" style="margin-top: 10px; font-weight: bold; color: var(--accent);"></div>
+    </div>
+
+    <div class="card">
       <h2>🏋️ Plaka Hesaplayıcı</h2>
-      <p style="font-size: 0.8rem; color: #718096;">Bara takacağınız hedef ağırlığı girin (20kg bar düşülerek tek tarafa takılacak plaka hesaplanır):</p>
+      <p style="font-size: 0.8rem; color: #718096;">Bara takacağın hedef ağırlığı gir (20kg bar düşülerek hesaplanır):</p>
       <div class="calc-box">
         <input type="number" id="target-weight" class="calc-input" placeholder="Örn: 60">
         <button class="btn btn-timer" onclick="calculatePlates()">Hesapla</button>
@@ -588,6 +650,8 @@
     document.addEventListener("DOMContentLoaded", () => {
       loadStats();
       loadData();
+      loadPRs();
+      renderHistory();
     });
 
     function switchTab(tabId, evt) {
@@ -605,12 +669,39 @@
       document.getElementById('last-date').textContent = lastDate;
     }
 
+    function checkPR(exId, weightVal) {
+      const weight = parseFloat(weightVal);
+      if (isNaN(weight) || weight <= 0) return;
+
+      const currentPR = parseFloat(localStorage.getItem(`pr_${exId}`) || 0);
+      if (weight > currentPR) {
+        localStorage.setItem(`pr_${exId}`, weight);
+        document.getElementById(`pr-${exId}`).textContent = `PR: ${weight} kg`;
+      }
+    }
+
+    function loadPRs() {
+      for (let i = 1; i <= 17; i++) {
+        const exId = `ex${i}`;
+        const savedPR = localStorage.getItem(`pr_${exId}`);
+        if (savedPR) {
+          const el = document.getElementById(`pr-${exId}`);
+          if (el) el.textContent = `PR: ${savedPR} kg`;
+        }
+      }
+    }
+
     function completeWorkout(dayName) {
       let count = parseInt(localStorage.getItem('totalWorkouts') || 0) + 1;
-      const today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+      const today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
       
       localStorage.setItem('totalWorkouts', count);
       localStorage.setItem('lastWorkoutDate', today);
+
+      // Antrenman Geçmişini Kaydet
+      let history = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+      history.unshift({ day: dayName, date: today });
+      localStorage.setItem('workoutHistory', JSON.stringify(history));
       
       document.querySelectorAll('.set-check').forEach(check => {
         check.checked = false;
@@ -618,11 +709,35 @@
       });
 
       loadStats();
-      alert(`Tebrikler! 🎉 "${dayName}" tamamlandı. Kutucuklar bir sonraki antrenman için temizlendi!`);
+      renderHistory();
+      alert(`Tebrikler! 🎉 "${dayName}" başarıyla kaydedildi.`);
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('history-list');
+      const history = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+      
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="font-size: 0.8rem; color: #a0aec0; text-align: center;">Henüz kaydedilmiş antrenman geçmişi yok.</p>';
+        return;
+      }
+
+      historyList.innerHTML = history.map(item => `
+        <div class="history-item">
+          <span class="history-date">${item.date}</span> - <strong>${item.day}</strong>
+        </div>
+      `).join('');
+    }
+
+    function clearHistory() {
+      if (confirm("Antrenman geçmişini silmek istediğinize emin misiniz?")) {
+        localStorage.removeItem('workoutHistory');
+        renderHistory();
+      }
     }
 
     function saveData() {
-      const inputs = document.querySelectorAll('.set-input');
+      const inputs = document.querySelectorAll('.set-input, .note-input');
       inputs.forEach(input => {
         localStorage.setItem(input.id, input.value);
       });
@@ -634,7 +749,7 @@
     }
 
     function loadData() {
-      const inputs = document.querySelectorAll('.set-input');
+      const inputs = document.querySelectorAll('.set-input, .note-input');
       inputs.forEach(input => {
         const val = localStorage.getItem(input.id);
         if (val !== null) input.value = val;
@@ -649,15 +764,12 @@
 
     function toggleGif(id) {
       const el = document.getElementById(id);
-      
-      // Aynı harekete ait açılmış diğer GIF alanlarını kapatır
       const parentLi = el.closest('.ex-item');
       if (parentLi) {
         parentLi.querySelectorAll('.gif-container').forEach(gifBox => {
           if (gifBox.id !== id) gifBox.style.display = 'none';
         });
       }
-
       el.style.display = (el.style.display === "block") ? "none" : "block";
     }
 
@@ -698,6 +810,21 @@
         osc.start();
         osc.stop(ctx.currentTime + 0.4);
       } catch(e) {}
+    }
+
+    function calculate1RM() {
+      const w = parseFloat(document.getElementById('rm-weight').value);
+      const r = parseFloat(document.getElementById('rm-reps').value);
+      const resultEl = document.getElementById('rm-result');
+      
+      if (!w || !r || r < 1) {
+        resultEl.textContent = "Lütfen geçerli ağırlık ve tekrar girin.";
+        return;
+      }
+      
+      // Epley Formülü
+      const rm = Math.round(w * (1 + r / 30));
+      resultEl.textContent = `Tahmini 1RM (Tek Tekrar Maks): ${rm} kg`;
     }
 
     function calculatePlates() {
