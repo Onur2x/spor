@@ -77,7 +77,7 @@
     .ex-item:last-child { border-bottom: none; }
     .ex-title { font-weight: 700; font-size: 0.95rem; color: #1a202c; }
     
-    .actions { display: flex; gap: 6px; margin-top: 6px; }
+    .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
     
     .btn {
       border: none;
@@ -88,7 +88,8 @@
       cursor: pointer;
     }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
-    .btn-gif { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
+    .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
+    .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
     .btn-finish { background: var(--success); color: white; width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px; margin-top: 10px; font-weight: bold;}
 
     .set-table {
@@ -172,21 +173,23 @@
     <button class="tab-btn" onclick="switchTab('tools', event)">🛠 ARAÇLAR</button>
   </div>
 
-  <!-- GÜN 1 -->
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>GÜN 1: PUSH (Göğüs, Omuz, Arka Kol)</h2>
       <ul class="ex-list">
         
-        <!-- 1. Bench Press -->
         <li class="ex-item">
-          <div class="ex-title">1. Barbell Bench Press</div>
+          <div class="ex-title">1. Barbell / Dumbbell Bench Press</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-1')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d1')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m1')">⚙️ Makine</button>
           </div>
-          <div id="gif-1" class="gif-container">
-            <img src="1.gif" onerror="this.src='1.png'" alt="Barbell Bench Press">
+          <div id="gif-d1" class="gif-container">
+            <img src="d1.gif" onerror="this.src='d1.png'" alt="Dumbbell Bench Press">
+          </div>
+          <div id="gif-m1" class="gif-container">
+            <img src="m1.gif" onerror="this.src='m1.png'" alt="Machine Bench Press">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -196,15 +199,18 @@
           </table>
         </li>
 
-        <!-- 2. Incline Press -->
         <li class="ex-item">
-          <div class="ex-title">2. Dumbbell Incline Press</div>
+          <div class="ex-title">2. Incline Press (Üst Göğüs)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-2')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d2')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m2')">⚙️ Makine</button>
           </div>
-          <div id="gif-2" class="gif-container">
-            <img src="2.gif" onerror="this.src='2.png'" alt="Incline Press">
+          <div id="gif-d2" class="gif-container">
+            <img src="d2.gif" onerror="this.src='d2.png'" alt="Incline Dumbbell Press">
+          </div>
+          <div id="gif-m2" class="gif-container">
+            <img src="m2.gif" onerror="this.src='m2.png'" alt="Incline Machine Press">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -214,15 +220,18 @@
           </table>
         </li>
 
-        <!-- 3. Pec Deck -->
         <li class="ex-item">
-          <div class="ex-title">3. Pec Deck / Butterfly</div>
+          <div class="ex-title">3. Fly / Pec Deck</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-3')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d3')">🏋️ Dumbbell Fly</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m3')">⚙️ Pec Deck Makine</button>
           </div>
-          <div id="gif-3" class="gif-container">
-            <img src="3.gif" onerror="this.src='3.png'" alt="Pec Deck">
+          <div id="gif-d3" class="gif-container">
+            <img src="d3.gif" onerror="this.src='d3.png'" alt="Dumbbell Fly">
+          </div>
+          <div id="gif-m3" class="gif-container">
+            <img src="m3.gif" onerror="this.src='m3.png'" alt="Pec Deck Machine">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -232,15 +241,18 @@
           </table>
         </li>
 
-        <!-- 4. Shoulder Press -->
         <li class="ex-item">
-          <div class="ex-title">4. Dumbbell Seated Shoulder Press</div>
+          <div class="ex-title">4. Shoulder Press (Omuz Pres)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-4')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d4')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m4')">⚙️ Makine</button>
           </div>
-          <div id="gif-4" class="gif-container">
-            <img src="4.gif" onerror="this.src='4.png'" alt="Shoulder Press">
+          <div id="gif-d4" class="gif-container">
+            <img src="d4.gif" onerror="this.src='d4.png'" alt="Dumbbell Shoulder Press">
+          </div>
+          <div id="gif-m4" class="gif-container">
+            <img src="m4.gif" onerror="this.src='m4.png'" alt="Machine Shoulder Press">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -250,15 +262,18 @@
           </table>
         </li>
 
-        <!-- 5. Lateral Raise -->
         <li class="ex-item">
-          <div class="ex-title">5. Lateral Raise Makinesi</div>
+          <div class="ex-title">5. Lateral Raise (Yan Omuz)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-5')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d5')">🏋️ Dumbbell</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m5')">⚙️ Makine/Kablo</button>
           </div>
-          <div id="gif-5" class="gif-container">
-            <img src="5.gif" onerror="this.src='5.png'" alt="Lateral Raise">
+          <div id="gif-d5" class="gif-container">
+            <img src="d5.gif" onerror="this.src='d5.png'" alt="Dumbbell Lateral Raise">
+          </div>
+          <div id="gif-m5" class="gif-container">
+            <img src="m5.gif" onerror="this.src='m5.png'" alt="Machine Lateral Raise">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -268,15 +283,18 @@
           </table>
         </li>
 
-        <!-- 6. Face Pull -->
         <li class="ex-item">
-          <div class="ex-title">6. Cable Face Pull</div>
+          <div class="ex-title">6. Rear Delt / Face Pull (Arka Omuz)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-6')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d6')">🏋️ Dumbbell Rear Delt</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m6')">⚙️ Cable Face Pull</button>
           </div>
-          <div id="gif-6" class="gif-container">
-            <img src="6.gif" onerror="this.src='6.png'" alt="Face Pull">
+          <div id="gif-d6" class="gif-container">
+            <img src="d6.gif" onerror="this.src='d6.png'" alt="Dumbbell Rear Delt Fly">
+          </div>
+          <div id="gif-m6" class="gif-container">
+            <img src="m6.gif" onerror="this.src='m6.png'" alt="Cable Face Pull">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -286,15 +304,18 @@
           </table>
         </li>
 
-        <!-- 7. Triceps Pushdown -->
         <li class="ex-item">
-          <div class="ex-title">7. Triceps Pushdown</div>
+          <div class="ex-title">7. Triceps Pushdown / Kickback (Arka Kol)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-7')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d7')">🏋️ Dumbbell Kickback</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m7')">⚙️ Cable Pushdown</button>
           </div>
-          <div id="gif-7" class="gif-container">
-            <img src="7.gif" onerror="this.src='7.png'" alt="Triceps Pushdown">
+          <div id="gif-d7" class="gif-container">
+            <img src="d7.gif" onerror="this.src='d7.png'" alt="Dumbbell Kickback">
+          </div>
+          <div id="gif-m7" class="gif-container">
+            <img src="m7.gif" onerror="this.src='m7.png'" alt="Cable Pushdown">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -304,15 +325,18 @@
           </table>
         </li>
 
-        <!-- 8. Overhead Triceps Extension -->
         <li class="ex-item">
-          <div class="ex-title">8. Dumbbell Overhead Triceps Extension</div>
+          <div class="ex-title">8. Overhead Triceps Extension</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-8')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d8')">🏋️ Dumbbell Overhead</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m8')">⚙️ Cable Overhead</button>
           </div>
-          <div id="gif-8" class="gif-container">
-            <img src="8.gif" onerror="this.src='8.png'" alt="Overhead Triceps Extension">
+          <div id="gif-d8" class="gif-container">
+            <img src="d8.gif" onerror="this.src='d8.png'" alt="Dumbbell Overhead Triceps">
+          </div>
+          <div id="gif-m8" class="gif-container">
+            <img src="m8.gif" onerror="this.src='m8.png'" alt="Cable Overhead Triceps">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -327,21 +351,23 @@
     </div>
   </div>
 
-  <!-- GÜN 2 -->
   <div id="day2" class="tab-content">
     <div class="card">
       <h2>GÜN 2: PULL & LEGS (Sırt, Bacak, Biceps, Karın)</h2>
       <ul class="ex-list">
 
-        <!-- 9. Lat Pulldown -->
         <li class="ex-item">
-          <div class="ex-title">1. Lat Pulldown Makinesi</div>
+          <div class="ex-title">1. Lat Pulldown / Dambıl Çekiş</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-9')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d9')">🏋️ Dumbbell Pullover</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m9')">⚙️ Lat Pulldown</button>
           </div>
-          <div id="gif-9" class="gif-container">
-            <img src="9.gif" onerror="this.src='9.png'" alt="Lat Pulldown">
+          <div id="gif-d9" class="gif-container">
+            <img src="d9.gif" onerror="this.src='d9.png'" alt="Dumbbell Pullover">
+          </div>
+          <div id="gif-m9" class="gif-container">
+            <img src="m9.gif" onerror="this.src='m9.png'" alt="Lat Pulldown">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -351,15 +377,18 @@
           </table>
         </li>
 
-        <!-- 10. Seated Cable Row -->
         <li class="ex-item">
-          <div class="ex-title">2. Seated Cable Row</div>
+          <div class="ex-title">2. Row (Sırt Çekiş)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-10')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d10')">🏋️ Dumbbell Row</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m10')">⚙️ Seated Cable Row</button>
           </div>
-          <div id="gif-10" class="gif-container">
-            <img src="10.gif" onerror="this.src='10.png'" alt="Cable Row">
+          <div id="gif-d10" class="gif-container">
+            <img src="d10.gif" onerror="this.src='d10.png'" alt="Dumbbell Row">
+          </div>
+          <div id="gif-m10" class="gif-container">
+            <img src="m10.gif" onerror="this.src='m10.png'" alt="Seated Cable Row">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -369,15 +398,18 @@
           </table>
         </li>
 
-        <!-- 11. One Arm Row -->
         <li class="ex-item">
-          <div class="ex-title">3. Dumbbell One Arm Row</div>
+          <div class="ex-title">3. Tek Kol Çekiş</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-11')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d11')">🏋️ One Arm Dumbbell Row</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m11')">⚙️ Single Arm Cable Row</button>
           </div>
-          <div id="gif-11" class="gif-container">
-            <img src="11.gif" onerror="this.src='11.png'" alt="One Arm Row">
+          <div id="gif-d11" class="gif-container">
+            <img src="d11.gif" onerror="this.src='d11.png'" alt="One Arm Dumbbell Row">
+          </div>
+          <div id="gif-m11" class="gif-container">
+            <img src="m11.gif" onerror="this.src='m11.png'" alt="Single Arm Cable Row">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -387,15 +419,18 @@
           </table>
         </li>
 
-        <!-- 12. Leg Press -->
         <li class="ex-item">
-          <div class="ex-title">4. Leg Press Makinesi</div>
+          <div class="ex-title">4. Bacak İtme / Squat</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(90)">⏱ 90sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-12')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d12')">🏋️ Goblet Squat</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m12')">⚙️ Leg Press</button>
           </div>
-          <div id="gif-12" class="gif-container">
-            <img src="12.gif" onerror="this.src='12.png'" alt="Leg Press">
+          <div id="gif-d12" class="gif-container">
+            <img src="d12.gif" onerror="this.src='d12.png'" alt="Dumbbell Goblet Squat">
+          </div>
+          <div id="gif-m12" class="gif-container">
+            <img src="m12.gif" onerror="this.src='m12.png'" alt="Leg Press Machine">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -405,15 +440,18 @@
           </table>
         </li>
 
-        <!-- 13. Leg Extension -->
         <li class="ex-item">
-          <div class="ex-title">5. Leg Extension Makinesi</div>
+          <div class="ex-title">5. Ön Bacak (Extension / Lunge)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-13')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d13')">🏋️ Dumbbell Lunge</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m13')">⚙️ Leg Extension</button>
           </div>
-          <div id="gif-13" class="gif-container">
-            <img src="13.gif" onerror="this.src='13.png'" alt="Leg Extension">
+          <div id="gif-d13" class="gif-container">
+            <img src="d13.gif" onerror="this.src='d13.png'" alt="Dumbbell Lunge">
+          </div>
+          <div id="gif-m13" class="gif-container">
+            <img src="m13.gif" onerror="this.src='m13.png'" alt="Leg Extension">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -423,15 +461,18 @@
           </table>
         </li>
 
-        <!-- 14. Leg Curl -->
         <li class="ex-item">
-          <div class="ex-title">6. Leg Curl Makinesi</div>
+          <div class="ex-title">6. Arka Bacak (Curl / RDL)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-14')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d14')">🏋️ Dumbbell RDL</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m14')">⚙️ Leg Curl Makinesi</button>
           </div>
-          <div id="gif-14" class="gif-container">
-            <img src="14.gif" onerror="this.src='14.png'" alt="Leg Curl">
+          <div id="gif-d14" class="gif-container">
+            <img src="d14.gif" onerror="this.src='d14.png'" alt="Dumbbell RDL">
+          </div>
+          <div id="gif-m14" class="gif-container">
+            <img src="m14.gif" onerror="this.src='m14.png'" alt="Leg Curl Machine">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -441,15 +482,18 @@
           </table>
         </li>
 
-        <!-- 15. Barbell Biceps Curl -->
         <li class="ex-item">
-          <div class="ex-title">7. Barbell Biceps Curl</div>
+          <div class="ex-title">7. Ön Kol (Biceps Curl)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-15')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d15')">🏋️ Dumbbell Curl</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m15')">⚙️ Cable Biceps Curl</button>
           </div>
-          <div id="gif-15" class="gif-container">
-            <img src="15.gif" onerror="this.src='15.png'" alt="Biceps Curl">
+          <div id="gif-d15" class="gif-container">
+            <img src="d15.gif" onerror="this.src='d15.png'" alt="Dumbbell Biceps Curl">
+          </div>
+          <div id="gif-m15" class="gif-container">
+            <img src="m15.gif" onerror="this.src='m15.png'" alt="Cable Biceps Curl">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -459,15 +503,18 @@
           </table>
         </li>
 
-        <!-- 16. Hammer Curl -->
         <li class="ex-item">
-          <div class="ex-title">8. Dumbbell Hammer Curl</div>
+          <div class="ex-title">8. Hammer Curl (Çekiç Ön Kol)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(60)">⏱ 60sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-16')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d16')">🏋️ Dumbbell Hammer</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m16')">⚙️ Cable Rope Hammer</button>
           </div>
-          <div id="gif-16" class="gif-container">
-            <img src="16.gif" onerror="this.src='16.png'" alt="Hammer Curl">
+          <div id="gif-d16" class="gif-container">
+            <img src="d16.gif" onerror="this.src='d16.png'" alt="Dumbbell Hammer Curl">
+          </div>
+          <div id="gif-m16" class="gif-container">
+            <img src="m16.gif" onerror="this.src='m16.png'" alt="Cable Rope Hammer Curl">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -477,15 +524,18 @@
           </table>
         </li>
 
-        <!-- 17. Cable Crunch -->
         <li class="ex-item">
-          <div class="ex-title">9. Cable Crunch (Göbek/Karın)</div>
+          <div class="ex-title">9. Karın (Crunch / Leg Raise)</div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(45)">⏱ 45sn Sayaç</button>
-            <button class="btn btn-gif" onclick="toggleGif('gif-17')">🎬 GIF Göster</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d17')">🏋️ Mat / Leg Raise</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m17')">⚙️ Cable Crunch</button>
           </div>
-          <div id="gif-17" class="gif-container">
-            <img src="17.gif" onerror="this.src='17.png'" alt="Cable Crunch">
+          <div id="gif-d17" class="gif-container">
+            <img src="d17.gif" onerror="this.src='d17.png'" alt="Lying Leg Raise">
+          </div>
+          <div id="gif-m17" class="gif-container">
+            <img src="m17.gif" onerror="this.src='m17.png'" alt="Cable Crunch">
           </div>
           <table class="set-table">
             <tr><th>Set</th><th>kg</th><th>Tekrar</th><th>Bitti</th></tr>
@@ -500,7 +550,6 @@
     </div>
   </div>
 
-  <!-- ARAÇLAR SEKMESİ -->
   <div id="tools" class="tab-content">
     <div class="card">
       <h2>🏋️ Plaka Hesaplayıcı</h2>
@@ -600,6 +649,15 @@
 
     function toggleGif(id) {
       const el = document.getElementById(id);
+      
+      // Aynı harekete ait açılmış diğer GIF alanlarını kapatır
+      const parentLi = el.closest('.ex-item');
+      if (parentLi) {
+        parentLi.querySelectorAll('.gif-container').forEach(gifBox => {
+          if (gifBox.id !== id) gifBox.style.display = 'none';
+        });
+      }
+
       el.style.display = (el.style.display === "block") ? "none" : "block";
     }
 
