@@ -21,6 +21,10 @@
     .subtitle { font-size: 0.8rem; color: #7f8c8d; margin-bottom: 12px; }
     .theme-toggle { background: var(--border); border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; color: var(--text); font-weight: bold; }
     
+    .stats-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: flex; justify-content: space-around; text-align: center; }
+    .stat-num { font-size: 1.4rem; font-weight: bold; }
+    .stat-label { font-size: 0.7rem; opacity: 0.9; }
+
     .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; }
     .tab-btn { flex: 1; padding: 10px 6px; background: var(--border); border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem; color: var(--text); cursor: pointer; white-space: nowrap; }
     .tab-btn.active { background: var(--primary); color: white; }
@@ -32,13 +36,17 @@
 
     .ex-list { list-style: none; padding: 0; margin: 0; }
     .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; }
+    .ex-header { display: flex; justify-content: space-between; align-items: center; }
     .ex-title { font-weight: 700; font-size: 0.95rem; }
+    .pr-badge { font-size: 0.7rem; background: #fefcbf; color: #b7791f; border: 1px solid #f6e05e; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+
     .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-    
     .btn { border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
     .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
+    .btn-yt { background: #fff0f0; color: #c00; border: 1px solid #ffcdd2; }
+    .btn-add { background: var(--border); color: var(--text); margin-top: 6px; padding: 4px 8px; font-size: 0.7rem; }
     .btn-finish { background: var(--success); color: white; width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px; margin-top: 10px; font-weight: bold;}
 
     .set-table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 0.78rem; }
@@ -46,8 +54,15 @@
     .set-table td { text-align: center; padding: 3px 0; }
     .set-input { width: 45px; padding: 4px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 5px; text-align: center; }
     .set-type-btn { font-size: 0.65rem; padding: 2px 5px; border-radius: 4px; background: var(--border); color: var(--text); border: none; }
+    .set-check { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
 
-    /* Visual Barbell Visualizer */
+    .note-input { width: 100%; margin-top: 6px; padding: 6px; border: 1px dashed var(--border); background: var(--input-bg); color: var(--text); border-radius: 6px; font-size: 0.72rem; box-sizing: border-box; }
+    .gif-container { display: none; margin-top: 8px; text-align: center; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
+    .gif-container img { max-width: 100%; height: auto; max-height: 220px; border-radius: 6px; }
+
+    .tracker-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.85rem; }
+    .calc-box { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+
     .barbell-display { display: flex; align-items: center; justify-content: center; height: 50px; background: var(--border); margin-top: 10px; border-radius: 8px; padding: 0 10px; }
     .bar-shaft { height: 8px; background: #a0aec0; flex-grow: 1; border-radius: 4px; }
     .plate { display: inline-block; margin: 0 1px; border-radius: 3px; color: white; font-size: 0.6rem; font-weight: bold; text-align: center; line-height: 35px; }
@@ -63,15 +78,28 @@
 <body>
 
   <div class="header-bar">
-    <h1>FITPRO PRO</h1>
+    <h1>AĞIR KAS GELİŞİMİ PRO</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Profesyonel Antrenman & İlerleme Asistanı</div>
+  <div class="subtitle">Ağırlık, Set, Beslenme & Analiz Asistanı</div>
+
+  <div class="stats-card">
+    <div>
+      <div class="stat-num" id="total-workouts">0</div>
+      <div class="stat-label">Tamamlanan</div>
+    </div>
+    <div>
+      <div class="stat-num" id="last-date">-</div>
+      <div class="stat-label">Son Antrenman</div>
+    </div>
+  </div>
 
   <div class="tab-container">
     <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
     <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ/BACAK</button>
+    <button class="tab-btn" onclick="switchTab('trackers', event)">🥤 TAKİP</button>
     <button class="tab-btn" onclick="switchTab('analytics', event)">📊 ANALİZ</button>
+    <button class="tab-btn" onclick="switchTab('history', event)">📜 GEÇMİŞ</button>
     <button class="tab-btn" onclick="switchTab('tools', event)">🛠 ARAÇLAR</button>
   </div>
 
@@ -79,81 +107,150 @@
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
-      <button class="btn btn-timer" style="width:100%; margin-bottom:10px;" onclick="startVoiceInput('ex1')">🎙️ Sesli Set Kaydı Başlat</button>
       <ul class="ex-list">
         <script>
           const day1Exercises = [
-            { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press)", timer: 90 },
-            { id: "ex2", title: "2. Üst Göğüs Pres (Incline Press)", timer: 90 },
-            { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck Fly)", timer: 60 },
-            { id: "ex4", title: "4. Omuz Pres (Shoulder Press)", timer: 90 },
-            { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise)", timer: 60 },
-            { id: "ex6", title: "6. Arka Omuz Çekiş (Face Pull)", timer: 60 },
-            { id: "ex7", title: "7. Arka Kol İtiş (Triceps Pushdown)", timer: 60 }
+            { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press)", timer: 90, query: "Bench+Press+Form" },
+            { id: "ex2", title: "2. Üst Göğüs Pres (Incline Press)", timer: 90, query: "Incline+Dumbbell+Press+Form" },
+            { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck / Fly)", timer: 60, query: "Pec+Deck+Fly+Form" },
+            { id: "ex4", title: "4. Omuz Pres (Shoulder Press)", timer: 90, query: "Dumbbell+Shoulder+Press+Form" },
+            { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise)", timer: 60, query: "Lateral+Raise+Form" },
+            { id: "ex6", title: "6. Arka Omuz Çekiş (Face Pull)", timer: 60, query: "Cable+Face+Pull+Form" },
+            { id: "ex7", title: "7. Arka Kol İtiş (Triceps Pushdown)", timer: 60, query: "Triceps+Pushdown+Form" },
+            { id: "ex8", title: "8. Baş Üstü Arka Kol (Overhead Triceps)", timer: 60, query: "Overhead+Triceps+Extension+Form" }
           ];
 
-          function renderEx(ex) {
+          function renderExercise(ex) {
             return `
-              <li class="ex-item">
-                <div class="ex-title">${ex.title}</div>
+              <li class="ex-item" id="item-${ex.id}">
+                <div class="ex-header">
+                  <div class="ex-title">${ex.title}</div>
+                  <span class="pr-badge" id="pr-${ex.id}">Rekor: - kg</span>
+                </div>
                 <div class="actions">
                   <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱ ${ex.timer}sn</button>
+                  <button class="btn btn-db" onclick="toggleGif('gif-d-${ex.id}')">🏋️ Dambıl</button>
+                  <button class="btn btn-mac" onclick="toggleGif('gif-m-${ex.id}')">⚙️ Makine</button>
+                  <a class="btn btn-yt" href="https://www.youtube.com/results?search_query=${ex.query}" target="_blank">🎥 Form</a>
+                  <button class="btn btn-timer" onclick="startVoiceInput('${ex.id}')">🎙️ Sesli Kayıt</button>
                 </div>
-                <table class="set-table">
-                  <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th></tr>
-                  ${[1,2,3].map(s => `
-                    <tr>
-                      <td>${s}. Set</td>
-                      <td><button class="set-type-btn" id="${ex.id}-s${s}-type" onclick="cycleSetType('${ex.id}-s${s}-type')">Normal</button></td>
-                      <td><input type="number" class="set-input" id="${ex.id}-s${s}-w" onchange="saveData()"></td>
-                      <td><input type="number" class="set-input" id="${ex.id}-s${s}-r" placeholder="10" onchange="saveData()"></td>
-                      <td><input type="number" class="set-input" id="${ex.id}-s${s}-rir" placeholder="1" min="0" max="4"></td>
-                    </tr>
-                  `).join('')}
+                <div id="gif-d-${ex.id}" class="gif-container"><img src="d_${ex.id}.gif" onerror="this.src='d_${ex.id}.png'" alt="Dambıl"></div>
+                <div id="gif-m-${ex.id}" class="gif-container"><img src="m_${ex.id}.gif" onerror="this.src='m_${ex.id}.png'" alt="Makine"></div>
+                <table class="set-table" id="table-${ex.id}">
+                  <thead>
+                    <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th><th>Bitti</th></tr>
+                  </thead>
+                  <tbody>
+                    ${[1,2,3].map(s => renderSetRow(ex.id, s)).join('')}
+                  </tbody>
                 </table>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-add" onclick="addSet('${ex.id}')">+ Set Ekle</button>
+                  <button class="btn btn-add" onclick="removeSet('${ex.id}')">- Set Sil</button>
+                </div>
+                <input type="text" class="note-input" id="${ex.id}-note" placeholder="📌 Özel not veya ayarlar..." onchange="saveData()">
               </li>
             `;
           }
-          day1Exercises.forEach(ex => document.write(renderEx(ex)));
+
+          function renderSetRow(exId, s) {
+            return `
+              <tr id="row-${exId}-s${s}">
+                <td>${s}. Set</td>
+                <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">Normal</button></td>
+                <td><input type="number" class="set-input" id="${exId}-s${s}-w" onchange="checkPR('${exId}', this.value); saveData()"></td>
+                <td><input type="number" class="set-input" id="${exId}-s${s}-r" placeholder="10" onchange="saveData()"></td>
+                <td><input type="number" class="set-input" id="${exId}-s${s}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
+                <td><input type="checkbox" class="set-check" id="${exId}-s${s}-c" onchange="saveData()"></td>
+              </tr>
+            `;
+          }
+
+          day1Exercises.forEach(ex => document.write(renderExercise(ex)));
         </script>
       </ul>
-      <button class="btn btn-finish" onclick="completeWorkout('İtiş')">✅ Antrenmanı Bitir & Hacmi Kaydet</button>
+      <button class="btn btn-finish" onclick="completeWorkout('1. Gün: İtiş (Push)')">✅ 1. Gün Antrenmanını Tamamla!</button>
     </div>
   </div>
 
   <!-- GÜN 2 -->
   <div id="day2" class="tab-content">
     <div class="card">
-      <h2>2. GÜN: ÇEKİŞ & BACAK</h2>
+      <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
       <ul class="ex-list">
         <script>
           const day2Exercises = [
-            { id: "ex8", title: "1. Lat Pulldown", timer: 90 },
-            { id: "ex9", title: "2. Seated Cable Row", timer: 90 },
-            { id: "ex10", title: "3. Leg Press / Squat", timer: 90 },
-            { id: "ex11", title: "4. Leg Extension", timer: 60 },
-            { id: "ex12", title: "5. Biceps Curl", timer: 60 }
+            { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown)", timer: 90, query: "Lat+Pulldown+Form" },
+            { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, query: "Seated+Cable+Row+Form" },
+            { id: "ex11", title: "3. Tek Kol Çekiş (One Arm Row)", timer: 60, query: "One+Arm+Dumbbell+Row+Form" },
+            { id: "ex12", title: "4. Bacak İtiş / Çömelme (Leg Press / Squat)", timer: 90, query: "Leg+Press+Form" },
+            { id: "ex13", title: "5. Ön Bacak Açış (Leg Extension)", timer: 60, query: "Leg+Extension+Form" },
+            { id: "ex14", title: "6. Arka Bacak Büküş (Leg Curl)", timer: 60, query: "Leg+Curl+Form" },
+            { id: "ex15", title: "7. Ön Kol Büküş (Biceps Curl)", timer: 60, query: "Biceps+Curl+Form" },
+            { id: "ex16", title: "8. Çekiç Büküş (Hammer Curl)", timer: 60, query: "Hammer+Curl+Form" },
+            { id: "ex17", title: "9. Karın Sıkıştırma (Cable Crunch)", timer: 45, query: "Cable+Crunch+Form" }
           ];
-          day2Exercises.forEach(ex => document.write(renderEx(ex)));
+          day2Exercises.forEach(ex => document.write(renderExercise(ex)));
         </script>
       </ul>
-      <button class="btn btn-finish" onclick="completeWorkout('Çekiş & Bacak')">✅ Antrenmanı Bitir & Hacmi Kaydet</button>
+      <button class="btn btn-finish" onclick="completeWorkout('2. Gün: Çekiş & Bacak')">✅ 2. Gün Antrenmanını Tamamla!</button>
     </div>
   </div>
 
-  <!-- ANALİZ SEKMESİ -->
+  <!-- TAKİP -->
+  <div id="trackers" class="tab-content">
+    <div class="card">
+      <h2>💧 Günlük Su Takibi</h2>
+      <div class="tracker-row">
+        <span>Tüketilen: <strong id="water-val">0</strong> / 3.5 Litre</span>
+        <div>
+          <button class="btn btn-timer" onclick="addWater(0.25)">+250 ml</button>
+          <button class="btn btn-db" onclick="resetWater()">Sıfırla</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🥩 Günlük Protein Takibi</h2>
+      <div class="tracker-row">
+        <span>Alınan: <strong id="protein-val">0</strong> / 160 gram</span>
+        <div>
+          <button class="btn btn-mac" onclick="addProtein(25)">+25g</button>
+          <button class="btn btn-db" onclick="resetProtein()">Sıfırla</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALİZ -->
   <div id="analytics" class="tab-content">
     <div class="card">
-      <h2>📈 Haftalık Toplam Hacim (kg)</h2>
+      <h2>📈 Haftalık Toplam Kaldırılan Hacim (kg)</h2>
       <canvas id="volumeChart" style="width:100%; max-height:220px;"></canvas>
     </div>
   </div>
 
-  <!-- ARAÇLAR SEKMESİ -->
+  <!-- GEÇMİŞ -->
+  <div id="history" class="tab-content">
+    <div class="card">
+      <h2>📜 Tamamlanan Antrenman Geçmişi</h2>
+      <div id="history-list" style="margin-top: 10px;"></div>
+      <button class="btn" style="background: #e53e3e; color: white; margin-top: 15px; width: 100%;" onclick="clearHistory()">Geçmişi Temizle</button>
+    </div>
+  </div>
+
+  <!-- ARAÇLAR -->
   <div id="tools" class="tab-content">
     <div class="card">
+      <h2>💾 Veri Yedekleme ve Taşıma</h2>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-mac" style="flex:1;" onclick="exportData()">📥 Yedek İndir</button>
+        <button class="btn btn-timer" style="flex:1;" onclick="document.getElementById('import-file').click()">📤 Yedek Yükle</button>
+        <input type="file" id="import-file" style="display:none;" onchange="importData(event)">
+      </div>
+    </div>
+    <div class="card">
       <h2>🏋️ Görsel Plaka Hesaplayıcı</h2>
-      <div style="display:flex; gap:8px;">
+      <div class="calc-box">
         <input type="number" id="target-weight" class="set-input" style="width:100px;" placeholder="Örn: 80">
         <button class="btn btn-timer" onclick="drawPlates()">Hesapla & Çiz</button>
       </div>
@@ -162,11 +259,20 @@
       </div>
       <div id="plate-text" style="font-size:0.75rem; margin-top:5px; text-align:center; opacity:0.8;">Bar: 20kg kabul edilir.</div>
     </div>
+    <div class="card">
+      <h2>💪 1RM (Maksimum Tekrar) Hesaplayıcı</h2>
+      <div class="calc-box">
+        <input type="number" id="rm-weight" class="set-input" style="width:80px;" placeholder="Ağırlık">
+        <input type="number" id="rm-reps" class="set-input" style="width:80px;" placeholder="Tekrar">
+        <button class="btn btn-timer" onclick="calculate1RM()">Hesapla</button>
+      </div>
+      <div id="rm-result" style="margin-top: 10px; font-weight: bold; color: var(--accent);"></div>
+    </div>
   </div>
 
   <div id="timer-bar">
     <div>
-      <div style="font-size:0.7rem; color:#a0aec0;">DİNLENME</div>
+      <div style="font-size:0.7rem; color:#a0aec0;">DİNLENME SÜRESİ</div>
       <div id="timer-display">00:00</div>
     </div>
     <button class="btn btn-db" onclick="stopTimer()">Kapat</button>
@@ -176,7 +282,11 @@
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
     document.addEventListener("DOMContentLoaded", () => {
+      loadStats();
       loadData();
+      loadPRs();
+      renderHistory();
+      loadTrackers();
       initChart();
       if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
     });
@@ -195,12 +305,79 @@
 
     function cycleSetType(id) {
       const btn = document.getElementById(id);
-      const types = ["Normal", "Drop", "Süper"];
-      btn.textContent = types[(types.indexOf(btn.textContent) + 1) % types.length];
-      localStorage.setItem(id, btn.textContent);
+      const types = ["Normal", "Drop Set", "Süper Set"];
+      let cur = types.indexOf(btn.textContent);
+      let next = types[(cur + 1) % types.length];
+      btn.textContent = next;
+      localStorage.setItem(id, next);
     }
 
-    /* Görsel Plaka Çizici */
+    function addSet(exId) {
+      const tbody = document.querySelector(`#table-${exId} tbody`);
+      const currentSets = tbody.querySelectorAll('tr').length + 1;
+      const tr = document.createElement('tr');
+      tr.id = `row-${exId}-s${currentSets}`;
+      tr.innerHTML = `
+        <td>${currentSets}. Set</td>
+        <td><button class="set-type-btn" id="${exId}-s${currentSets}-type" onclick="cycleSetType('${exId}-s${currentSets}-type')">Normal</button></td>
+        <td><input type="number" class="set-input" id="${exId}-s${currentSets}-w" onchange="checkPR('${exId}', this.value); saveData()"></td>
+        <td><input type="number" class="set-input" id="${exId}-s${currentSets}-r" placeholder="10" onchange="saveData()"></td>
+        <td><input type="number" class="set-input" id="${exId}-s${currentSets}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
+        <td><input type="checkbox" class="set-check" id="${exId}-s${currentSets}-c" onchange="saveData()"></td>
+      `;
+      tbody.appendChild(tr);
+      saveData();
+    }
+
+    function removeSet(exId) {
+      const tbody = document.querySelector(`#table-${exId} tbody`);
+      const rows = tbody.querySelectorAll('tr');
+      if (rows.length > 1) {
+        tbody.removeChild(rows[rows.length - 1]);
+        saveData();
+      }
+    }
+
+    function addWater(val) {
+      let cur = parseFloat(localStorage.getItem('water') || 0) + val;
+      localStorage.setItem('water', cur.toFixed(2));
+      document.getElementById('water-val').textContent = cur.toFixed(2);
+    }
+    function resetWater() { localStorage.setItem('water', 0); document.getElementById('water-val').textContent = 0; }
+
+    function addProtein(val) {
+      let cur = parseInt(localStorage.getItem('protein') || 0) + val;
+      localStorage.setItem('protein', cur);
+      document.getElementById('protein-val').textContent = cur;
+    }
+    function resetProtein() { localStorage.setItem('protein', 0); document.getElementById('protein-val').textContent = 0; }
+
+    function loadTrackers() {
+      document.getElementById('water-val').textContent = localStorage.getItem('water') || 0;
+      document.getElementById('protein-val').textContent = localStorage.getItem('protein') || 0;
+    }
+
+    function checkPR(exId, weightVal) {
+      const weight = parseFloat(weightVal);
+      if (isNaN(weight) || weight <= 0) return;
+      const currentPR = parseFloat(localStorage.getItem(`pr_${exId}`) || 0);
+      if (weight > currentPR) {
+        localStorage.setItem(`pr_${exId}`, weight);
+        document.getElementById(`pr-${exId}`).textContent = `Rekor: ${weight} kg`;
+      }
+    }
+
+    function loadPRs() {
+      for (let i = 1; i <= 17; i++) {
+        const exId = `ex${i}`;
+        const savedPR = localStorage.getItem(`pr_${exId}`);
+        if (savedPR) {
+          const el = document.getElementById(`pr-${exId}`);
+          if (el) el.textContent = `Rekor: ${savedPR} kg`;
+        }
+      }
+    }
+
     function drawPlates() {
       const target = parseFloat(document.getElementById('target-weight').value);
       const container = document.getElementById('barbell-container');
@@ -227,7 +404,6 @@
       text.textContent = `Tek taraf için plakalar: ${sidePlates.join('kg, ')}kg`;
     }
 
-    /* Akıllı Sesli Komut Motoru */
     function startVoiceInput(exId) {
       if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert("Tarayıcınız sesli komutu desteklemiyor.");
@@ -237,37 +413,47 @@
       const rec = new SpeechRecognition();
       rec.lang = 'tr-TR';
       rec.start();
-      alert("Konuşun! Örn: '80 kilo 10 tekrar'");
+      alert("Örn: '2. set 80 kilo 10 tekrar'");
 
       rec.onresult = (e) => {
         const text = e.results[0][0].transcript;
         const nums = text.match(/\d+/g);
-        if (nums && nums.length >= 2) {
-          document.getElementById(`${exId}-s1-w`).value = nums[0];
-          document.getElementById(`${exId}-s1-r`).value = nums[1];
-          saveData();
-          alert(`Kaydedildi: ${nums[0]}kg x ${nums[1]} tekrar`);
+        if (nums && nums.length >= 3) {
+          let setNum = nums[0];
+          let weight = nums[1];
+          let reps = nums[2];
+
+          let targetW = document.getElementById(`${exId}-s${setNum}-w`);
+          let targetR = document.getElementById(`${exId}-s${setNum}-r`);
+
+          if (targetW && targetR) {
+            targetW.value = weight;
+            targetR.value = reps;
+            checkPR(exId, weight);
+            saveData();
+            alert(`${setNum}. Set Kaydedildi: ${weight}kg x ${reps} tekrar`);
+          }
         }
       };
     }
 
-    /* Dinlenme Sayacı & Sesli Geri Sayım */
     let timerInterval;
-    function startTimer(sec) {
+    function startTimer(seconds) {
       clearInterval(timerInterval);
       const display = document.getElementById('timer-display');
       document.getElementById('timer-bar').style.display = 'flex';
-      let timeLeft = sec;
+      let timeLeft = seconds;
+      display.textContent = timeLeft + " sn";
 
       timerInterval = setInterval(() => {
         timeLeft--;
         display.textContent = timeLeft + " sn";
-
         if (timeLeft <= 3 && timeLeft > 0) speakText(timeLeft.toString());
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           display.textContent = "Süre Bitti! 🔥";
           speakText("Dinlenme bitti, sonraki sete geç!");
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
         }
       }, 1000);
     }
@@ -285,8 +471,37 @@
       }
     }
 
-    /* Grafik & Veri Takibi */
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "fitpro_yedek.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importData(event) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = JSON.parse(e.target.result);
+        Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
+        alert("Veriler yüklendi!");
+        location.reload();
+      };
+      reader.readAsText(event.target.files[0]);
+    }
+
     function completeWorkout(dayName) {
+      let count = parseInt(localStorage.getItem('totalWorkouts') || 0) + 1;
+      const today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      localStorage.setItem('totalWorkouts', count);
+      localStorage.setItem('lastWorkoutDate', today);
+
+      let history = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+      history.unshift({ day: dayName, date: today });
+      localStorage.setItem('workoutHistory', JSON.stringify(history));
+
       let totalVolume = 0;
       document.querySelectorAll('.set-input[id$="-w"]').forEach(input => {
         let idBase = input.id.replace('-w', '');
@@ -295,14 +510,35 @@
         totalVolume += (w * r);
       });
 
-      let history = JSON.parse(localStorage.getItem('volHistory') || '[]');
+      let volHistory = JSON.parse(localStorage.getItem('volHistory') || '[]');
       const dateLabel = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-      history.push({ date: dateLabel, volume: totalVolume });
-      if (history.length > 7) history.shift();
-      localStorage.setItem('volHistory', JSON.stringify(history));
+      volHistory.push({ date: dateLabel, volume: totalVolume });
+      if (volHistory.length > 7) volHistory.shift();
+      localStorage.setItem('volHistory', JSON.stringify(volHistory));
 
-      alert(`Tebrikler! 🎉 Antrenman bitti. Toplam Hacim: ${totalVolume} kg`);
-      location.reload();
+      loadStats();
+      renderHistory();
+      alert(`Tebrikler! 🎉 "${dayName}" kaydedildi. Toplam Hacim: ${totalVolume} kg`);
+    }
+
+    function loadStats() {
+      document.getElementById('total-workouts').textContent = localStorage.getItem('totalWorkouts') || 0;
+      document.getElementById('last-date').textContent = localStorage.getItem('lastWorkoutDate') || 'Henüz Yok';
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('history-list');
+      const history = JSON.parse(localStorage.getItem('workoutHistory') || '[]');
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="font-size: 0.8rem; color: #a0aec0; text-align: center;">Henüz geçmiş yok.</p>';
+        return;
+      }
+      historyList.innerHTML = history.map(item => `<div style="border-bottom:1px solid var(--border); padding:6px 0; font-size:0.8rem;"><strong>${item.date}</strong> - ${item.day}</div>`).join('');
+    }
+
+    function clearHistory() {
+      localStorage.removeItem('workoutHistory');
+      renderHistory();
     }
 
     function initChart() {
@@ -328,12 +564,32 @@
     }
 
     function saveData() {
-      document.querySelectorAll('.set-input').forEach(i => localStorage.setItem(i.id, i.value));
+      document.querySelectorAll('.set-input, .note-input').forEach(i => localStorage.setItem(i.id, i.value));
+      document.querySelectorAll('.set-check').forEach(c => localStorage.setItem(c.id, c.checked));
     }
+
     function loadData() {
-      document.querySelectorAll('.set-input').forEach(i => {
+      document.querySelectorAll('.set-input, .note-input').forEach(i => {
         if (localStorage.getItem(i.id) !== null) i.value = localStorage.getItem(i.id);
       });
+      document.querySelectorAll('.set-check').forEach(c => {
+        if (localStorage.getItem(c.id) !== null) c.checked = (localStorage.getItem(c.id) === 'true');
+      });
+      document.querySelectorAll('.set-type-btn').forEach(b => {
+        if (localStorage.getItem(b.id) !== null) b.textContent = localStorage.getItem(b.id);
+      });
+    }
+
+    function toggleGif(id) {
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display === "block") ? "none" : "block";
+    }
+
+    function calculate1RM() {
+      const w = parseFloat(document.getElementById('rm-weight').value);
+      const r = parseFloat(document.getElementById('rm-reps').value);
+      if (!w || !r) return;
+      document.getElementById('rm-result').textContent = `Tahmini 1RM: ${Math.round(w * (1 + r / 30))} kg`;
     }
   </script>
 </body>
