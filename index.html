@@ -93,7 +93,7 @@
     }
 
     .ex-list { list-style: none; padding: 0; margin: 0; }
-    .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; }
+    .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; position: relative; }
     .ex-item:last-child { border-bottom: none; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; }
     .ex-title { font-weight: 700; font-size: 0.95rem; }
@@ -115,7 +115,9 @@
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
     .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
     .btn-yt { background: #fff0f0; color: #c00; border: 1px solid #ffcdd2; }
+    .btn-delete-ex { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.65rem; }
     .btn-add { background: var(--border); color: var(--text); margin-top: 6px; padding: 4px 8px; font-size: 0.7rem; }
+    .btn-new-ex { background: var(--accent); color: white; width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 8px; margin-top: 10px; font-weight: bold; }
     .btn-finish { background: var(--success); color: white; width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px; margin-top: 10px; font-weight: bold;}
 
     .set-table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 0.78rem; }
@@ -222,98 +224,27 @@
     <button class="tab-btn" onclick="switchTab('tools', event)">🛠 ARAÇLAR</button>
   </div>
 
+  <!-- GÜN 1 -->
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
-      <ul class="ex-list">
-        <script>
-          const day1Exercises = [
-            { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press)", timer: 90, query: "Bench+Press+Form" },
-            { id: "ex2", title: "2. Üst Göğüs Pres (Incline Press)", timer: 90, query: "Incline+Dumbbell+Press+Form" },
-            { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck / Fly)", timer: 60, query: "Pec+Deck+Fly+Form" },
-            { id: "ex4", title: "4. Omuz Pres (Shoulder Press)", timer: 90, query: "Dumbbell+Shoulder+Press+Form" },
-            { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise)", timer: 60, query: "Lateral+Raise+Form" },
-            { id: "ex6", title: "6. Arka Omuz Çekiş (Face Pull)", timer: 60, query: "Cable+Face+Pull+Form" },
-            { id: "ex7", title: "7. Arka Kol İtiş (Triceps Pushdown)", timer: 60, query: "Triceps+Pushdown+Form" },
-            { id: "ex8", title: "8. Baş Üstü Arka Kol (Overhead Triceps)", timer: 60, query: "Overhead+Triceps+Extension+Form" }
-          ];
-
-          function renderExercise(ex) {
-            return `
-              <li class="ex-item" id="item-${ex.id}">
-                <div class="ex-header">
-                  <div class="ex-title">${ex.title}</div>
-                  <span class="pr-badge" id="pr-${ex.id}">Rekor: - kg</span>
-                </div>
-                <div class="actions">
-                  <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱ ${ex.timer}sn</button>
-                  <button class="btn btn-db" onclick="toggleGif('gif-d-${ex.id}')">🏋️ Dambıl</button>
-                  <button class="btn btn-mac" onclick="toggleGif('gif-m-${ex.id}')">⚙️ Makine</button>
-                  <a class="btn btn-yt" href="https://www.youtube.com/results?search_query=${ex.query}" target="_blank">🎥 Form</a>
-                  <button class="btn btn-timer" onclick="startVoiceInput('${ex.id}')">🎙️ Sesli Kayıt</button>
-                </div>
-                <div id="gif-d-${ex.id}" class="gif-container"><img src="d_${ex.id}.gif" onerror="this.src='d_${ex.id}.png'" alt="Dambıl"></div>
-                <div id="gif-m-${ex.id}" class="gif-container"><img src="m_${ex.id}.gif" onerror="this.src='m_${ex.id}.png'" alt="Makine"></div>
-                <table class="set-table" id="table-${ex.id}">
-                  <thead>
-                    <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th><th>Bitti</th></tr>
-                  </thead>
-                  <tbody>
-                    ${[1,2,3].map(s => renderSetRow(ex.id, s)).join('')}
-                  </tbody>
-                </table>
-                <div style="display:flex; gap:6px;">
-                  <button class="btn btn-add" onclick="addSet('${ex.id}')">+ Set Ekle</button>
-                  <button class="btn btn-add" onclick="removeSet('${ex.id}')">- Set Sil</button>
-                </div>
-                <input type="text" class="note-input" id="${ex.id}-note" placeholder="📌 Özel not veya ayarlar..." onchange="saveData()">
-              </li>
-            `;
-          }
-
-          function renderSetRow(exId, s) {
-            return `
-              <tr id="row-${exId}-s${s}">
-                <td>${s}. Set</td>
-                <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">Normal</button></td>
-                <td><input type="number" class="set-input" id="${exId}-s${s}-w" onchange="checkPR('${exId}', this.value); saveData()"></td>
-                <td><input type="number" class="set-input" id="${exId}-s${s}-r" placeholder="10" onchange="saveData()"></td>
-                <td><input type="number" class="set-input" id="${exId}-s${s}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
-                <td><input type="checkbox" class="set-check" id="${exId}-s${s}-c" onchange="saveData()"></td>
-              </tr>
-            `;
-          }
-
-          day1Exercises.forEach(ex => document.write(renderExercise(ex)));
-        </script>
-      </ul>
+      <ul class="ex-list" id="day1-list"></ul>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Yeni İtiş Egzersizi Ekle</button>
       <button class="btn btn-finish" onclick="completeWorkout('1. Gün: İtiş (Push)')">✅ 1. Gün Antrenmanını Tamamla!</button>
     </div>
   </div>
 
+  <!-- GÜN 2 -->
   <div id="day2" class="tab-content">
     <div class="card">
       <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
-      <ul class="ex-list">
-        <script>
-          const day2Exercises = [
-            { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown)", timer: 90, query: "Lat+Pulldown+Form" },
-            { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, query: "Seated+Cable+Row+Form" },
-            { id: "ex11", title: "3. Tek Kol Çekiş (One Arm Row)", timer: 60, query: "One+Arm+Dumbbell+Row+Form" },
-            { id: "ex12", title: "4. Bacak İtiş / Çömelme (Leg Press / Squat)", timer: 90, query: "Leg+Press+Form" },
-            { id: "ex13", title: "5. Ön Bacak Açış (Leg Extension)", timer: 60, query: "Leg+Extension+Form" },
-            { id: "ex14", title: "6. Arka Bacak Büküş (Leg Curl)", timer: 60, query: "Leg+Curl+Form" },
-            { id: "ex15", title: "7. Ön Kol Büküş (Biceps Curl)", timer: 60, query: "Biceps+Curl+Form" },
-            { id: "ex16", title: "8. Çekiç Büküş (Hammer Curl)", timer: 60, query: "Hammer+Curl+Form" },
-            { id: "ex17", title: "9. Karın Sıkıştırma (Cable Crunch)", timer: 45, query: "Cable+Crunch+Form" }
-          ];
-          day2Exercises.forEach(ex => document.write(renderExercise(ex)));
-        </script>
-      </ul>
+      <ul class="ex-list" id="day2-list"></ul>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Yeni Çekiş/Bacak Egzersizi Ekle</button>
       <button class="btn btn-finish" onclick="completeWorkout('2. Gün: Çekiş & Bacak')">✅ 2. Gün Antrenmanını Tamamla!</button>
     </div>
   </div>
 
+  <!-- TAKİP SEKMESİ -->
   <div id="trackers" class="tab-content">
     <div class="card">
       <h2>💧 Günlük Su Takibi</h2>
@@ -338,6 +269,7 @@
     </div>
   </div>
 
+  <!-- ANALİZ SEKMESİ -->
   <div id="analytics" class="tab-content">
     <div class="card">
       <h2>📈 Haftalık Toplam Kaldırılan Hacim (kg)</h2>
@@ -345,6 +277,7 @@
     </div>
   </div>
 
+  <!-- GEÇMİŞ SEKMESİ -->
   <div id="history" class="tab-content">
     <div class="card">
       <h2>📜 Tamamlanan Antrenman Geçmişi</h2>
@@ -355,6 +288,7 @@
     </div>
   </div>
 
+  <!-- ARAÇLAR SEKMESİ -->
   <div id="tools" class="tab-content">
     <div class="card">
       <h2>💾 Veri Yedekleme ve Taşıma</h2>
@@ -402,7 +336,35 @@
       navigator.serviceWorker.register('sw.js');
     }
 
+    const defaultDay1 = [
+      { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press)", timer: 90, query: "Bench+Press+Form" },
+      { id: "ex2", title: "2. Üst Göğüs Pres (Incline Press)", timer: 90, query: "Incline+Dumbbell+Press+Form" },
+      { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck / Fly)", timer: 60, query: "Pec+Deck+Fly+Form" },
+      { id: "ex4", title: "4. Omuz Pres (Shoulder Press)", timer: 90, query: "Dumbbell+Shoulder+Press+Form" },
+      { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise)", timer: 60, query: "Lateral+Raise+Form" },
+      { id: "ex6", title: "6. Arka Omuz Çekiş (Face Pull)", timer: 60, query: "Cable+Face+Pull+Form" },
+      { id: "ex7", title: "7. Arka Kol İtiş (Triceps Pushdown)", timer: 60, query: "Triceps+Pushdown+Form" },
+      { id: "ex8", title: "8. Baş Üstü Arka Kol (Overhead Triceps)", timer: 60, query: "Overhead+Triceps+Extension+Form" }
+    ];
+
+    const defaultDay2 = [
+      { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown)", timer: 90, query: "Lat+Pulldown+Form" },
+      { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, query: "Seated+Cable+Row+Form" },
+      { id: "ex11", title: "3. Tek Kol Çekiş (One Arm Row)", timer: 60, query: "One+Arm+Dumbbell+Row+Form" },
+      { id: "ex12", title: "4. Bacak İtiş / Çömelme (Leg Press / Squat)", timer: 90, query: "Leg+Press+Form" },
+      { id: "ex13", title: "5. Ön Bacak Açış (Leg Extension)", timer: 60, query: "Leg+Extension+Form" },
+      { id: "ex14", title: "6. Arka Bacak Büküş (Leg Curl)", timer: 60, query: "Leg+Curl+Form" },
+      { id: "ex15", title: "7. Ön Kol Büküş (Biceps Curl)", timer: 60, query: "Biceps+Curl+Form" },
+      { id: "ex16", title: "8. Çekiç Büküş (Hammer Curl)", timer: 60, query: "Hammer+Curl+Form" },
+      { id: "ex17", title: "9. Karın Sıkıştırma (Cable Crunch)", timer: 45, query: "Cable+Crunch+Form" }
+    ];
+
+    let day1Exercises = [];
+    let day2Exercises = [];
+
     document.addEventListener("DOMContentLoaded", () => {
+      initExercises();
+      renderAllExercises();
       loadStats();
       loadData();
       loadPRs();
@@ -413,6 +375,103 @@
         document.body.classList.add('dark-theme');
       }
     });
+
+    function initExercises() {
+      const s1 = localStorage.getItem('day1_custom');
+      const s2 = localStorage.getItem('day2_custom');
+      day1Exercises = s1 ? JSON.parse(s1) : defaultDay1;
+      day2Exercises = s2 ? JSON.parse(s2) : defaultDay2;
+    }
+
+    function saveExercises() {
+      localStorage.setItem('day1_custom', JSON.stringify(day1Exercises));
+      localStorage.setItem('day2_custom', JSON.stringify(day2Exercises));
+    }
+
+    function renderAllExercises() {
+      document.getElementById('day1-list').innerHTML = day1Exercises.map(ex => renderExerciseHTML(ex, 'day1')).join('');
+      document.getElementById('day2-list').innerHTML = day2Exercises.map(ex => renderExerciseHTML(ex, 'day2')).join('');
+    }
+
+    function renderExerciseHTML(ex, dayType) {
+      return `
+        <li class="ex-item" id="item-${ex.id}">
+          <div class="ex-header">
+            <div class="ex-title">${ex.title}</div>
+            <div>
+              <span class="pr-badge" id="pr-${ex.id}">Rekor: - kg</span>
+              <button class="btn btn-delete-ex" onclick="deleteExercise('${ex.id}', '${dayType}')">🗑️ Sil</button>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱ ${ex.timer}sn</button>
+            <button class="btn btn-db" onclick="toggleGif('gif-d-${ex.id}')">🏋️ Dambıl</button>
+            <button class="btn btn-mac" onclick="toggleGif('gif-m-${ex.id}')">⚙️ Makine</button>
+            <a class="btn btn-yt" href="https://www.youtube.com/results?search_query=${ex.query}" target="_blank">🎥 Form</a>
+            <button class="btn btn-timer" onclick="startVoiceInput('${ex.id}')">🎙️ Sesli Kayıt</button>
+          </div>
+          <div id="gif-d-${ex.id}" class="gif-container"><img src="d_${ex.id}.gif" onerror="this.src='d_${ex.id}.png'" alt="Dambıl"></div>
+          <div id="gif-m-${ex.id}" class="gif-container"><img src="m_${ex.id}.gif" onerror="this.src='m_${ex.id}.png'" alt="Makine"></div>
+          <table class="set-table" id="table-${ex.id}">
+            <thead>
+              <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th><th>Bitti</th></tr>
+            </thead>
+            <tbody>
+              ${[1,2,3].map(s => renderSetRow(ex.id, s)).join('')}
+            </tbody>
+          </table>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-add" onclick="addSet('${ex.id}')">+ Set Ekle</button>
+            <button class="btn btn-add" onclick="removeSet('${ex.id}')">- Set Sil</button>
+          </div>
+          <input type="text" class="note-input" id="${ex.id}-note" placeholder="📌 Özel not veya ayarlar..." onchange="saveData()">
+        </li>
+      `;
+    }
+
+    function renderSetRow(exId, s) {
+      return `
+        <tr id="row-${exId}-s${s}">
+          <td>${s}. Set</td>
+          <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">Normal</button></td>
+          <td><input type="number" class="set-input" id="${exId}-s${s}-w" onchange="checkPR('${exId}', this.value); saveData()"></td>
+          <td><input type="number" class="set-input" id="${exId}-s${s}-r" placeholder="10" onchange="saveData()"></td>
+          <td><input type="number" class="set-input" id="${exId}-s${s}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
+          <td><input type="checkbox" class="set-check" id="${exId}-s${s}-c" onchange="saveData()"></td>
+        </tr>
+      `;
+    }
+
+    function addNewExercisePrompt(dayType) {
+      const name = prompt("Egzersiz adını giriniz:");
+      if (!name) return;
+      const timer = parseInt(prompt("Dinlenme süresi (saniye):", "60")) || 60;
+      const newId = "custom_" + Date.now();
+      const newEx = { id: newId, title: name, timer: timer, query: encodeURIComponent(name) };
+
+      if (dayType === 'day1') {
+        day1Exercises.push(newEx);
+      } else {
+        day2Exercises.push(newEx);
+      }
+      saveExercises();
+      renderAllExercises();
+      loadData();
+      loadPRs();
+    }
+
+    function deleteExercise(exId, dayType) {
+      if (!confirm("Bu egzersizi silmek istediğinizden emin misiniz?")) return;
+      if (dayType === 'day1') {
+        day1Exercises = day1Exercises.filter(e => e.id !== exId);
+      } else {
+        day2Exercises = day2Exercises.filter(e => e.id !== exId);
+      }
+      saveExercises();
+      renderAllExercises();
+      loadData();
+      loadPRs();
+    }
 
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
@@ -493,19 +552,19 @@
       const currentPR = parseFloat(localStorage.getItem(`pr_${exId}`) || 0);
       if (weight > currentPR) {
         localStorage.setItem(`pr_${exId}`, weight);
-        document.getElementById(`pr-${exId}`).textContent = `Rekor: ${weight} kg`;
+        const el = document.getElementById(`pr-${exId}`);
+        if (el) el.textContent = `Rekor: ${weight} kg`;
       }
     }
 
     function loadPRs() {
-      for (let i = 1; i <= 17; i++) {
-        const exId = `ex${i}`;
-        const savedPR = localStorage.getItem(`pr_${exId}`);
+      [...day1Exercises, ...day2Exercises].forEach(ex => {
+        const savedPR = localStorage.getItem(`pr_${ex.id}`);
         if (savedPR) {
-          const el = document.getElementById(`pr-${exId}`);
+          const el = document.getElementById(`pr-${ex.id}`);
           if (el) el.textContent = `Rekor: ${savedPR} kg`;
         }
-      }
+      });
     }
 
     function drawPlates() {
@@ -581,10 +640,27 @@
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           display.textContent = "Süre Bitti! 🔥";
+          playBeepSound();
           speakAlert();
           if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
         }
       }, 1000);
+    }
+
+    function playBeepSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        [0, 0.2, 0.4].forEach(delay => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = 880; // A5 Bip sesi
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + delay);
+          osc.stop(ctx.currentTime + delay + 0.1);
+        });
+      } catch (e) { console.log(e); }
     }
 
     function stopTimer() {
@@ -715,7 +791,7 @@
 
     function toggleGif(id) {
       const el = document.getElementById(id);
-      el.style.display = (el.style.display === "block") ? "none" : "block";
+      if (el) el.style.display = (el.style.display === "block") ? "none" : "block";
     }
 
     function calculate1RM() {
