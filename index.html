@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitPro - AI Powered Workout Platform</title>
+  <title>FitPro AI - Ultimate Workout Platform</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
   <link rel="apple-touch-icon" href="icon-192.png">
+  <!-- CDN Kütüphaneleri -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
@@ -144,7 +145,7 @@
     .calc-box { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
     .calc-input { width: 80px; padding: 6px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 6px; }
 
-    /* ROZETLER */
+    /* ROZETLER & GRID */
     .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
     .badge-item { background: var(--border); border-radius: 8px; padding: 8px; text-align: center; opacity: 0.4; transition: 0.3s; }
     .badge-item.unlocked { opacity: 1; background: #fffbe3; border: 1px solid #f6e05e; }
@@ -183,13 +184,13 @@
     <h1>FITPRO AI PLATFORM</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Akıllı Koçluk & Performans Ekosistemi</div>
+  <div class="subtitle">Ağır Kas Gelişimi & Akıllı Koçluk Ekosistemi</div>
 
   <!-- GAMIFICATION / LEVEL BAR -->
   <div class="user-level-card">
     <div style="flex:1;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
-        <span style="font-size:0.85rem; font-weight:bold;">Sporcu Unvanı: <span id="user-title">Çaylak</span></span>
+        <span style="font-size:0.85rem; font-weight:bold;">Unvan: <span id="user-title">Çaylak</span></span>
         <span class="level-badge" id="user-level">LVL 1</span>
       </div>
       <div class="xp-bar-bg">
@@ -206,7 +207,7 @@
       <strong id="workout-timer" style="font-size:1.1rem; color:var(--accent); display:block;">00:00:00</strong>
     </div>
     <div>
-      <span style="font-size:0.75rem; opacity:0.8;">Est. Kalori:</span>
+      <span style="font-size:0.75rem; opacity:0.8;">Tahmini Kalori:</span>
       <strong id="workout-calories" style="font-size:1.1rem; color:var(--success); display:block;">0 kcal</strong>
     </div>
     <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
@@ -259,10 +260,8 @@
   <div id="ai-coach" class="tab-content">
     <div class="card">
       <h2>🧠 AI Koç Tavsiyeleri & Analiz</h2>
-      <div id="ai-insights-list">
-        <!-- JS ile dolacak -->
-      </div>
-      <button class="btn btn-timer" style="width:100%; margin-top:10px;" onclick="generateAIInsights()">🤖 Antrenman Verilerini Analiz Et</button>
+      <div id="ai-insights-list"></div>
+      <button class="btn btn-timer" style="width:100%; margin-top:10px;" onclick="generateAIInsights()">🤖 Verileri Yeniden Analiz Et</button>
     </div>
   </div>
 
@@ -283,9 +282,7 @@
       <h2>📸 İlerleme Fotoğrafları (Before / After)</h2>
       <input type="file" id="photo-input" accept="image/*" onchange="uploadProgressPhoto(event)" style="display:none;">
       <button class="btn btn-timer" style="width:100%;" onclick="document.getElementById('photo-input').click()">📷 Yeni Fotoğraf Ekle</button>
-      <div class="photo-grid" id="photo-grid-container">
-        <!-- JS ile dolacak -->
-      </div>
+      <div class="photo-grid" id="photo-grid-container"></div>
     </div>
   </div>
 
@@ -307,19 +304,27 @@
   <div id="badges" class="tab-content">
     <div class="card">
       <h2>🏆 Başarımlar & Rozetler</h2>
-      <div class="badge-grid" id="badge-container">
-        <!-- JS ile dolacak -->
-      </div>
+      <div class="badge-grid" id="badge-container"></div>
     </div>
   </div>
 
-  <!-- ARAÇLAR -->
+  <!-- ARAÇLAR (EXCEL / MAKRO / ŞABLON) -->
   <div id="tools" class="tab-content">
     <div class="card">
-      <h2>📅 Yeni Antrenman / Şablon Günü Ekle</h2>
+      <h2>📅 Yeni Şablon Günü Ekle</h2>
       <div class="calc-box">
         <input type="text" id="custom-tab-name" class="calc-input" style="flex:1;" placeholder="Örn: 3. GÜN: BACAK">
         <button class="btn btn-timer" onclick="createNewTab()">Sekme Oluştur</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💾 Veri Yedekleme & Excel Entegrasyonu</h2>
+      <p style="font-size:0.75rem;">Antrenman geçmişini yedekleyebilir veya Excel/VBA sistemine aktarabilirsin.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-mac" onclick="exportDataJSON()">📤 JSON Dışa Aktar</button>
+        <button class="btn btn-db" onclick="importDataJSON()">📥 JSON İçe Aktar</button>
+        <button class="btn btn-timer" onclick="exportToCSV()">📊 Excel CSV İndir</button>
       </div>
     </div>
 
@@ -425,9 +430,22 @@
     function renderAllExercises() {
       document.getElementById('day1-list').innerHTML = day1Exercises.map(ex => renderExerciseHTML(ex, 'day1')).join('');
       document.getElementById('day2-list').innerHTML = day2Exercises.map(ex => renderExerciseHTML(ex, 'day2')).join('');
+      customTabs.forEach(tab => {
+        const listEl = document.getElementById(`${tab.id}-list`);
+        if (listEl) {
+          let exList = JSON.parse(localStorage.getItem(`${tab.id}_custom`) || '[]');
+          listEl.innerHTML = exList.map(ex => renderExerciseHTML(ex, tab.id)).join('');
+        }
+      });
     }
 
     function renderExerciseHTML(ex, dayType) {
+      let setCounts = parseInt(localStorage.getItem(`${ex.id}_set_count`) || 3);
+      let setRowsHTML = '';
+      for (let s = 1; s <= setCounts; s++) {
+        setRowsHTML += renderSetRow(ex.id, s);
+      }
+
       return `
         <li class="ex-item" id="item-${ex.id}">
           <div class="ex-header">
@@ -449,8 +467,8 @@
             <thead>
               <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th><th>Bitti</th></tr>
             </thead>
-            <tbody>
-              ${[1,2,3].map(s => renderSetRow(ex.id, s)).join('')}
+            <tbody id="tbody-${ex.id}">
+              ${setRowsHTML}
             </tbody>
           </table>
           <div style="display:flex; gap:6px;">
@@ -465,10 +483,11 @@
     function renderSetRow(exId, s) {
       const prevW = localStorage.getItem(`prev_${exId}_s${s}_w`) || '';
       const prevR = localStorage.getItem(`prev_${exId}_s${s}_r`) || '10';
+      const savedType = localStorage.getItem(`${exId}-s${s}-type`) || 'Normal';
       return `
         <tr id="row-${exId}-s${s}">
           <td>${s}. Set</td>
-          <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">Normal</button></td>
+          <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">${savedType}</button></td>
           <td><input type="number" class="set-input" id="${exId}-s${s}-w" placeholder="${prevW}" onchange="checkPR('${exId}', this.value); saveData()"></td>
           <td><input type="number" class="set-input" id="${exId}-s${s}-r" placeholder="${prevR}" onchange="saveData()"></td>
           <td><input type="number" class="set-input" id="${exId}-s${s}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
@@ -477,7 +496,77 @@
       `;
     }
 
-    /* 🧠 AI KOÇ ANALİZİ (PLATEAU & TAVSİYE) */
+    function cycleSetType(btnId) {
+      const btn = document.getElementById(btnId);
+      const types = ['Normal', 'Isınma', 'Drop', 'Failure'];
+      let currIndex = types.indexOf(btn.textContent);
+      let nextType = types[(currIndex + 1) % types.length];
+      btn.textContent = nextType;
+      localStorage.setItem(btnId, nextType);
+    }
+
+    function addSet(exId) {
+      let count = parseInt(localStorage.getItem(`${exId}_set_count`) || 3) + 1;
+      localStorage.setItem(`${exId}_set_count`, count);
+      const tbody = document.getElementById(`tbody-${exId}`);
+      if (tbody) {
+        tbody.insertAdjacentHTML('beforeend', renderSetRow(exId, count));
+      }
+    }
+
+    function removeSet(exId) {
+      let count = parseInt(localStorage.getItem(`${exId}_set_count`) || 3);
+      if (count > 1) {
+        const row = document.getElementById(`row-${exId}-s${count}`);
+        if (row) row.remove();
+        localStorage.setItem(`${exId}_set_count`, count - 1);
+      }
+    }
+
+    function addNewExercisePrompt(dayType) {
+      const title = prompt("Yeni egzersiz adı:");
+      if (!title) return;
+      const timer = prompt("Dinlenme süresi (saniye):", "60") || "60";
+      const newEx = {
+        id: "custom_" + Date.now(),
+        title: title,
+        timer: parseInt(timer),
+        query: encodeURIComponent(title + " Form")
+      };
+
+      if (dayType === 'day1') {
+        day1Exercises.push(newEx);
+        localStorage.setItem('day1_custom', JSON.stringify(day1Exercises));
+      } else if (dayType === 'day2') {
+        day2Exercises.push(newEx);
+        localStorage.setItem('day2_custom', JSON.stringify(day2Exercises));
+      } else {
+        let customList = JSON.parse(localStorage.getItem(`${dayType}_custom`) || '[]');
+        customList.push(newEx);
+        localStorage.setItem(`${dayType}_custom`, JSON.stringify(customList));
+      }
+      renderAllExercises();
+      populateExerciseSelect();
+    }
+
+    function deleteExercise(exId, dayType) {
+      if (!confirm("Bu egzersizi silmek istediğine emin misin?")) return;
+      if (dayType === 'day1') {
+        day1Exercises = day1Exercises.filter(e => e.id !== exId);
+        localStorage.setItem('day1_custom', JSON.stringify(day1Exercises));
+      } else if (dayType === 'day2') {
+        day2Exercises = day2Exercises.filter(e => e.id !== exId);
+        localStorage.setItem('day2_custom', JSON.stringify(day2Exercises));
+      } else {
+        let customList = JSON.parse(localStorage.getItem(`${dayType}_custom`) || '[]');
+        customList = customList.filter(e => e.id !== exId);
+        localStorage.setItem(`${dayType}_custom`, JSON.stringify(customList));
+      }
+      renderAllExercises();
+      populateExerciseSelect();
+    }
+
+    /* 🧠 AI KOÇ ANALİZİ */
     function generateAIInsights() {
       const container = document.getElementById('ai-insights-list');
       if (!container) return;
@@ -601,6 +690,47 @@
       document.getElementById('measurement-history').innerHTML = history.map(h => `📌 <strong>${h.date}:</strong> Kol: ${h.arm||'-'}cm | Göğüs: ${h.chest||'-'}cm | Bel: ${h.waist||'-'}cm`).join('<br>');
     }
 
+    /* SERBEST ŞABLON TABLARI */
+    function createNewTab() {
+      const name = document.getElementById('custom-tab-name').value;
+      if (!name) return;
+      const tabId = "tab_" + Date.now();
+      customTabs.push({ id: tabId, name: name });
+      localStorage.setItem('custom_tabs', JSON.stringify(customTabs));
+      document.getElementById('custom-tab-name').value = '';
+      renderCustomTabs();
+      renderAllExercises();
+    }
+
+    function renderCustomTabs() {
+      const btnContainer = document.getElementById('tab-buttons');
+      const dynamicContainer = document.getElementById('dynamic-tabs');
+      
+      document.querySelectorAll('.custom-dynamic-btn').forEach(e => e.remove());
+      dynamicContainer.innerHTML = '';
+
+      customTabs.forEach(tab => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn custom-dynamic-btn';
+        btn.textContent = tab.name;
+        btn.onclick = (e) => switchTab(tab.id, e);
+        btnContainer.appendChild(btn);
+
+        const content = document.createElement('div');
+        content.id = tab.id;
+        content.className = 'tab-content';
+        content.innerHTML = `
+          <div class="card">
+            <h2>${tab.name}</h2>
+            <ul class="ex-list" id="${tab.id}-list"></ul>
+            <button class="btn btn-new-ex" onclick="addNewExercisePrompt('${tab.id}')">➕ Yeni Egzersiz Ekle</button>
+            <button class="btn btn-finish" onclick="completeWorkout('${tab.name}')">✅ Antrenmanı Tamamla!</button>
+          </div>
+        `;
+        dynamicContainer.appendChild(content);
+      });
+    }
+
     /* ANTRENMANI TAMAMLAMA VE ÖDÜLLENDİRME */
     function completeWorkout(dayName) {
       let count = parseInt(localStorage.getItem('totalWorkouts') || 0) + 1;
@@ -626,11 +756,85 @@
         }
       });
 
-      addXP(50); // Complete workout XP
+      // Volume History update
+      let volHistory = JSON.parse(localStorage.getItem('volHistory') || '[]');
+      volHistory.push({ date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }), volume: totalVolume });
+      if (volHistory.length > 7) volHistory.shift();
+      localStorage.setItem('volHistory', JSON.stringify(volHistory));
+
+      addXP(50);
       loadStats();
       initChart();
       generateAIInsights();
       showStoryModal(dayName, totalVolume);
+    }
+
+    /* VERİ DIŞA/İÇE AKTAR (EXCEL / JSON) */
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `fitpro_backup_${Date.now()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importDataJSON() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+        reader.onload = readerEvent => {
+          const content = JSON.parse(readerEvent.target.result);
+          Object.keys(content).forEach(key => localStorage.setItem(key, content[key]));
+          alert("Veriler başarıyla içe aktarıldı!");
+          location.reload();
+        }
+      }
+      input.click();
+    }
+
+    function exportToCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,Egzersiz ID,Set,Agirlik,Tekrar,Tarih\n";
+      [...day1Exercises, ...day2Exercises].forEach(ex => {
+        let history = JSON.parse(localStorage.getItem(`history_${ex.id}`) || '[]');
+        history.forEach(h => {
+          csvContent += `"${ex.title}",1,${h.weight},10,"${h.date}"\n`;
+        });
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "fitpro_antrenman_gecmisi.csv");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function calculateMacros() {
+      const age = parseFloat(document.getElementById('macro-age').value);
+      const weight = parseFloat(document.getElementById('macro-weight').value);
+      const height = parseFloat(document.getElementById('macro-height').value);
+
+      if (!age || !weight || !height) return;
+
+      // Harris-Benedict BMR
+      let bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+      let tdee = bmr * 1.55; // Orta seviye hareketli
+      let targetCal = tdee + 300; // Kas yapımı için kalori fazlası
+
+      let protein = weight * 2.2;
+      let fat = weight * 1.0;
+      let carb = (targetCal - (protein * 4 + fat * 9)) / 4;
+
+      document.getElementById('macro-result').innerHTML = `
+        🔥 <strong>Günlük Hedef Kalori:</strong> ${Math.round(targetCal)} kcal<br>
+        🥩 <strong>Protein:</strong> ${Math.round(protein)}g | 🥑 <strong>Yağ:</strong> ${Math.round(fat)}g | 🍚 <strong>Karbonhidrat:</strong> ${Math.round(carb)}g
+      `;
     }
 
     /* DİĞER YARDIMCI METOTLAR */
@@ -641,7 +845,7 @@
       if (weight > currentPR) {
         localStorage.setItem(`pr_${exId}`, weight);
         document.getElementById(`pr-${exId}`).textContent = `Rekor: ${weight} kg`;
-        addXP(20); // PR XP
+        addXP(20);
         if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
     }
@@ -712,6 +916,24 @@
     function populateExerciseSelect() {
       const sel = document.getElementById('exercise-chart-select');
       if (sel) sel.innerHTML = [...day1Exercises, ...day2Exercises].map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+    }
+
+    function updateExerciseChart() {
+      const exId = document.getElementById('exercise-chart-select').value;
+      const history = JSON.parse(localStorage.getItem(`history_${exId}`) || '[]');
+      const ctx = document.getElementById('exerciseChart')?.getContext('2d');
+      if (!ctx) return;
+
+      if (exerciseChartInstance) exerciseChartInstance.destroy();
+
+      exerciseChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: history.map(h => h.date),
+          datasets: [{ label: 'Ağırlık (kg)', data: history.map(h => h.weight), borderColor: '#0275d8', fill: false }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
     }
 
     function initChart() {
