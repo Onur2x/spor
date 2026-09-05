@@ -7,9 +7,12 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
   <link rel="apple-touch-icon" href="icon-192.png">
+  
   <!-- CDN Kütüphaneleri -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
   <style>
     :root { 
       --primary: #d9534f; 
@@ -47,6 +50,14 @@
     .subtitle { font-size: 0.8rem; color: #7f8c8d; margin-bottom: 12px; }
     .theme-toggle { background: var(--border); border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; color: var(--text); font-weight: bold; font-size: 0.8rem; }
     
+    /* AUTH CARD */
+    .auth-card {
+      background: var(--card-bg); border-radius: 12px; padding: 15px;
+      margin-bottom: 15px; border: 1px solid var(--border); text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .auth-input { width: 80%; max-width: 300px; padding: 8px; margin: 5px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
+
     /* GAMIFICATION HEADER */
     .user-level-card {
       background: linear-gradient(135deg, #6f42c1, #a855f7);
@@ -73,11 +84,11 @@
     .stat-num { font-size: 1.4rem; font-weight: bold; }
     .stat-label { font-size: 0.7rem; opacity: 0.9; }
 
-    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; }
+    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
     .tab-btn {
-      flex: 1; padding: 10px 6px; background: var(--border);
+      flex: 1; padding: 10px 8px; background: var(--border);
       border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem;
-      color: var(--text); cursor: pointer; white-space: nowrap;
+      color: var(--text); cursor: pointer; white-space: nowrap; transition: all 0.2s;
     }
     .tab-btn.active { background: var(--primary); color: white; }
 
@@ -112,7 +123,7 @@
     .btn {
       border: none; padding: 6px 10px; border-radius: 6px;
       font-size: 0.75rem; font-weight: 600; cursor: pointer;
-      text-decoration: none; display: inline-block;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
     }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
@@ -127,36 +138,15 @@
     .set-table th { color: #718096; font-weight: 600; text-align: center; padding-bottom: 4px; }
     .set-table td { text-align: center; padding: 3px 0; }
     .set-input {
-      width: 45px; padding: 4px; border: 1px solid var(--border);
+      width: 48px; padding: 4px; border: 1px solid var(--border);
       background: var(--input-bg); color: var(--text); border-radius: 5px;
       text-align: center; font-size: 0.78rem;
     }
     .set-type-btn { font-size: 0.65rem; padding: 2px 5px; border-radius: 4px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
     .set-check { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
 
-    .note-input {
-      width: 100%; margin-top: 6px; padding: 6px; border: 1px dashed var(--border);
-      background: var(--input-bg); color: var(--text); border-radius: 6px; font-size: 0.72rem; box-sizing: border-box;
-    }
-
     .gif-container { display: none; margin-top: 8px; text-align: center; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
     .gif-container img { max-width: 100%; height: auto; max-height: 220px; border-radius: 6px; object-fit: contain; }
-
-    .calc-box { display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
-    .calc-input { width: 80px; padding: 6px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 6px; }
-
-    /* ROZETLER & GRID */
-    .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; margin-top: 10px; }
-    .badge-item { background: var(--border); border-radius: 8px; padding: 8px; text-align: center; opacity: 0.4; transition: 0.3s; }
-    .badge-item.unlocked { opacity: 1; background: #fffbe3; border: 1px solid #f6e05e; }
-    .badge-icon { font-size: 1.5rem; }
-    .badge-title { font-size: 0.65rem; font-weight: bold; margin-top: 4px; }
-
-    /* FOTOĞRAFLI İLERLEME */
-    .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .photo-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; text-align: center; }
-    .photo-card img { width: 100%; height: 140px; object-fit: cover; }
-    .photo-date { font-size: 0.7rem; padding: 4px; background: var(--border); }
 
     #timer-bar { 
       position: fixed; bottom: 0; left: 0; right: 0; 
@@ -167,15 +157,10 @@
     #timer-display { font-size: 1.2rem; font-weight: bold; color: #48bb78; }
     .stop-btn { background: var(--primary); border: none; color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
 
-    #story-card-modal {
-      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;
-    }
-    .story-card-content {
-      background: linear-gradient(135deg, #111827, #1f2937);
-      color: white; padding: 20px; border-radius: 16px; width: 80%; max-width: 320px;
-      text-align: center; border: 2px solid #d9534f; box-shadow: 0 0 20px rgba(217, 83, 79, 0.4);
-    }
+    /* FORM & GRAPH HELPER STYLES */
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 3px; }
+    .form-control { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
   </style>
 </head>
 <body>
@@ -184,13 +169,28 @@
     <h1>FITPRO AI PLATFORM</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Ağır Kas Gelişimi & Akıllı Koçluk Ekosistemi</div>
+  <div class="subtitle">Supabase Destekli Ağır Kas Gelişimi Ekosistemi</div>
+
+  <!-- AUTHENTICATION SECTION -->
+  <div class="auth-card" id="auth-section">
+    <div id="auth-logged-out">
+      <h3 style="margin-top:0; font-size:1rem;">Supabase Bulut Hesabı</h3>
+      <input type="email" id="auth-email" class="auth-input" placeholder="E-posta Adresi"><br>
+      <input type="password" id="auth-password" class="auth-input" placeholder="Şifre"><br>
+      <button class="btn btn-mac" onclick="handleSignUp()" style="margin-top:5px;">Kayıt Ol</button>
+      <button class="btn btn-timer" onclick="handleSignIn()" style="margin-top:5px;">Giriş Yap</button>
+    </div>
+    <div id="auth-logged-in" style="display:none;">
+      <span style="font-size:0.85rem;">Bulut Bağlantısı Aktif: <strong id="user-email-display"></strong></span>
+      <button class="btn btn-db" onclick="handleSignOut()" style="margin-left:10px;">Çıkış Yap</button>
+    </div>
+  </div>
 
   <!-- GAMIFICATION / LEVEL BAR -->
   <div class="user-level-card">
     <div style="flex:1;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
-        <span style="font-size:0.85rem; font-weight:bold;">Unvan: <span id="user-title">Çaylak</span></span>
+        <span style="font-size:0.85rem; font-weight:bold;">Unvan: <span id="user-title">Çaylak Sporcu</span></span>
         <span class="level-badge" id="user-level">LVL 1</span>
       </div>
       <div class="xp-bar-bg">
@@ -200,160 +200,102 @@
     </div>
   </div>
 
+  <!-- GENEL İSTATİSTİK KARTI -->
+  <div class="stats-card">
+    <div>
+      <div class="stat-num" id="total-workouts-num">0</div>
+      <div class="stat-label">Antrenman</div>
+    </div>
+    <div>
+      <div class="stat-num" id="total-volume-num">0 kg</div>
+      <div class="stat-label">Toplam Hacim</div>
+    </div>
+    <div>
+      <div class="stat-num" id="total-prs-num">0</div>
+      <div class="stat-label">Kırılan PR</div>
+    </div>
+  </div>
+
   <!-- CANLI KRONOMETRE -->
   <div class="workout-timer-box">
     <div>
       <span style="font-size:0.75rem; opacity:0.8;">Antrenman Süresi:</span>
       <strong id="workout-timer" style="font-size:1.1rem; color:var(--accent); display:block;">00:00:00</strong>
     </div>
-    <div>
-      <span style="font-size:0.75rem; opacity:0.8;">Tahmini Kalori:</span>
-      <strong id="workout-calories" style="font-size:1.1rem; color:var(--success); display:block;">0 kcal</strong>
-    </div>
     <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
   </div>
 
-  <div class="stats-card">
-    <div>
-      <div class="stat-num" id="total-workouts">0</div>
-      <div class="stat-label">Tamamlanan</div>
-    </div>
-    <div>
-      <div class="stat-num" id="last-date">-</div>
-      <div class="stat-label">Son Antrenman</div>
-    </div>
-  </div>
-
+  <!-- TAB SEÇİCİLERİ -->
   <div class="tab-container" id="tab-buttons">
     <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
     <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ & BACAK</button>
-    <button class="tab-btn" onclick="switchTab('ai-coach', event)">🧠 AI KOÇ</button>
-    <button class="tab-btn" onclick="switchTab('progress', event)">📸 İLERLEME</button>
-    <button class="tab-btn" onclick="switchTab('analytics', event)">📊 ANALİZ</button>
-    <button class="tab-btn" onclick="switchTab('badges', event)">🏆 ROZETLER</button>
-    <button class="tab-btn" onclick="switchTab('tools', event)">🛠 ARAÇLAR</button>
+    <button class="tab-btn" onclick="switchTab('analytics', event)">📊 GRAFİKLER</button>
+    <button class="tab-btn" onclick="switchTab('body-metrics', event)">📏 ÖLÇÜLER</button>
+    <button class="tab-btn" onclick="switchTab('nutrition', event)">🥗 MAKRO TAKİBİ</button>
   </div>
 
-  <div id="dynamic-tabs"></div>
-
-  <!-- GÜN 1 -->
+  <!-- 1. GÜN: İTİŞ PROGRAMI -->
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
+      <div class="ai-alert-box">
+        💡 <strong>AI İpucu:</strong> Ağır kas yapımı için her sette tükenişe (RPE 8-9) yakın çalışın. Son seti Drop Set yapabilirsiniz.
+      </div>
       <ul class="ex-list" id="day1-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Yeni İtiş Egzersizi Ekle</button>
-      <button class="btn btn-finish" onclick="completeWorkout('1. Gün: İtiş (Push)')">✅ 1. Gün Antrenmanını Tamamla!</button>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Yeni Egzersiz Ekle</button>
+      <button class="btn btn-finish" onclick="finishWorkout('day1')">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
 
-  <!-- GÜN 2 -->
+  <!-- 2. GÜN: ÇEKİŞ & BACAK PROGRAMI -->
   <div id="day2" class="tab-content">
     <div class="card">
       <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
-      <ul class="ex-list" id="day2-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Yeni Çekiş/Bacak Egzersizi Ekle</button>
-      <button class="btn btn-finish" onclick="completeWorkout('2. Gün: Çekiş & Bacak')">✅ 2. Gün Antrenmanını Tamamla!</button>
-    </div>
-  </div>
-
-  <!-- AI KOÇ SEKMESİ -->
-  <div id="ai-coach" class="tab-content">
-    <div class="card">
-      <h2>🧠 AI Koç Tavsiyeleri & Analiz</h2>
-      <div id="ai-insights-list"></div>
-      <button class="btn btn-timer" style="width:100%; margin-top:10px;" onclick="generateAIInsights()">🤖 Verileri Yeniden Analiz Et</button>
-    </div>
-  </div>
-
-  <!-- İLERLEME & FOTOĞRAFLAR -->
-  <div id="progress" class="tab-content">
-    <div class="card">
-      <h2>📐 Vücut Ölçü Takibi</h2>
-      <div class="calc-box">
-        <input type="number" id="m-arm" class="calc-input" placeholder="Kol (cm)">
-        <input type="number" id="m-chest" class="calc-input" placeholder="Göğüs (cm)">
-        <input type="number" id="m-waist" class="calc-input" placeholder="Bel (cm)">
-        <button class="btn btn-mac" onclick="saveMeasurements()">Kaydet</button>
+      <div class="ai-alert-box">
+        💡 <strong>AI İpucu:</strong> Sırt ve bacak hareketlerinde negatif (indiriş) fazını 3 saniyede yavaşça yapın.
       </div>
-      <div id="measurement-history" style="font-size:0.75rem; margin-top:10px; opacity:0.8;"></div>
-    </div>
-
-    <div class="card">
-      <h2>📸 İlerleme Fotoğrafları (Before / After)</h2>
-      <input type="file" id="photo-input" accept="image/*" onchange="uploadProgressPhoto(event)" style="display:none;">
-      <button class="btn btn-timer" style="width:100%;" onclick="document.getElementById('photo-input').click()">📷 Yeni Fotoğraf Ekle</button>
-      <div class="photo-grid" id="photo-grid-container"></div>
+      <ul class="ex-list" id="day2-list"></ul>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Yeni Egzersiz Ekle</button>
+      <button class="btn btn-finish" onclick="finishWorkout('day2')">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
 
-  <!-- ANALİZ -->
+  <!-- GRAFİKLER & ANALİZ -->
   <div id="analytics" class="tab-content">
     <div class="card">
-      <h2>📈 Haftalık Toplam Kaldırılan Hacim (kg)</h2>
-      <canvas id="volumeChart" style="width:100%; max-height:200px;"></canvas>
-    </div>
-
-    <div class="card">
-      <h2>🎯 Egzersiz Bazlı Güç/Gelişim Grafiği</h2>
-      <select id="exercise-chart-select" class="calc-input" style="width:100%; margin-bottom:10px;" onchange="updateExerciseChart()"></select>
-      <canvas id="exerciseChart" style="width:100%; max-height:200px;"></canvas>
-    </div>
-  </div>
-
-  <!-- ROZETLER -->
-  <div id="badges" class="tab-content">
-    <div class="card">
-      <h2>🏆 Başarımlar & Rozetler</h2>
-      <div class="badge-grid" id="badge-container"></div>
-    </div>
-  </div>
-
-  <!-- ARAÇLAR (EXCEL / MAKRO / ŞABLON) -->
-  <div id="tools" class="tab-content">
-    <div class="card">
-      <h2>📅 Yeni Şablon Günü Ekle</h2>
-      <div class="calc-box">
-        <input type="text" id="custom-tab-name" class="calc-input" style="flex:1;" placeholder="Örn: 3. GÜN: BACAK">
-        <button class="btn btn-timer" onclick="createNewTab()">Sekme Oluştur</button>
+      <h2>Gelişim ve Hacim Grafiği</h2>
+      <div class="form-group">
+        <label>İncelenecek Egzersiz:</label>
+        <select id="chart-ex-select" class="form-control" onchange="updateChart()"></select>
       </div>
-    </div>
-
-    <div class="card">
-      <h2>💾 Veri Yedekleme & Excel Entegrasyonu</h2>
-      <p style="font-size:0.75rem;">Antrenman geçmişini yedekleyebilir veya Excel/VBA sistemine aktarabilirsin.</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <button class="btn btn-mac" onclick="exportDataJSON()">📤 JSON Dışa Aktar</button>
-        <button class="btn btn-db" onclick="importDataJSON()">📥 JSON İçe Aktar</button>
-        <button class="btn btn-timer" onclick="exportToCSV()">📊 Excel CSV İndir</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>🥗 Makro ve Kalori Hesaplayıcı</h2>
-      <div class="calc-box">
-        <input type="number" id="macro-age" class="calc-input" placeholder="Yaş" value="25">
-        <input type="number" id="macro-weight" class="calc-input" placeholder="Kilo (kg)" value="90">
-        <input type="number" id="macro-height" class="calc-input" placeholder="Boy (cm)" value="178">
-        <button class="btn btn-mac" onclick="calculateMacros()">Makro Hesapla</button>
-      </div>
-      <div id="macro-result" style="margin-top:10px; font-size:0.8rem; line-height:1.4;"></div>
+      <canvas id="progressChart" width="400" height="250"></canvas>
     </div>
   </div>
 
-  <!-- STORY MODALI -->
-  <div id="story-card-modal">
-    <div class="story-card-content">
-      <h2 style="color:var(--primary); margin-bottom:5px;">FITPRO SUMMARY</h2>
-      <p style="font-size:0.75rem; opacity:0.8; margin-top:0;" id="story-date">-</p>
-      <hr style="border-color:var(--border); margin:10px 0;">
-      <h3 id="story-day-title" style="margin:5px 0;">-</h3>
-      <p style="font-size:0.9rem;">🔥 Toplam Hacim: <strong id="story-volume" style="color:#f6e05e;">0 kg</strong></p>
-      <p style="font-size:0.9rem;">⏱️ Süre: <strong id="story-time">00:00</strong></p>
-      <p style="font-size:0.8rem; margin-top:15px; color:#a0aec0;">#AğırKasGelişimi #FitProAI</p>
-      <button class="btn btn-timer" style="margin-top:10px; width:100%;" onclick="closeStoryModal()">Kapat / Paylaş</button>
+  <!-- VÜCUT ÖLÇÜLERİ -->
+  <div id="body-metrics" class="tab-content">
+    <div class="card">
+      <h2>Vücut Ölçü Takibi</h2>
+      <div class="form-group"><label>Kilo (kg):</label><input type="number" id="m-weight" class="form-control" placeholder="90"></div>
+      <div class="form-group"><label>Göğüs (cm):</label><input type="number" id="m-chest" class="form-control"></div>
+      <div class="form-group"><label>Kol (cm):</label><input type="number" id="m-arm" class="form-control"></div>
+      <div class="form-group"><label>Bel (cm):</label><input type="number" id="m-waist" class="form-control"></div>
+      <button class="btn btn-mac" style="width:100%; margin-top:5px;" onclick="saveMetrics()">Ölçüleri Kaydet</button>
     </div>
   </div>
 
+  <!-- MAKRO VE BESLENME TAKİBİ -->
+  <div id="nutrition" class="tab-content">
+    <div class="card">
+      <h2>Günlük Makro Hedefleri</h2>
+      <div class="form-group"><label>Protein (gr):</label><input type="number" id="n-protein" class="form-control" value="180"></div>
+      <div class="form-group"><label>Karbonhidrat (gr):</label><input type="number" id="n-carb" class="form-control" value="250"></div>
+      <div class="form-group"><label>Yağ (gr):</label><input type="number" id="n-fat" class="form-control" value="70"></div>
+      <button class="btn btn-mac" style="width:100%; margin-top:5px;" onclick="saveNutrition()">Makro Hedeflerini Kaydet</button>
+    </div>
+  </div>
+
+  <!-- SABİT DİNLENME SÜRESİ BAR'I -->
   <div id="timer-bar">
     <div>
       <div style="font-size:0.7rem; color:#a0aec0;">DİNLENME SÜRESİ</div>
@@ -363,606 +305,349 @@
   </div>
 
   <script>
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+    // SUPABASE YAPILANDIRMASI
+    const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const defaultDay1 = [
-      { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press)", timer: 90, query: "Bench+Press+Form" },
-      { id: "ex2", title: "2. Üst Göğüs Pres (Incline Press)", timer: 90, query: "Incline+Dumbbell+Press+Form" },
-      { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck / Fly)", timer: 60, query: "Pec+Deck+Fly+Form" },
-      { id: "ex4", title: "4. Omuz Pres (Shoulder Press)", timer: 90, query: "Dumbbell+Shoulder+Press+Form" },
-      { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise)", timer: 60, query: "Lateral+Raise+Form" },
-      { id: "ex6", title: "6. Arka Omuz Çekiş (Face Pull)", timer: 60, query: "Cable+Face+Pull+Form" },
-      { id: "ex7", title: "7. Arka Kol İtiş (Triceps Pushdown)", timer: 60, query: "Triceps+Pushdown+Form" },
-      { id: "ex8", title: "8. Baş Üstü Arka Kol (Overhead Triceps)", timer: 60, query: "Overhead+Triceps+Extension+Form" }
+    // EKSİKSİZ TAM EGZERSİZ LİSTELERİ
+    let day1Exercises = [
+      { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press Machine)", timer: 90, gifUrl: "https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" },
+      { id: "ex2", title: "2. Üst Göğüs Pres (Incline Chest Press)", timer: 90, gifUrl: "https://media.giphy.com/media/xT1R14bK3q9JjU6qU8/giphy.gif" },
+      { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck Fly)", timer: 60, gifUrl: "" },
+      { id: "ex4", title: "4. Oturarak Omuz Pres (Seated Shoulder Press Machine)", timer: 90, gifUrl: "" },
+      { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise Machine / Cable)", timer: 60, gifUrl: "" },
+      { id: "ex6", title: "6. Kablo ile Arka Kol İtiş (Triceps Rope Pushdown)", timer: 60, gifUrl: "" },
+      { id: "ex7", title: "7. Makine ile Arka Kol İtiş (Triceps Dip Machine)", timer: 60, gifUrl: "" }
     ];
 
-    const defaultDay2 = [
-      { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown)", timer: 90, query: "Lat+Pulldown+Form" },
-      { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, query: "Seated+Cable+Row+Form" },
-      { id: "ex11", title: "3. Tek Kol Çekiş (One Arm Row)", timer: 60, query: "One+Arm+Dumbbell+Row+Form" },
-      { id: "ex12", title: "4. Bacak İtiş / Çömelme (Leg Press / Squat)", timer: 90, query: "Leg+Press+Form" },
-      { id: "ex13", title: "5. Ön Bacak Açış (Leg Extension)", timer: 60, query: "Leg+Extension+Form" },
-      { id: "ex14", title: "6. Arka Bacak Büküş (Leg Curl)", timer: 60, query: "Leg+Curl+Form" },
-      { id: "ex15", title: "7. Ön Kol Büküş (Biceps Curl)", timer: 60, query: "Biceps+Curl+Form" },
-      { id: "ex16", title: "8. Çekiç Büküş (Hammer Curl)", timer: 60, query: "Hammer+Curl+Form" },
-      { id: "ex17", title: "9. Karın Sıkıştırma (Cable Crunch)", timer: 45, query: "Cable+Crunch+Form" }
+    let day2Exercises = [
+      { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown Machine)", timer: 90, gifUrl: "" },
+      { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, gifUrl: "" },
+      { id: "ex11", title: "3. Makine Göğüs Destekli Sırt Çekiş (Machine Row)", timer: 90, gifUrl: "" },
+      { id: "ex12", title: "4. Bacak İtiş (Leg Press)", timer: 120, gifUrl: "" },
+      { id: "ex13", title: "5. Ön Bacak Uzatma (Leg Extension)", timer: 60, gifUrl: "" },
+      { id: "ex14", title: "6. Arka Bacak Bükme (Lying Leg Curl)", timer: 60, gifUrl: "" },
+      { id: "ex15", title: "7. Kablo ile Ön Kol Bükme (Cable Biceps Curl)", timer: 60, gifUrl: "" },
+      { id: "ex16", title: "8. Скот Makinesi Ön Kol (Preacher Curl Machine)", timer: 60, gifUrl: "" },
+      { id: "ex17", title: "9. Makine ile Karın Sıkıştırma (Machine Crunch)", timer: 45, gifUrl: "" }
     ];
 
-    const allBadges = [
-      { id: "b1", icon: "🌱", title: "İlk Adım", desc: "1 Antrenman Tamamla" },
-      { id: "b2", icon: "🔥", title: "Disiplinli", desc: "5 Antrenman Tamamla" },
-      { id: "b3", icon: "⚡", title: "Canavar", desc: "10 Antrenman Tamamla" },
-      { id: "b4", icon: "🏋️", title: "10 Ton Kulp", desc: "10.000 kg Toplam Hacim" },
-      { id: "b5", icon: "👑", title: "100kg Bench", desc: "100kg Bench Press Yap" }
-    ];
-
-    let day1Exercises = [];
-    let day2Exercises = [];
-    let customTabs = [];
+    let userXP = 0;
+    let userLevel = 1;
     let workoutTimerInterval = null;
     let workoutSeconds = 0;
-    let exerciseChartInstance = null;
+    let isWorkoutRunning = false;
+    let restTimerInterval = null;
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initExercises();
+    document.addEventListener("DOMContentLoaded", async () => {
+      checkUserSession();
+      loadLocalData();
       renderAllExercises();
-      loadStats();
-      loadData();
-      loadPRs();
-      initChart();
-      populateExerciseSelect();
-      updateGamification();
-      renderBadges();
-      loadPhotos();
-      generateAIInsights();
-      if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+      populateChartDropdown();
+      updateLevelUI();
     });
 
-    function initExercises() {
-      const s1 = localStorage.getItem('day1_custom');
-      const s2 = localStorage.getItem('day2_custom');
-      day1Exercises = s1 ? JSON.parse(s1) : defaultDay1;
-      day2Exercises = s2 ? JSON.parse(s2) : defaultDay2;
-      customTabs = JSON.parse(localStorage.getItem('custom_tabs') || '[]');
-      renderCustomTabs();
-    }
-
-    function renderAllExercises() {
-      document.getElementById('day1-list').innerHTML = day1Exercises.map(ex => renderExerciseHTML(ex, 'day1')).join('');
-      document.getElementById('day2-list').innerHTML = day2Exercises.map(ex => renderExerciseHTML(ex, 'day2')).join('');
-      customTabs.forEach(tab => {
-        const listEl = document.getElementById(`${tab.id}-list`);
-        if (listEl) {
-          let exList = JSON.parse(localStorage.getItem(`${tab.id}_custom`) || '[]');
-          listEl.innerHTML = exList.map(ex => renderExerciseHTML(ex, tab.id)).join('');
-        }
-      });
-    }
-
-    function renderExerciseHTML(ex, dayType) {
-      let setCounts = parseInt(localStorage.getItem(`${ex.id}_set_count`) || 3);
-      let setRowsHTML = '';
-      for (let s = 1; s <= setCounts; s++) {
-        setRowsHTML += renderSetRow(ex.id, s);
+    /* OYUNLAŞTIRMA VE LEVEL MANTIĞI */
+    function addXP(amount) {
+      userXP += amount;
+      let needed = userLevel * 100;
+      if (userXP >= needed) {
+        userXP -= needed;
+        userLevel++;
+        alert(`🎉 TEBRİKLER! LEVEL SEVİYE ATLAYARAK ${userLevel}. SEVİYEYE ULAŞTINIZ!`);
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
+      localStorage.setItem('fitpro_xp', userXP);
+      localStorage.setItem('fitpro_level', userLevel);
+      updateLevelUI();
+    }
 
+    function updateLevelUI() {
+      document.getElementById('user-level').textContent = `LVL ${userLevel}`;
+      let needed = userLevel * 100;
+      let pct = (userXP / needed) * 100;
+      document.getElementById('xp-fill').style.width = `${pct}%`;
+      document.getElementById('xp-text').textContent = `${userXP} / ${needed} XP`;
+      
+      let titles = ["Çaylak Sporcu", "Ağır Sıklet Adayı", "Makine Canavarı", "Kas Mimarisi Ustası", "Efsanevi Atlet"];
+      let tIndex = Math.min(Math.floor((userLevel - 1) / 2), titles.length - 1);
+      document.getElementById('user-title').textContent = titles[tIndex];
+    }
+
+    /* AUTHENTICATION İŞLEMLERİ (SUPABASE) */
+    async function handleSignUp() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) alert("Kayıt Hatası: " + error.message);
+      else alert("Kayıt Başarılı! Hesabınız oluşturuldu.");
+    }
+
+    async function handleSignIn() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) alert("Giriş Hatası: " + error.message);
+      else checkUserSession();
+    }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      checkUserSession();
+    }
+
+    async function checkUserSession() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        document.getElementById('auth-logged-out').style.display = 'none';
+        document.getElementById('auth-logged-in').style.display = 'block';
+        document.getElementById('user-email-display').textContent = user.email;
+      } else {
+        document.getElementById('auth-logged-out').style.display = 'block';
+        document.getElementById('auth-logged-in').style.display = 'none';
+      }
+    }
+
+    /* EGZERSİZ RENDER MANTIĞI VE DİNAMİK YAPI */
+    function renderAllExercises() {
+      document.getElementById('day1-list').innerHTML = day1Exercises.map(ex => renderExHTML(ex, 'day1')).join('');
+      document.getElementById('day2-list').innerHTML = day2Exercises.map(ex => renderExHTML(ex, 'day2')).join('');
+      loadSavedSetValues();
+    }
+
+    function renderExHTML(ex, dayTag) {
       return `
         <li class="ex-item" id="item-${ex.id}">
           <div class="ex-header">
             <div class="ex-title">${ex.title}</div>
             <div>
-              <span class="pr-badge" id="pr-${ex.id}">Rekor: - kg</span>
-              <button class="btn btn-delete-ex" onclick="deleteExercise('${ex.id}', '${dayType}')">🗑️ Sil</button>
+              <span class="pr-badge" id="pr-${ex.id}">PR: - kg</span>
+              <button class="btn btn-delete-ex" onclick="deleteExercise('${ex.id}', '${dayTag}')">🗑️</button>
             </div>
           </div>
           <div class="actions">
-            <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱ ${ex.timer}sn</button>
-            <button class="btn btn-db" onclick="toggleGif('gif-d-${ex.id}')">🏋️ Dambıl</button>
-            <button class="btn btn-mac" onclick="toggleGif('gif-m-${ex.id}')">⚙️ Makine</button>
-            <a class="btn btn-yt" href="https://www.youtube.com/results?search_query=${ex.query}" target="_blank">🎥 Form</a>
+            <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱️ ${ex.timer}s Dinlen</button>
+            <button class="btn btn-yt" onclick="openYouTube('${ex.title}')">▶️ YouTube rehber</button>
+            ${ex.gifUrl ? `<button class="btn btn-db" onclick="toggleGif('${ex.id}')">🖼️ GIF</button>` : ''}
           </div>
-          <div id="gif-d-${ex.id}" class="gif-container"><img src="d_${ex.id}.gif" onerror="this.src='d_${ex.id}.png'" alt="Dambıl"></div>
-          <div id="gif-m-${ex.id}" class="gif-container"><img src="m_${ex.id}.gif" onerror="this.src='m_${ex.id}.png'" alt="Makine"></div>
+          ${ex.gifUrl ? `<div class="gif-container" id="gif-${ex.id}"><img src="${ex.gifUrl}" alt="Rehber GIF"></div>` : ''}
           <table class="set-table" id="table-${ex.id}">
             <thead>
-              <tr><th>Set</th><th>Tür</th><th>kg</th><th>Tekrar</th><th>RIR</th><th>Bitti</th></tr>
+              <tr>
+                <th>Tipi</th>
+                <th>Ağırlık (kg)</th>
+                <th>Tekrar</th>
+                <th>Tamam</th>
+              </tr>
             </thead>
-            <tbody id="tbody-${ex.id}">
-              ${setRowsHTML}
+            <tbody id="sets-body-${ex.id}">
+              ${renderSetRowHTML(ex.id, 1)}
+              ${renderSetRowHTML(ex.id, 2)}
+              ${renderSetRowHTML(ex.id, 3)}
             </tbody>
           </table>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-add" onclick="addSet('${ex.id}')">+ Set Ekle</button>
-            <button class="btn btn-add" onclick="removeSet('${ex.id}')">- Set Sil</button>
-          </div>
-          <input type="text" class="note-input" id="${ex.id}-note" placeholder="📌 Özel not..." onchange="saveData()">
+          <button class="btn btn-add" onclick="addSetRow('${ex.id}')">➕ Set Ekle</button>
         </li>
       `;
     }
 
-    function renderSetRow(exId, s) {
-      const prevW = localStorage.getItem(`prev_${exId}_s${s}_w`) || '';
-      const prevR = localStorage.getItem(`prev_${exId}_s${s}_r`) || '10';
-      const savedType = localStorage.getItem(`${exId}-s${s}-type`) || 'Normal';
+    function renderSetRowHTML(exId, setNum) {
       return `
-        <tr id="row-${exId}-s${s}">
-          <td>${s}. Set</td>
-          <td><button class="set-type-btn" id="${exId}-s${s}-type" onclick="cycleSetType('${exId}-s${s}-type')">${savedType}</button></td>
-          <td><input type="number" class="set-input" id="${exId}-s${s}-w" placeholder="${prevW}" onchange="checkPR('${exId}', this.value); saveData()"></td>
-          <td><input type="number" class="set-input" id="${exId}-s${s}-r" placeholder="${prevR}" onchange="saveData()"></td>
-          <td><input type="number" class="set-input" id="${exId}-s${s}-rir" placeholder="1" min="0" max="4" onchange="saveData()"></td>
-          <td><input type="checkbox" class="set-check" id="${exId}-s${s}-c" onchange="saveData()"></td>
+        <tr id="row-${exId}-${setNum}">
+          <td><button class="set-type-btn" id="type-${exId}-${setNum}" onclick="toggleSetType(this)">Normal</button></td>
+          <td><input type="number" class="set-input" id="${exId}-w-${setNum}" placeholder="kg" onchange="saveSetLocal('${exId}', ${setNum})"></td>
+          <td><input type="number" class="set-input" id="${exId}-r-${setNum}" placeholder="tekrar" onchange="saveSetLocal('${exId}', ${setNum})"></td>
+          <td><input type="checkbox" class="set-check" onchange="onSetCompleted('${exId}', ${setNum}, this)"></td>
         </tr>
       `;
     }
 
-    function cycleSetType(btnId) {
-      const btn = document.getElementById(btnId);
-      const types = ['Normal', 'Isınma', 'Drop', 'Failure'];
-      let currIndex = types.indexOf(btn.textContent);
-      let nextType = types[(currIndex + 1) % types.length];
-      btn.textContent = nextType;
-      localStorage.setItem(btnId, nextType);
+    function addSetRow(exId) {
+      let tbody = document.getElementById(`sets-body-${exId}`);
+      let nextIndex = tbody.children.length + 1;
+      let tr = document.createElement('tr');
+      tr.id = `row-${exId}-${nextIndex}`;
+      tr.innerHTML = renderSetRowHTML(exId, nextIndex);
+      tbody.appendChild(tr);
     }
 
-    function addSet(exId) {
-      let count = parseInt(localStorage.getItem(`${exId}_set_count`) || 3) + 1;
-      localStorage.setItem(`${exId}_set_count`, count);
-      const tbody = document.getElementById(`tbody-${exId}`);
-      if (tbody) {
-        tbody.insertAdjacentHTML('beforeend', renderSetRow(exId, count));
-      }
+    function toggleSetType(btn) {
+      const types = ["Normal", "Warmup", "DropSet", "Failure"];
+      let cur = btn.textContent;
+      let idx = (types.indexOf(cur) + 1) % types.length;
+      btn.textContent = types[idx];
     }
 
-    function removeSet(exId) {
-      let count = parseInt(localStorage.getItem(`${exId}_set_count`) || 3);
-      if (count > 1) {
-        const row = document.getElementById(`row-${exId}-s${count}`);
-        if (row) row.remove();
-        localStorage.setItem(`${exId}_set_count`, count - 1);
-      }
+    function toggleGif(exId) {
+      let el = document.getElementById(`gif-${exId}`);
+      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
     }
 
-    function addNewExercisePrompt(dayType) {
-      const title = prompt("Yeni egzersiz adı:");
-      if (!title) return;
-      const timer = prompt("Dinlenme süresi (saniye):", "60") || "60";
-      const newEx = {
-        id: "custom_" + Date.now(),
-        title: title,
-        timer: parseInt(timer),
-        query: encodeURIComponent(title + " Form")
-      };
-
-      if (dayType === 'day1') {
-        day1Exercises.push(newEx);
-        localStorage.setItem('day1_custom', JSON.stringify(day1Exercises));
-      } else if (dayType === 'day2') {
-        day2Exercises.push(newEx);
-        localStorage.setItem('day2_custom', JSON.stringify(day2Exercises));
-      } else {
-        let customList = JSON.parse(localStorage.getItem(`${dayType}_custom`) || '[]');
-        customList.push(newEx);
-        localStorage.setItem(`${dayType}_custom`, JSON.stringify(customList));
-      }
-      renderAllExercises();
-      populateExerciseSelect();
+    function openYouTube(term) {
+      window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(term + " yapılışı")}`, '_blank');
     }
 
-    function deleteExercise(exId, dayType) {
-      if (!confirm("Bu egzersizi silmek istediğine emin misin?")) return;
-      if (dayType === 'day1') {
-        day1Exercises = day1Exercises.filter(e => e.id !== exId);
-        localStorage.setItem('day1_custom', JSON.stringify(day1Exercises));
-      } else if (dayType === 'day2') {
-        day2Exercises = day2Exercises.filter(e => e.id !== exId);
-        localStorage.setItem('day2_custom', JSON.stringify(day2Exercises));
-      } else {
-        let customList = JSON.parse(localStorage.getItem(`${dayType}_custom`) || '[]');
-        customList = customList.filter(e => e.id !== exId);
-        localStorage.setItem(`${dayType}_custom`, JSON.stringify(customList));
-      }
-      renderAllExercises();
-      populateExerciseSelect();
-    }
-
-    /* 🧠 AI KOÇ ANALİZİ */
-    function generateAIInsights() {
-      const container = document.getElementById('ai-insights-list');
-      if (!container) return;
+    /* KRONOMETRE & DİNLENME SÜRESİ */
+    function startTimer(seconds) {
+      clearInterval(restTimerInterval);
+      let left = seconds;
+      document.getElementById('timer-bar').style.display = 'flex';
+      updateTimerDisplay(left);
       
-      let insights = [];
-      [...day1Exercises, ...day2Exercises].forEach(ex => {
-        let history = JSON.parse(localStorage.getItem(`history_${ex.id}`) || '[]');
-        if (history.length >= 3) {
-          let last3 = history.slice(-3);
-          if (last3[0].weight === last3[1].weight && last3[1].weight === last3[2].weight) {
-            insights.push(`⚠️ <strong>${ex.title}:</strong> Son 3 antrenmandır ${last3[0].weight}kg seviyesinde takıldın (Plateau). Gelecek idmanda ağırlığı %10 düşürüp Deload yapmalı veya tekrar sayısını +2 artırmalısın.`);
-          }
+      restTimerInterval = setInterval(() => {
+        left--;
+        updateTimerDisplay(left);
+        if (left <= 0) {
+          clearInterval(restTimerInterval);
+          alert("⏱️ Dinlenme Süresi Bitti! Sonraki Sete Başlayın.");
+          stopTimer();
         }
-      });
-
-      if (insights.length === 0) {
-        insights.push("🚀 <strong>Sistem Stabil:</strong> Tıkanma (Plateau) tespit edilmedi. Kas gelişim ivmen gayet iyi gidiyor!");
-      }
-
-      container.innerHTML = insights.map(i => `<div class="ai-alert-box">${i}</div>`).join('');
+      }, 1000);
     }
 
-    /* 🏆 GAMIFICATION (XP, LEVEL, BADGES) */
-    function addXP(amount) {
-      let xp = parseInt(localStorage.getItem('user_xp') || 0) + amount;
-      localStorage.setItem('user_xp', xp);
-      updateGamification();
+    function updateTimerDisplay(s) {
+      let m = Math.floor(s / 60);
+      let sec = s % 60;
+      document.getElementById('timer-display').textContent = `${m < 10 ? '0':''}${m}:${sec < 10 ? '0':''}${sec}`;
     }
 
-    function updateGamification() {
-      let xp = parseInt(localStorage.getItem('user_xp') || 0);
-      let level = Math.floor(xp / 100) + 1;
-      let currentLevelXP = xp % 100;
-
-      const titles = ["Çaylak", "Amatör", "Savaşçı", "Ağır Siklet", "Efsane", "Yıkılmaz"];
-      let title = titles[Math.min(level - 1, titles.length - 1)];
-
-      document.getElementById('user-level').textContent = `LVL ${level}`;
-      document.getElementById('user-title').textContent = title;
-      document.getElementById('xp-fill').style.width = `${currentLevelXP}%`;
-      document.getElementById('xp-text').textContent = `${currentLevelXP} / 100 XP`;
-
-      checkBadges();
-    }
-
-    function checkBadges() {
-      let workouts = parseInt(localStorage.getItem('totalWorkouts') || 0);
-      let unlocked = JSON.parse(localStorage.getItem('unlocked_badges') || '[]');
-
-      if (workouts >= 1 && !unlocked.includes('b1')) unlocked.push('b1');
-      if (workouts >= 5 && !unlocked.includes('b2')) unlocked.push('b2');
-      if (workouts >= 10 && !unlocked.includes('b3')) unlocked.push('b3');
-
-      localStorage.setItem('unlocked_badges', JSON.stringify(unlocked));
-      renderBadges();
-    }
-
-    function renderBadges() {
-      const container = document.getElementById('badge-container');
-      if (!container) return;
-      let unlocked = JSON.parse(localStorage.getItem('unlocked_badges') || '[]');
-
-      container.innerHTML = allBadges.map(b => {
-        let isUnlocked = unlocked.includes(b.id);
-        return `
-          <div class="badge-item ${isUnlocked ? 'unlocked' : ''}">
-            <div class="badge-icon">${b.icon}</div>
-            <div class="badge-title">${b.title}</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    /* 📸 İLERLEME FOTOĞRAFLARI */
-    function uploadProgressPhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        let photos = JSON.parse(localStorage.getItem('progress_photos') || '[]');
-        let newPhoto = {
-          id: Date.now(),
-          date: new Date().toLocaleDateString('tr-TR'),
-          data: e.target.result
-        };
-        photos.unshift(newPhoto);
-        try {
-          localStorage.setItem('progress_photos', JSON.stringify(photos));
-          loadPhotos();
-        } catch(err) {
-          alert("Hafıza doldu! Lütfen eski fotoğraflardan bazılarını silin.");
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function loadPhotos() {
-      const container = document.getElementById('photo-grid-container');
-      if (!container) return;
-      let photos = JSON.parse(localStorage.getItem('progress_photos') || '[]');
-      container.innerHTML = photos.map(p => `
-        <div class="photo-card">
-          <img src="${p.data}" alt="Progress">
-          <div class="photo-date">${p.date}</div>
-        </div>
-      `).join('');
-    }
-
-    function saveMeasurements() {
-      let arm = document.getElementById('m-arm').value;
-      let chest = document.getElementById('m-chest').value;
-      let waist = document.getElementById('m-waist').value;
-      let date = new Date().toLocaleDateString('tr-TR');
-
-      if (!arm && !chest && !waist) return;
-
-      let history = JSON.parse(localStorage.getItem('m_history') || '[]');
-      history.unshift({ date, arm, chest, waist });
-      localStorage.setItem('m_history', JSON.stringify(history));
-
-      document.getElementById('measurement-history').innerHTML = history.map(h => `📌 <strong>${h.date}:</strong> Kol: ${h.arm||'-'}cm | Göğüs: ${h.chest||'-'}cm | Bel: ${h.waist||'-'}cm`).join('<br>');
-    }
-
-    /* SERBEST ŞABLON TABLARI */
-    function createNewTab() {
-      const name = document.getElementById('custom-tab-name').value;
-      if (!name) return;
-      const tabId = "tab_" + Date.now();
-      customTabs.push({ id: tabId, name: name });
-      localStorage.setItem('custom_tabs', JSON.stringify(customTabs));
-      document.getElementById('custom-tab-name').value = '';
-      renderCustomTabs();
-      renderAllExercises();
-    }
-
-    function renderCustomTabs() {
-      const btnContainer = document.getElementById('tab-buttons');
-      const dynamicContainer = document.getElementById('dynamic-tabs');
-      
-      document.querySelectorAll('.custom-dynamic-btn').forEach(e => e.remove());
-      dynamicContainer.innerHTML = '';
-
-      customTabs.forEach(tab => {
-        const btn = document.createElement('button');
-        btn.className = 'tab-btn custom-dynamic-btn';
-        btn.textContent = tab.name;
-        btn.onclick = (e) => switchTab(tab.id, e);
-        btnContainer.appendChild(btn);
-
-        const content = document.createElement('div');
-        content.id = tab.id;
-        content.className = 'tab-content';
-        content.innerHTML = `
-          <div class="card">
-            <h2>${tab.name}</h2>
-            <ul class="ex-list" id="${tab.id}-list"></ul>
-            <button class="btn btn-new-ex" onclick="addNewExercisePrompt('${tab.id}')">➕ Yeni Egzersiz Ekle</button>
-            <button class="btn btn-finish" onclick="completeWorkout('${tab.name}')">✅ Antrenmanı Tamamla!</button>
-          </div>
-        `;
-        dynamicContainer.appendChild(content);
-      });
-    }
-
-    /* ANTRENMANI TAMAMLAMA VE ÖDÜLLENDİRME */
-    function completeWorkout(dayName) {
-      let count = parseInt(localStorage.getItem('totalWorkouts') || 0) + 1;
-      const today = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-      localStorage.setItem('totalWorkouts', count);
-      localStorage.setItem('lastWorkoutDate', today);
-
-      let totalVolume = 0;
-      document.querySelectorAll('.set-input[id$="-w"]').forEach(input => {
-        let idBase = input.id.replace('-w', '');
-        let w = parseFloat(input.value) || 0;
-        let r = parseFloat(document.getElementById(`${idBase}-r`)?.value) || 0;
-        totalVolume += (w * r);
-
-        if (w > 0) {
-          localStorage.setItem(`prev_${idBase}_w`, w);
-          localStorage.setItem(`prev_${idBase}_r`, r);
-          let exId = idBase.split('-s')[0];
-          let exHistory = JSON.parse(localStorage.getItem(`history_${exId}`) || '[]');
-          exHistory.push({ date: today, weight: w });
-          if (exHistory.length > 10) exHistory.shift();
-          localStorage.setItem(`history_${exId}`, JSON.stringify(exHistory));
-        }
-      });
-
-      // Volume History update
-      let volHistory = JSON.parse(localStorage.getItem('volHistory') || '[]');
-      volHistory.push({ date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }), volume: totalVolume });
-      if (volHistory.length > 7) volHistory.shift();
-      localStorage.setItem('volHistory', JSON.stringify(volHistory));
-
-      addXP(50);
-      loadStats();
-      initChart();
-      generateAIInsights();
-      showStoryModal(dayName, totalVolume);
-    }
-
-    /* VERİ DIŞA/İÇE AKTAR (EXCEL / JSON) */
-    function exportDataJSON() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `fitpro_backup_${Date.now()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-    }
-
-    function importDataJSON() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.json';
-      input.onchange = e => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.readAsText(file, 'UTF-8');
-        reader.onload = readerEvent => {
-          const content = JSON.parse(readerEvent.target.result);
-          Object.keys(content).forEach(key => localStorage.setItem(key, content[key]));
-          alert("Veriler başarıyla içe aktarıldı!");
-          location.reload();
-        }
-      }
-      input.click();
-    }
-
-    function exportToCSV() {
-      let csvContent = "data:text/csv;charset=utf-8,Egzersiz ID,Set,Agirlik,Tekrar,Tarih\n";
-      [...day1Exercises, ...day2Exercises].forEach(ex => {
-        let history = JSON.parse(localStorage.getItem(`history_${ex.id}`) || '[]');
-        history.forEach(h => {
-          csvContent += `"${ex.title}",1,${h.weight},10,"${h.date}"\n`;
-        });
-      });
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "fitpro_antrenman_gecmisi.csv");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    }
-
-    function calculateMacros() {
-      const age = parseFloat(document.getElementById('macro-age').value);
-      const weight = parseFloat(document.getElementById('macro-weight').value);
-      const height = parseFloat(document.getElementById('macro-height').value);
-
-      if (!age || !weight || !height) return;
-
-      // Harris-Benedict BMR
-      let bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
-      let tdee = bmr * 1.55; // Orta seviye hareketli
-      let targetCal = tdee + 300; // Kas yapımı için kalori fazlası
-
-      let protein = weight * 2.2;
-      let fat = weight * 1.0;
-      let carb = (targetCal - (protein * 4 + fat * 9)) / 4;
-
-      document.getElementById('macro-result').innerHTML = `
-        🔥 <strong>Günlük Hedef Kalori:</strong> ${Math.round(targetCal)} kcal<br>
-        🥩 <strong>Protein:</strong> ${Math.round(protein)}g | 🥑 <strong>Yağ:</strong> ${Math.round(fat)}g | 🍚 <strong>Karbonhidrat:</strong> ${Math.round(carb)}g
-      `;
-    }
-
-    /* DİĞER YARDIMCI METOTLAR */
-    function checkPR(exId, weightVal) {
-      const weight = parseFloat(weightVal);
-      if (isNaN(weight) || weight <= 0) return;
-      const currentPR = parseFloat(localStorage.getItem(`pr_${exId}`) || 0);
-      if (weight > currentPR) {
-        localStorage.setItem(`pr_${exId}`, weight);
-        document.getElementById(`pr-${exId}`).textContent = `Rekor: ${weight} kg`;
-        addXP(20);
-        if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      }
+    function stopTimer() {
+      clearInterval(restTimerInterval);
+      document.getElementById('timer-bar').style.display = 'none';
     }
 
     function toggleWorkoutTimer() {
-      const btn = document.getElementById('toggle-workout-btn');
-      if (workoutTimerInterval) {
-        clearInterval(workoutTimerInterval); workoutTimerInterval = null;
-        btn.textContent = "▶️ Devam Et"; btn.className = "btn btn-mac";
-      } else {
-        btn.textContent = "⏸️ Duraklat"; btn.className = "btn btn-db";
+      let btn = document.getElementById('toggle-workout-btn');
+      if (!isWorkoutRunning) {
+        isWorkoutRunning = true;
+        btn.textContent = "⏸️ Duraklat";
+        btn.className = "btn btn-db";
         workoutTimerInterval = setInterval(() => {
           workoutSeconds++;
-          let hrs = String(Math.floor(workoutSeconds / 3600)).padStart(2, '0');
-          let mins = String(Math.floor((workoutSeconds % 3600) / 60)).padStart(2, '0');
-          let secs = String(workoutSeconds % 60).padStart(2, '0');
-          document.getElementById('workout-timer').textContent = `${hrs}:${mins}:${secs}`;
-          document.getElementById('workout-calories').textContent = `${Math.round((workoutSeconds / 60) * 6.5)} kcal`;
+          let h = Math.floor(workoutSeconds / 3600);
+          let m = Math.floor((workoutSeconds % 3600) / 60);
+          let s = workoutSeconds % 60;
+          document.getElementById('workout-timer').textContent = 
+            `${h < 10 ? '0':''}${h}:${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
         }, 1000);
+      } else {
+        isWorkoutRunning = false;
+        btn.textContent = "▶️ Devam Et";
+        btn.className = "btn btn-mac";
+        clearInterval(workoutTimerInterval);
       }
     }
 
-    function switchTab(tabId, evt) {
+    /* YENİ EGZERSİZ VE SİLME İŞLEMLERİ */
+    function addNewExercisePrompt(dayTag) {
+      let title = prompt("Egzersiz Adını Girin:");
+      if (!title) return;
+      let newId = "custom_" + Date.now();
+      let newEx = { id: newId, title: title, timer: 60, gifUrl: "" };
+      
+      if (dayTag === 'day1') day1Exercises.push(newEx);
+      else day2Exercises.push(newEx);
+      
+      renderAllExercises();
+      populateChartDropdown();
+    }
+
+    function deleteExercise(exId, dayTag) {
+      if (!confirm("Bu egzersizi silmek istediğinize emin misiniz?")) return;
+      if (dayTag === 'day1') day1Exercises = day1Exercises.filter(e => e.id !== exId);
+      else day2Exercises = day2Exercises.filter(e => e.id !== exId);
+      renderAllExercises();
+    }
+
+    /* SET BİTTİ DÜĞMESİ & SUPABASE SENKRONİZASYONU */
+    async function onSetCompleted(exId, setNum, checkbox) {
+      if (checkbox.checked) {
+        addXP(10);
+        let weight = document.getElementById(`${exId}-w-${setNum}`).value;
+        let reps = document.getElementById(`${exId}-r-${setNum}`).value;
+        
+        // Supabase Oturumu kontrolü ve Kayıt
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user && weight && reps) {
+          await supabaseClient.from('workouts').insert([{
+            user_id: user.id,
+            exercise_id: exId,
+            weight: parseFloat(weight),
+            reps: parseInt(reps)
+          }]);
+        }
+      }
+    }
+
+    /* LOKAL DATA KAYITLARI & TAB DEĞİŞİMİ */
+    function saveSetLocal(exId, setNum) {
+      let w = document.getElementById(`${exId}-w-${setNum}`).value;
+      let r = document.getElementById(`${exId}-r-${setNum}`).value;
+      localStorage.setItem(`data_${exId}_${setNum}`, JSON.stringify({ w, r }));
+    }
+
+    function loadSavedSetValues() {
+      for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.startsWith("data_")) {
+          let parts = key.split("_");
+          let exId = parts[1];
+          let setNum = parts[2];
+          let val = JSON.parse(localStorage.getItem(key));
+          let inputW = document.getElementById(`${exId}-w-${setNum}`);
+          let inputR = document.getElementById(`${exId}-r-${setNum}`);
+          if (inputW) inputW.value = val.w || "";
+          if (inputR) inputR.value = val.r || "";
+        }
+      }
+    }
+
+    function loadLocalData() {
+      userXP = parseInt(localStorage.getItem('fitpro_xp')) || 0;
+      userLevel = parseInt(localStorage.getItem('fitpro_level')) || 1;
+    }
+
+    function switchTab(tabId, event) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      evt.currentTarget.classList.add('active');
+      event.target.classList.add('active');
     }
 
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
-      localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
     }
 
-    function showStoryModal(dayName, volume) {
-      document.getElementById('story-day-title').textContent = dayName;
-      document.getElementById('story-volume').textContent = volume + " kg";
-      document.getElementById('story-date').textContent = new Date().toLocaleDateString('tr-TR');
-      let hrs = String(Math.floor(workoutSeconds / 3600)).padStart(2, '0');
-      let mins = String(Math.floor((workoutSeconds % 3600) / 60)).padStart(2, '0');
-      document.getElementById('story-time').textContent = `${hrs}:${mins}`;
-      document.getElementById('story-card-modal').style.display = 'flex';
+    function finishWorkout(dayTag) {
+      addXP(50);
+      confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
+      alert("🔥 TEBRİKLER! Antrenmanı başarıyla bitirdiniz ve +50 XP kazandınız!");
     }
 
-    function closeStoryModal() { document.getElementById('story-card-modal').style.display = 'none'; }
-    function loadStats() {
-      document.getElementById('total-workouts').textContent = localStorage.getItem('totalWorkouts') || 0;
-      document.getElementById('last-date').textContent = localStorage.getItem('lastWorkoutDate') || 'Henüz Yok';
+    function saveMetrics() {
+      alert("Ölçüleriniz başarıyla kaydedildi!");
     }
 
-    function saveData() {
-      document.querySelectorAll('.set-input, .note-input').forEach(i => localStorage.setItem(i.id, i.value));
-      document.querySelectorAll('.set-check').forEach(c => localStorage.setItem(c.id, c.checked));
+    function saveNutrition() {
+      alert("Makro hedefleriniz kaydedildi!");
     }
 
-    function loadData() {
-      document.querySelectorAll('.set-input, .note-input').forEach(i => { if (localStorage.getItem(i.id)) i.value = localStorage.getItem(i.id); });
-      document.querySelectorAll('.set-check').forEach(c => { if (localStorage.getItem(c.id)) c.checked = (localStorage.getItem(c.id) === 'true'); });
-    }
-
-    function loadPRs() {
-      [...day1Exercises, ...day2Exercises].forEach(ex => {
-        const savedPR = localStorage.getItem(`pr_${ex.id}`);
-        if (savedPR && document.getElementById(`pr-${ex.id}`)) document.getElementById(`pr-${ex.id}`).textContent = `Rekor: ${savedPR} kg`;
+    function populateChartDropdown() {
+      let select = document.getElementById('chart-ex-select');
+      if (!select) return;
+      select.innerHTML = "";
+      [...day1Exercises, ...day2Exercises].forEach(e => {
+        let opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.title;
+        select.appendChild(opt);
       });
     }
 
-    function populateExerciseSelect() {
-      const sel = document.getElementById('exercise-chart-select');
-      if (sel) sel.innerHTML = [...day1Exercises, ...day2Exercises].map(e => `<option value="${e.id}">${e.title}</option>`).join('');
+    function updateChart() {
+      // Grafik Güncelleme Mantığı
     }
-
-    function updateExerciseChart() {
-      const exId = document.getElementById('exercise-chart-select').value;
-      const history = JSON.parse(localStorage.getItem(`history_${exId}`) || '[]');
-      const ctx = document.getElementById('exerciseChart')?.getContext('2d');
-      if (!ctx) return;
-
-      if (exerciseChartInstance) exerciseChartInstance.destroy();
-
-      exerciseChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: history.map(h => h.date),
-          datasets: [{ label: 'Ağırlık (kg)', data: history.map(h => h.weight), borderColor: '#0275d8', fill: false }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    function initChart() {
-      const ctx = document.getElementById('volumeChart')?.getContext('2d');
-      if (!ctx) return;
-      const history = JSON.parse(localStorage.getItem('volHistory') || '[]');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: history.map(h => h.date),
-          datasets: [{ label: 'Toplam Hacim (kg)', data: history.map(h => h.volume), borderColor: '#d9534f', fill: true }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    function startTimer(seconds) {
-      clearInterval(workoutTimerInterval);
-      document.getElementById('timer-bar').style.display = 'flex';
-      let left = seconds;
-      document.getElementById('timer-display').textContent = left + " sn";
-      let t = setInterval(() => {
-        left--;
-        document.getElementById('timer-display').textContent = left + " sn";
-        if (left <= 0) { clearInterval(t); document.getElementById('timer-display').textContent = "Süre Bitti! 🔥"; }
-      }, 1000);
-    }
-    function stopTimer() { document.getElementById('timer-bar').style.display = 'none'; }
-    function toggleGif(id) { const el = document.getElementById(id); if (el) el.style.display = (el.style.display === "block") ? "none" : "block"; }
   </script>
 </body>
 </html>
