@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FitPro CLOUD - Ultimate Fitness & Analytics Platform</title>
+  <title>FitPro CLOUD - Ultimate Fitness Platform</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#090d16">
   
@@ -195,6 +195,44 @@
     .set-check { width: 22px; height: 22px; accent-color: var(--primary); cursor: pointer; }
 
     .chart-container { position: relative; width: 100%; height: 220px; margin-top: 10px; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      width: 90%;
+      max-width: 360px;
+    }
+
+    /* REST TIMER BAR */
+    #timer-bar { 
+      position: fixed; 
+      bottom: 20px; 
+      left: 16px; 
+      right: 16px; 
+      background: #1e293b; 
+      border: 1px solid var(--primary);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      color: white; 
+      padding: 12px 18px; 
+      border-radius: 14px;
+      display: none; 
+      justify-content: space-between; 
+      align-items: center; 
+      z-index: 1000; 
+    }
+    #timer-display { font-size: 1.4rem; font-weight: 900; color: var(--primary); }
   </style>
 </head>
 <body>
@@ -205,6 +243,7 @@
       <span class="brand-logo">FITPRO</span>
       <h1>CLOUD PRO</h1>
     </div>
+    <button class="btn btn-danger" id="btn-logout" style="display:none; font-size:0.7rem;" onclick="handleSignOut()">Çıkış</button>
   </div>
 
   <!-- AUTH SECTION -->
@@ -226,10 +265,10 @@
     <div class="goal-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <span style="font-size:0.75rem; color:var(--text-muted);">HEDEFİNİZ</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">MEVCUT HEDEFİNİZ</span>
           <div style="font-weight:800; font-size:1.1rem; color:var(--accent);" id="display-goal">Ağır Kas Kütlesi Yapma</div>
         </div>
-        <button class="btn btn-accent" onclick="openGoalModal()" style="font-size:0.7rem;">🎯 Hedef Değiştir</button>
+        <button class="btn btn-accent" onclick="openGoalModal()" style="font-size:0.7rem;">🎯 Değiştir</button>
       </div>
     </div>
 
@@ -299,7 +338,7 @@
       <!-- PROGRAM SEÇİCİ -->
       <div class="card">
         <h2>📋 Antrenman Şablonları</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
           <button class="btn btn-accent" onclick="loadProgramTemplate('pushpull')">💪 İtiş / Çekiş / Bacak</button>
           <button class="btn btn-purple" onclick="loadProgramTemplate('fullbody')">🏋️ Full Body (3 Gün)</button>
         </div>
@@ -310,6 +349,7 @@
         <div id="workout-list">
           <!-- Dinamik Egzersizler Buraya Gelecek -->
         </div>
+        <button class="btn btn-accent" style="width:100%; margin-top:8px;" onclick="addCustomExercisePrompt()">➕ Yeni Egzersiz Ekle</button>
         <button class="btn btn-primary" style="width:100%; padding:14px; font-size:0.95rem; margin-top:12px;" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+100 XP)</button>
       </div>
 
@@ -319,29 +359,51 @@
     <div id="nutrition" class="tab-content">
       <div class="card">
         <h2>🎯 Günlük Makro ve Kalori Hedefiniz</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted);">Hedefinize uygun olarak yapay zeka tarafından hesaplanmıştır:</p>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Seçtiğiniz hedefe göre önerilen günlük değerler:</p>
         
         <div class="dash-grid" style="margin-top:12px;">
           <div class="stat-card">
             <div class="stat-lbl">Hedef Kalori</div>
-            <div class="stat-val" style="color:var(--warning);">2,850 kcal</div>
+            <div class="stat-val" style="color:var(--warning);" id="macro-calories">2,850 kcal</div>
           </div>
           <div class="stat-card">
             <div class="stat-lbl">Protein</div>
-            <div class="stat-val" style="color:var(--primary);">180 g</div>
+            <div class="stat-val" style="color:var(--primary);" id="macro-protein">180 g</div>
           </div>
           <div class="stat-card">
             <div class="stat-lbl">Karbonhidrat</div>
-            <div class="stat-val" style="color:var(--accent);">320 g</div>
+            <div class="stat-val" style="color:var(--accent);" id="macro-carbs">320 g</div>
           </div>
           <div class="stat-card">
             <div class="stat-lbl">Yağ</div>
-            <div class="stat-val" style="color:var(--purple);">65 g</div>
+            <div class="stat-val" style="color:var(--purple);" id="macro-fat">65 g</div>
           </div>
         </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- GOAL MODAL -->
+  <div class="modal-overlay" id="goal-modal">
+    <div class="modal-card">
+      <h3 style="margin-top:0; color:var(--text);">Yeni Hedef Seçin</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-accent" onclick="selectGoal('Ağır Kas Kütlesi Yapma')">💪 Ağır Kas Kütlesi Yapma</button>
+        <button class="btn btn-purple" onclick="selectGoal('Kilo Verme / Definasyon')">🔥 Kilo Verme & Yağ Yakımı</button>
+        <button class="btn btn-primary" onclick="selectGoal('Güç & Powerlifting')">🏋️ Güç & Powerlifting</button>
+      </div>
+      <button class="btn btn-danger" style="width:100%; margin-top:12px;" onclick="closeGoalModal()">İptal</button>
+    </div>
+  </div>
+
+  <!-- REST TIMER BAR -->
+  <div id="timer-bar">
+    <div>
+      <div style="font-size:0.68rem; color:var(--text-muted); font-weight:700;">DİNLENME SÜRESİ</div>
+      <div id="timer-display">00:00</div>
+    </div>
+    <button class="btn btn-danger" onclick="stopTimer()">Kapat</button>
   </div>
 
   <script>
@@ -351,18 +413,29 @@
 
     let currentUser = null;
     let bodyChartInstance = null;
+    let restTimerInterval = null;
 
-    // ŞABLON EGZERSİZLER
-    const defaultWorkout = [
-      { id: 1, title: 'Bench Press (Göğüs)', sets: 4 },
-      { id: 2, title: 'Incline Dumbbell Press', sets: 3 },
-      { id: 3, title: 'Overhead Shoulder Press (Omuz)', sets: 4 },
-      { id: 4, title: 'Triceps Rope Pushdown', sets: 3 }
-    ];
+    // ŞABLON EGZERSİZ VERİLERİ
+    const templates = {
+      pushpull: [
+        { id: '1', title: 'Bench Press (Göğüs)', sets: 4 },
+        { id: '2', title: 'Incline Dumbbell Press', sets: 3 },
+        { id: '3', title: 'Overhead Shoulder Press (Omuz)', sets: 4 },
+        { id: '4', title: 'Triceps Rope Pushdown', sets: 3 }
+      ],
+      fullbody: [
+        { id: '5', title: 'Barbell Squat (Bacak)', sets: 4 },
+        { id: '6', title: 'Barbell Row (Sırt)', sets: 4 },
+        { id: '7', title: 'Bench Press (Göğüs)', sets: 3 },
+        { id: '8', title: 'Barbell Biceps Curl', sets: 3 }
+      ]
+    };
+
+    let currentWorkout = [...templates.pushpull];
 
     document.addEventListener("DOMContentLoaded", async () => {
       await checkUserSession();
-      renderWorkoutList(defaultWorkout);
+      renderWorkoutList(currentWorkout);
     });
 
     /* SESSION & AUTH */
@@ -372,31 +445,41 @@
       
       const authSection = document.getElementById('auth-section');
       const appContent = document.getElementById('app-content');
+      const logoutBtn = document.getElementById('btn-logout');
 
       if (currentUser) {
         authSection.style.display = 'none';
         appContent.style.display = 'block';
+        logoutBtn.style.display = 'inline-flex';
         await loadDashboardData();
       } else {
         authSection.style.display = 'block';
         appContent.style.display = 'none';
+        logoutBtn.style.display = 'none';
       }
     }
 
     async function handleSignIn() {
       const email = document.getElementById('auth-email').value;
       const password = document.getElementById('auth-password').value;
-      if (!email || !password) return alert("Bilgileri doldurun!");
+      if (!email || !password) return alert("E-posta ve şifrenizi girin!");
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert(error.message); else await checkUserSession();
+      if (error) alert("Giriş Hatası: " + error.message);
+      else await checkUserSession();
     }
 
     async function handleSignUp() {
       const email = document.getElementById('auth-email').value;
       const password = document.getElementById('auth-password').value;
-      if (!email || !password) return alert("Bilgileri doldurun!");
+      if (!email || !password) return alert("E-posta ve şifrenizi girin!");
       const { error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) alert(error.message); else alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+      if (error) alert("Kayıt Hatası: " + error.message);
+      else alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+    }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      await checkUserSession();
     }
 
     /* DASHBOARD & CHARTS */
@@ -429,8 +512,8 @@
         data: {
           labels: labels,
           datasets: [
-            { label: 'Kilo (kg)', data: data.map(d => d.weight), borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true },
-            { label: 'Kas (kg)', data: data.map(d => d.muscle_mass), borderColor: '#10b981', backgroundColor: 'transparent' }
+            { label: 'Kilo (kg)', data: data.map(d => d.weight), borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', fill: true, tension: 0.3 },
+            { label: 'Kas (kg)', data: data.map(d => d.muscle_mass), borderColor: '#10b981', backgroundColor: 'transparent', tension: 0.3 }
           ]
         },
         options: {
@@ -457,21 +540,29 @@
       }]);
 
       if (!error) {
-        alert("✅ Kaydedildi!");
+        alert("✅ Ölçüm kaydedildi!");
+        document.getElementById('input-weight').value = '';
+        document.getElementById('input-fat').value = '';
+        document.getElementById('input-muscle').value = '';
         await loadDashboardData();
+      } else {
+        alert("Hata: " + error.message);
       }
     }
 
-    /* WORKOUT RENDER */
+    /* WORKOUT LOGIC */
     function renderWorkoutList(exercises) {
       const container = document.getElementById('workout-list');
       container.innerHTML = exercises.map(ex => `
-        <div class="ex-item">
+        <div class="ex-item" id="ex-${ex.id}">
           <div class="ex-header">
             <div class="ex-title">${ex.title}</div>
-            <button class="btn btn-purple" style="font-size:0.65rem;" onclick="openYT('${ex.title}')">▶ Form İzle</button>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-purple" style="font-size:0.65rem;" onclick="openYT('${ex.title}')">▶ Form İzle</button>
+              <button class="btn btn-accent" style="font-size:0.65rem;" onclick="startTimer(60)">⏱️ 60s Dinlen</button>
+            </div>
           </div>
-          <table class="set-table">
+          <table class="set-table" id="table-${ex.id}">
             <thead>
               <tr><th>Set</th><th>Kg</th><th>Tekrar</th><th>Tamam</th></tr>
             </thead>
@@ -481,20 +572,89 @@
                   <td>${i+1}</td>
                   <td><input type="number" class="set-input" placeholder="0"></td>
                   <td><input type="number" class="set-input" placeholder="0"></td>
-                  <td><input type="checkbox" class="set-check"></td>
+                  <td><input type="checkbox" class="set-check" onchange="if(this.checked) startTimer(60)"></td>
                 </tr>
               `).join('')}
             </tbody>
           </table>
+          <button class="btn btn-accent" style="width:100%; margin-top:8px; font-size:0.7rem;" onclick="addSetToExercise('${ex.id}')">+ Set Ekle</button>
         </div>
       `).join('');
     }
 
+    function addSetToExercise(exId) {
+      const tbody = document.querySelector(`#table-${exId} tbody`);
+      const setNum = tbody.children.length + 1;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${setNum}</td>
+        <td><input type="number" class="set-input" placeholder="0"></td>
+        <td><input type="number" class="set-input" placeholder="0"></td>
+        <td><input type="checkbox" class="set-check" onchange="if(this.checked) startTimer(60)"></td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function addCustomExercisePrompt() {
+      const title = prompt("Egzersiz Adı Girin (Örn: Leg Press):");
+      if (title) {
+        currentWorkout.push({ id: Date.now().toString(), title: title, sets: 3 });
+        renderWorkoutList(currentWorkout);
+      }
+    }
+
+    function loadProgramTemplate(type) {
+      currentWorkout = [...templates[type]];
+      renderWorkoutList(currentWorkout);
+      alert("✅ Program yüklendi!");
+    }
+
+    /* GOAL MODAL LOGIC */
+    function openGoalModal() { document.getElementById('goal-modal').style.display = 'flex'; }
+    function closeGoalModal() { document.getElementById('goal-modal').style.display = 'none'; }
+    
+    function selectGoal(goalName) {
+      document.getElementById('display-goal').textContent = goalName;
+      
+      // Makro Hedeflerini Otomatik Ayarla
+      if(goalName.includes("Kilo Verme")) {
+        document.getElementById('macro-calories').textContent = "2,100 kcal";
+        document.getElementById('macro-protein').textContent = "195 g";
+        document.getElementById('macro-carbs').textContent = "180 g";
+        document.getElementById('macro-fat').textContent = "50 g";
+      } else {
+        document.getElementById('macro-calories').textContent = "2,850 kcal";
+        document.getElementById('macro-protein').textContent = "180 g";
+        document.getElementById('macro-carbs').textContent = "320 g";
+        document.getElementById('macro-fat').textContent = "65 g";
+      }
+
+      closeGoalModal();
+    }
+
+    /* UTILS & TIMER */
     function switchTab(tabId, event) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       event.target.classList.add('active');
+    }
+
+    function startTimer(seconds) {
+      clearInterval(restTimerInterval);
+      let left = seconds;
+      document.getElementById('timer-bar').style.display = 'flex';
+      restTimerInterval = setInterval(() => {
+        left--;
+        let m = Math.floor(left / 60), s = left % 60;
+        document.getElementById('timer-display').textContent = `${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
+        if (left <= 0) stopTimer();
+      }, 1000);
+    }
+
+    function stopTimer() { 
+      clearInterval(restTimerInterval); 
+      document.getElementById('timer-bar').style.display = 'none'; 
     }
 
     function openYT(query) {
