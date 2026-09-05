@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitPro AI - Bulut Tabanlı Spor Platformu</title>
+  <title>FitPro AI - Kişiselleştirilmiş Spor Platformu</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
-  <link rel="apple-touch-icon" href="icon-192.png">
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
@@ -33,7 +31,7 @@
     .theme-toggle { background: var(--border); border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; color: var(--text); font-weight: bold; font-size: 0.8rem; }
     
     .auth-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .auth-input { width: 80%; max-width: 300px; padding: 8px; margin: 5px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
+    .auth-input { width: 80%; max-width: 280px; padding: 8px; margin: 4px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
 
     .user-level-card { background: linear-gradient(135deg, #6f42c1, #a855f7); color: white; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3); }
     .level-badge { background: #fff; color: #6f42c1; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
@@ -42,8 +40,8 @@
 
     .workout-timer-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
-    .tab-btn { flex: 1; padding: 10px 8px; background: var(--border); border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem; color: var(--text); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+    .tab-container { display: flex; gap: 6px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 10px 8px; background: var(--border); border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem; color: var(--text); cursor: pointer; }
     .tab-btn.active { background: var(--primary); color: white; }
 
     .tab-content { display: none; }
@@ -53,64 +51,61 @@
     h2 { color: var(--accent); font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 0; }
 
     .ex-list { list-style: none; padding: 0; margin: 0; }
-    .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; position: relative; }
-    .ex-item:last-child { border-bottom: none; }
+    .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; }
     .ex-title { font-weight: 700; font-size: 0.95rem; }
 
     .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-    .btn { border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+    .btn { border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
     .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
     .btn-yt { background: #fff0f0; color: #c00; border: 1px solid #ffcdd2; }
     .btn-delete-ex { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.65rem; }
-    .btn-add { background: var(--border); color: var(--text); margin-top: 6px; padding: 4px 8px; font-size: 0.7rem; }
     .btn-new-ex { background: var(--accent); color: white; width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 8px; margin-top: 10px; font-weight: bold; }
     .btn-finish { background: var(--success); color: white; width: 100%; padding: 12px; font-size: 0.95rem; border-radius: 8px; margin-top: 10px; font-weight: bold;}
 
     .set-table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 0.78rem; }
     .set-table th { color: #718096; font-weight: 600; text-align: center; padding-bottom: 4px; }
     .set-table td { text-align: center; padding: 3px 0; }
-    .set-input { width: 48px; padding: 4px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 5px; text-align: center; font-size: 0.78rem; }
-    .set-check { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
+    .set-input { width: 50px; padding: 5px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 5px; text-align: center; }
+    .set-check { width: 20px; height: 20px; accent-color: var(--success); cursor: pointer; }
 
     .gif-container { display: none; margin-top: 8px; text-align: center; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
-    .gif-container img { max-width: 100%; height: auto; max-height: 220px; border-radius: 6px; object-fit: contain; }
+    .gif-container img { max-width: 100%; height: auto; max-height: 200px; border-radius: 6px; }
 
-    #timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a202c; color: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 -3px 12px rgba(0,0,0,0.2); z-index: 1000; }
+    #timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a202c; color: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 1000; }
     #timer-display { font-size: 1.2rem; font-weight: bold; color: #48bb78; }
-    .stop-btn { background: var(--primary); border: none; color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
   </style>
 </head>
 <body>
 
   <div class="header-bar">
-    <h1>FITPRO AI PLATFORM</h1>
+    <h1>FITPRO CLOUD</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Supabase Veritabanı Destekli Egzersiz Takibi</div>
+  <div class="subtitle">Kişisel Bulut Tabanlı Spor Takip Sistemi</div>
 
-  <!-- AUTH SECTION -->
-  <div class="auth-card" id="auth-section">
+  <!-- UYELIK / HESAP KARTI -->
+  <div class="auth-card">
     <div id="auth-logged-out">
-      <h3 style="margin-top:0; font-size:1rem;">Supabase Bulut Hesabı</h3>
-      <input type="email" id="auth-email" class="auth-input" placeholder="E-posta Adresi"><br>
+      <h3 style="margin:0 0 8px 0; font-size:0.95rem;">Hesabınıza Giriş Yapın</h3>
+      <input type="email" id="auth-email" class="auth-input" placeholder="E-posta"><br>
       <input type="password" id="auth-password" class="auth-input" placeholder="Şifre"><br>
       <button class="btn btn-mac" onclick="handleSignUp()" style="margin-top:5px;">Kayıt Ol</button>
       <button class="btn btn-timer" onclick="handleSignIn()" style="margin-top:5px;">Giriş Yap</button>
     </div>
     <div id="auth-logged-in" style="display:none;">
-      <span style="font-size:0.85rem;">Giriş Yapıldı: <strong id="user-email-display"></strong></span>
+      <span style="font-size:0.85rem;">Aktif Kullanıcı: <strong id="user-email-display" style="color:var(--accent);"></strong></span>
       <button class="btn btn-db" onclick="handleSignOut()" style="margin-left:10px;">Çıkış Yap</button>
     </div>
   </div>
 
-  <!-- LEVEL CARD -->
+  <!-- KULLANICI LEVEL & XP -->
   <div class="user-level-card">
     <div style="flex:1;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
-        <span style="font-size:0.85rem; font-weight:bold;">Unvan: <span id="user-title">Çaylak Sporcu</span></span>
+        <span style="font-size:0.85rem; font-weight:bold;">Seviye İlerlemesi</span>
         <span class="level-badge" id="user-level">LVL 1</span>
       </div>
       <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
@@ -127,7 +122,7 @@
     <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
   </div>
 
-  <!-- TAB SEÇİCİ -->
+  <!-- TABS -->
   <div class="tab-container">
     <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
     <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ & BACAK</button>
@@ -138,7 +133,7 @@
     <div class="card">
       <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
       <ul class="ex-list" id="day1-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Resimli/GIF'li Yeni Egzersiz Ekle</button>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Resimli/GIF'li Egzersiz Ekle</button>
       <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
@@ -148,18 +143,18 @@
     <div class="card">
       <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
       <ul class="ex-list" id="day2-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Resimli/GIF'li Yeni Egzersiz Ekle</button>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Resimli/GIF'li Egzersiz Ekle</button>
       <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
 
-  <!-- REST TIMER BAR -->
+  <!-- DİNLENME BAR -->
   <div id="timer-bar">
     <div>
       <div style="font-size:0.7rem; color:#a0aec0;">DİNLENME SÜRESİ</div>
       <div id="timer-display">00:00</div>
     </div>
-    <button class="stop-btn" onclick="stopTimer()">Kapat</button>
+    <button class="btn btn-db" onclick="stopTimer()">Kapat</button>
   </div>
 
   <script>
@@ -167,6 +162,7 @@
     const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let currentUser = null;
     let allExercises = [];
     let userXP = 0;
     let userLevel = 1;
@@ -176,19 +172,46 @@
     let restTimerInterval = null;
 
     document.addEventListener("DOMContentLoaded", async () => {
-      checkUserSession();
-      loadLocalData();
+      await checkUserSession();
       await fetchExercisesFromSupabase();
-      updateLevelUI();
     });
+
+    /* OTURUM VE KULLANICI PROFİLİ YÖNETİMİ */
+    async function checkUserSession() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      currentUser = user;
+      
+      if (currentUser) {
+        document.getElementById('auth-logged-out').style.display = 'none';
+        document.getElementById('auth-logged-in').style.display = 'block';
+        document.getElementById('user-email-display').textContent = currentUser.email;
+        await loadUserProfile();
+      } else {
+        document.getElementById('auth-logged-out').style.display = 'block';
+        document.getElementById('auth-logged-in').style.display = 'none';
+        userXP = 0; userLevel = 1; updateLevelUI();
+      }
+    }
+
+    async function loadUserProfile() {
+      if (!currentUser) return;
+      let { data, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+      
+      if (!data) {
+        // Profil yoksa ilk kez olustur
+        await supabaseClient.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, xp: 0, level: 1 }]);
+        userXP = 0; userLevel = 1;
+      } else {
+        userXP = data.xp || 0;
+        userLevel = data.level || 1;
+      }
+      updateLevelUI();
+    }
 
     /* SUPABASE'DEN EGZERSİZLERİ ÇEKME */
     async function fetchExercisesFromSupabase() {
       const { data, error } = await supabaseClient.from('exercises').select('*');
-      if (error) {
-        console.error("Egzersiz yükleme hatası:", error);
-        return;
-      }
+      if (error) { console.error("Egzersiz yükleme hatası:", error); return; }
       allExercises = data || [];
       renderAllExercises();
     }
@@ -214,16 +237,16 @@
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱️ ${ex.timer}s Dinlen</button>
             <button class="btn btn-yt" onclick="openYouTube('${ex.title}')">▶️ YouTube</button>
-            ${ex.gif_url ? `<button class="btn btn-db" onclick="toggleGif('${ex.id}')">🖼️ GIF / Resim</button>` : ''}
+            ${ex.gif_url ? `<button class="btn btn-db" onclick="toggleGif('${ex.id}')">🖼️ Resim/GIF</button>` : ''}
           </div>
           ${ex.gif_url ? `<div class="gif-container" id="gif-${ex.id}"><img src="${ex.gif_url}" alt="Rehber Visual"></div>` : ''}
           <table class="set-table">
             <thead><tr><th>Ağırlık (kg)</th><th>Tekrar</th><th>Tamam</th></tr></thead>
             <tbody>
               <tr>
-                <td><input type="number" class="set-input" placeholder="kg"></td>
-                <td><input type="number" class="set-input" placeholder="tekrar"></td>
-                <td><input type="checkbox" class="set-check" onchange="onSetCompleted(this)"></td>
+                <td><input type="number" class="set-input weight-input" placeholder="0"></td>
+                <td><input type="number" class="set-input reps-input" placeholder="0"></td>
+                <td><input type="checkbox" class="set-check" onchange="onSetCompleted(this, '${ex.id}', '${ex.title}')"></td>
               </tr>
             </tbody>
           </table>
@@ -231,109 +254,61 @@
       `;
     }
 
-    /* YENİ EGZERSİZ VE RESİM/GIF EKLEME (SUPABASE'E YAZAR) */
+    /* SET TAMAMLAMA VE KİŞİSEL VERİYİ VERİTABANINA YAZMA */
+    async function onSetCompleted(checkbox, exId, exTitle) {
+      if (!currentUser) {
+        alert("⚠️ Verilerinizin kaydolması için lütfen önce giriş yapın!");
+        checkbox.checked = false;
+        return;
+      }
+
+      if (checkbox.checked) {
+        let row = checkbox.closest('tr');
+        let weight = parseFloat(row.querySelector('.weight-input').value) || 0;
+        let reps = parseInt(row.querySelector('.reps-input').value) || 0;
+
+        // Supabase'deki workout_logs tablosuna kisinin ID'si ile kaydet
+        const { error } = await supabaseClient.from('workout_logs').insert([{
+          user_id: currentUser.id,
+          exercise_id: exId,
+          exercise_title: exTitle,
+          weight: weight,
+          reps: reps
+        }]);
+
+        if (error) {
+          console.error("Set kaydedilemedi:", error.message);
+        } else {
+          await addXP(10);
+        }
+      }
+    }
+
+    /* YENİ EGZERSİZ EKLEME */
     async function addNewExercisePrompt(dayTag) {
       let title = prompt("Egzersiz Adını Girin:");
       if (!title) return;
-      
-      let gifUrl = prompt("Egzersiz Resim veya GIF Linkini Girin (İsteğe bağlı):") || "";
+      let gifUrl = prompt("Egzersiz Resim veya GIF Linki (İsteğe bağlı):") || "";
       let timerVal = parseInt(prompt("Dinlenme Süresi (Saniye):", "60")) || 60;
 
-      const { data: { user } } = await supabaseClient.auth.getUser();
       let newId = "custom_" + Date.now();
-
-      const { data, error } = await supabaseClient.from('exercises').insert([{
-        id: newId,
-        title: title,
-        day_type: dayTag,
-        timer: timerVal,
-        gif_url: gifUrl,
-        user_id: user ? user.id : null
+      const { error } = await supabaseClient.from('exercises').insert([{
+        id: newId, title: title, day_type: dayTag, timer: timerVal, gif_url: gifUrl, user_id: currentUser ? currentUser.id : null
       }]);
 
-      if (error) {
-        alert("Egzersiz eklenirken hata oluştu: " + error.message);
-      } else {
-        alert("✅ Egzersiz ve Resim/GIF veritabanına başarıyla kaydedildi!");
-        await fetchExercisesFromSupabase();
-      }
+      if (error) alert("Hata: " + error.message);
+      else await fetchExercisesFromSupabase();
     }
 
-    /* EGZERSİZ SİLME */
     async function deleteExercise(exId) {
-      if (!confirm("Bu egzersizi veritabanından silmek istediğinize emin misiniz?")) return;
-      
+      if (!confirm("Bu egzersizi silmek istediğinize emin misiniz?")) return;
       const { error } = await supabaseClient.from('exercises').delete().eq('id', exId);
-      if (error) {
-        alert("Silme hatası: " + error.message);
-      } else {
-        await fetchExercisesFromSupabase();
-      }
+      if (error) alert("Silme Hatası: " + error.message);
+      else await fetchExercisesFromSupabase();
     }
 
-    function toggleGif(exId) {
-      let el = document.getElementById(`gif-${exId}`);
-      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function openYouTube(term) {
-      window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(term + " yapılışı")}`, '_blank');
-    }
-
-    /* KRONOMETRE & DİNLENME SÜRESİ */
-    function startTimer(seconds) {
-      clearInterval(restTimerInterval);
-      let left = seconds;
-      document.getElementById('timer-bar').style.display = 'flex';
-      updateTimerDisplay(left);
-      
-      restTimerInterval = setInterval(() => {
-        left--;
-        updateTimerDisplay(left);
-        if (left <= 0) {
-          clearInterval(restTimerInterval);
-          alert("⏱️ Dinlenme Süresi Bitti!");
-          stopTimer();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay(s) {
-      let m = Math.floor(s / 60);
-      let sec = s % 60;
-      document.getElementById('timer-display').textContent = `${m < 10 ? '0':''}${m}:${sec < 10 ? '0':''}${sec}`;
-    }
-
-    function stopTimer() {
-      clearInterval(restTimerInterval);
-      document.getElementById('timer-bar').style.display = 'none';
-    }
-
-    function toggleWorkoutTimer() {
-      let btn = document.getElementById('toggle-workout-btn');
-      if (!isWorkoutRunning) {
-        isWorkoutRunning = true;
-        btn.textContent = "⏸️ Duraklat";
-        workoutTimerInterval = setInterval(() => {
-          workoutSeconds++;
-          let h = Math.floor(workoutSeconds / 3600);
-          let m = Math.floor((workoutSeconds % 3600) / 60);
-          let s = workoutSeconds % 60;
-          document.getElementById('workout-timer').textContent = 
-            `${h < 10 ? '0':''}${h}:${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
-        }, 1000);
-      } else {
-        isWorkoutRunning = false;
-        btn.textContent = "▶️ Devam Et";
-        clearInterval(workoutTimerInterval);
-      }
-    }
-
-    function onSetCompleted(checkbox) {
-      if (checkbox.checked) addXP(10);
-    }
-
-    function addXP(amount) {
+    /* XP VE SEVİYE SİSTEMİ (VERİTABANI ENTEGRELİ) */
+    async function addXP(amount) {
       userXP += amount;
       let needed = userLevel * 100;
       if (userXP >= needed) {
@@ -342,9 +317,11 @@
         alert(`🎉 TEBRİKLER! LEVEL ${userLevel} OLDU!`);
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
-      localStorage.setItem('fitpro_xp', userXP);
-      localStorage.setItem('fitpro_level', userLevel);
       updateLevelUI();
+
+      if (currentUser) {
+        await supabaseClient.from('profiles').update({ xp: userXP, level: userLevel }).eq('id', currentUser.id);
+      }
     }
 
     function updateLevelUI() {
@@ -355,12 +332,13 @@
       document.getElementById('xp-text').textContent = `${userXP} / ${needed} XP`;
     }
 
+    /* AUTH İŞLEMLERİ */
     async function handleSignUp() {
       const email = document.getElementById('auth-email').value;
       const password = document.getElementById('auth-password').value;
       const { error } = await supabaseClient.auth.signUp({ email, password });
       if (error) alert("Kayıt Hatası: " + error.message);
-      else alert("Kayıt Başarılı!");
+      else alert("✅ Kayıt Başarılı! Oturum açabilirsiniz.");
     }
 
     async function handleSignIn() {
@@ -368,29 +346,55 @@
       const password = document.getElementById('auth-password').value;
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) alert("Giriş Hatası: " + error.message);
-      else checkUserSession();
+      else await checkUserSession();
     }
 
     async function handleSignOut() {
       await supabaseClient.auth.signOut();
-      checkUserSession();
+      await checkUserSession();
     }
 
-    async function checkUserSession() {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
-        document.getElementById('auth-logged-out').style.display = 'none';
-        document.getElementById('auth-logged-in').style.display = 'block';
-        document.getElementById('user-email-display').textContent = user.email;
+    /* YARDIMCI FONKSİYONLAR */
+    function toggleGif(exId) {
+      let el = document.getElementById(`gif-${exId}`);
+      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function openYouTube(term) {
+      window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(term + " yapılışı")}`, '_blank');
+    }
+
+    function startTimer(seconds) {
+      clearInterval(restTimerInterval);
+      let left = seconds;
+      document.getElementById('timer-bar').style.display = 'flex';
+      updateTimerDisplay(left);
+      restTimerInterval = setInterval(() => {
+        left--;
+        updateTimerDisplay(left);
+        if (left <= 0) { clearInterval(restTimerInterval); alert("⏱️ Dinlenme Süresi Bitti!"); stopTimer(); }
+      }, 1000);
+    }
+
+    function updateTimerDisplay(s) {
+      let m = Math.floor(s / 60), sec = s % 60;
+      document.getElementById('timer-display').textContent = `${m < 10 ? '0':''}${m}:${sec < 10 ? '0':''}${sec}`;
+    }
+
+    function stopTimer() { clearInterval(restTimerInterval); document.getElementById('timer-bar').style.display = 'none'; }
+
+    function toggleWorkoutTimer() {
+      let btn = document.getElementById('toggle-workout-btn');
+      if (!isWorkoutRunning) {
+        isWorkoutRunning = true; btn.textContent = "⏸️ Duraklat";
+        workoutTimerInterval = setInterval(() => {
+          workoutSeconds++;
+          let h = Math.floor(workoutSeconds / 3600), m = Math.floor((workoutSeconds % 3600) / 60), s = workoutSeconds % 60;
+          document.getElementById('workout-timer').textContent = `${h < 10 ? '0':''}${h}:${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
+        }, 1000);
       } else {
-        document.getElementById('auth-logged-out').style.display = 'block';
-        document.getElementById('auth-logged-in').style.display = 'none';
+        isWorkoutRunning = false; btn.textContent = "▶️ Devam Et"; clearInterval(workoutTimerInterval);
       }
-    }
-
-    function loadLocalData() {
-      userXP = parseInt(localStorage.getItem('fitpro_xp')) || 0;
-      userLevel = parseInt(localStorage.getItem('fitpro_level')) || 1;
     }
 
     function switchTab(tabId, event) {
@@ -401,7 +405,7 @@
     }
 
     function toggleTheme() { document.body.classList.toggle('dark-theme'); }
-    function finishWorkout() { addXP(50); confetti({ particleCount: 150 }); alert("🔥 Antrenman Tamamlandı!"); }
+    async function finishWorkout() { await addXP(50); confetti({ particleCount: 150 }); alert("🔥 Antrenman Tamamlandı!"); }
   </script>
 </body>
 </html>
