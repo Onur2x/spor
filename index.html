@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitPro AI - Kişiselleştirilmiş Spor Platformu</title>
+  <title>FitPro CLOUD - Özel Spor Platformu</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
   
@@ -25,13 +25,16 @@
       background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; 
       padding-bottom: 120px; transition: background 0.3s, color 0.3s;
     }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; }
+    .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     h1 { color: var(--primary); font-size: 1.4rem; margin: 0; }
-    .subtitle { font-size: 0.8rem; color: #7f8c8d; margin-bottom: 12px; }
     .theme-toggle { background: var(--border); border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; color: var(--text); font-weight: bold; font-size: 0.8rem; }
     
-    .auth-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .auth-input { width: 80%; max-width: 280px; padding: 8px; margin: 4px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
+    /* GİRİŞ EKRANI KARTI */
+    .auth-card { background: var(--card-bg); border-radius: 12px; padding: 20px; margin: 20px auto; border: 1px solid var(--border); text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 350px; }
+    .auth-input { width: 90%; padding: 10px; margin: 6px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); font-size: 0.9rem; }
+
+    /* UYGULAMA İÇERİĞİ (GİRİŞ YAPILMADAN GİZLENİR) */
+    #app-content { display: none; }
 
     .user-level-card { background: linear-gradient(135deg, #6f42c1, #a855f7); color: white; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3); }
     .level-badge { background: #fff; color: #6f42c1; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
@@ -56,10 +59,10 @@
     .ex-title { font-weight: 700; font-size: 0.95rem; }
 
     .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-    .btn { border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+    .btn { border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
-    .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
+    .btn-mac { background: #28a745; color: white; }
     .btn-yt { background: #fff0f0; color: #c00; border: 1px solid #ffcdd2; }
     .btn-delete-ex { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.65rem; }
     .btn-new-ex { background: var(--accent); color: white; width: 100%; padding: 10px; font-size: 0.85rem; border-radius: 8px; margin-top: 10px; font-weight: bold; }
@@ -76,6 +79,7 @@
 
     #timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a202c; color: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 1000; }
     #timer-display { font-size: 1.2rem; font-weight: bold; color: #48bb78; }
+    .user-info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -84,68 +88,75 @@
     <h1>FITPRO CLOUD</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Kişisel Bulut Tabanlı Spor Takip Sistemi</div>
 
-  <!-- UYELIK / HESAP KARTI -->
-  <div class="auth-card">
-    <div id="auth-logged-out">
-      <h3 style="margin:0 0 8px 0; font-size:0.95rem;">Hesabınıza Giriş Yapın</h3>
-      <input type="email" id="auth-email" class="auth-input" placeholder="E-posta"><br>
-      <input type="password" id="auth-password" class="auth-input" placeholder="Şifre"><br>
-      <button class="btn btn-mac" onclick="handleSignUp()" style="margin-top:5px;">Kayıt Ol</button>
-      <button class="btn btn-timer" onclick="handleSignIn()" style="margin-top:5px;">Giriş Yap</button>
-    </div>
-    <div id="auth-logged-in" style="display:none;">
-      <span style="font-size:0.85rem;">Aktif Kullanıcı: <strong id="user-email-display" style="color:var(--accent);"></strong></span>
-      <button class="btn btn-db" onclick="handleSignOut()" style="margin-left:10px;">Çıkış Yap</button>
+  <!-- GİRİŞ EKRANI (GİRİŞ YAPILMAMIŞSA SADECE BU GÖRÜNÜR) -->
+  <div class="auth-card" id="auth-section">
+    <h2 style="margin:0 0 10px 0; color:var(--primary); border:none;">Giriş Yap</h2>
+    <p style="font-size:0.8rem; color:#7f8c8d; margin-top:0;">Antrenmanlarınıza erişmek için hesabınıza giriş yapın.</p>
+    <input type="email" id="auth-email" class="auth-input" placeholder="E-posta Adresi"><br>
+    <input type="password" id="auth-password" class="auth-input" placeholder="Şifre"><br>
+    <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
+      <button class="btn btn-timer" onclick="handleSignIn()" style="flex:1;">Giriş Yap</button>
+      <button class="btn btn-mac" onclick="handleSignUp()" style="flex:1;">Kayıt Ol</button>
     </div>
   </div>
 
-  <!-- KULLANICI LEVEL & XP -->
-  <div class="user-level-card">
-    <div style="flex:1;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
-        <span style="font-size:0.85rem; font-weight:bold;">Seviye İlerlemesi</span>
-        <span class="level-badge" id="user-level">LVL 1</span>
+  <!-- UYGULAMA İÇERİĞİ (GİRİŞ YAPILINCA AÇILIR) -->
+  <div id="app-content">
+    
+    <!-- KULLANICI BİLGİ VE ÇIKIŞ BARI -->
+    <div class="user-info-bar">
+      <span style="font-size:0.8rem;">👤 <strong id="user-email-display" style="color:var(--accent);"></strong></span>
+      <button class="btn btn-db" onclick="handleSignOut()">🚪 Çıkış Yap</button>
+    </div>
+
+    <!-- LEVEL & XP -->
+    <div class="user-level-card">
+      <div style="flex:1;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
+          <span style="font-size:0.85rem; font-weight:bold;">Seviye İlerlemesi</span>
+          <span class="level-badge" id="user-level">LVL 1</span>
+        </div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
+        <div style="font-size:0.65rem; margin-top:3px; opacity:0.9;" id="xp-text">0 / 100 XP</div>
       </div>
-      <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
-      <div style="font-size:0.65rem; margin-top:3px; opacity:0.9;" id="xp-text">0 / 100 XP</div>
     </div>
-  </div>
 
-  <!-- KRONOMETRE -->
-  <div class="workout-timer-box">
-    <div>
-      <span style="font-size:0.75rem; opacity:0.8;">Antrenman Süresi:</span>
-      <strong id="workout-timer" style="font-size:1.1rem; color:var(--accent); display:block;">00:00:00</strong>
+    <!-- KRONOMETRE -->
+    <div class="workout-timer-box">
+      <div>
+        <span style="font-size:0.75rem; opacity:0.8;">Antrenman Süresi:</span>
+        <strong id="workout-timer" style="font-size:1.1rem; color:var(--accent); display:block;">00:00:00</strong>
+      </div>
+      <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
     </div>
-    <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
-  </div>
 
-  <!-- TABS -->
-  <div class="tab-container">
-    <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
-    <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ & BACAK</button>
-  </div>
-
-  <!-- 1. GÜN -->
-  <div id="day1" class="tab-content active">
-    <div class="card">
-      <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
-      <ul class="ex-list" id="day1-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Resimli/GIF'li Egzersiz Ekle</button>
-      <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
+    <!-- TABS -->
+    <div class="tab-container">
+      <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
+      <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ & BACAK</button>
     </div>
-  </div>
 
-  <!-- 2. GÜN -->
-  <div id="day2" class="tab-content">
-    <div class="card">
-      <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
-      <ul class="ex-list" id="day2-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Resimli/GIF'li Egzersiz Ekle</button>
-      <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
+    <!-- 1. GÜN -->
+    <div id="day1" class="tab-content active">
+      <div class="card">
+        <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
+        <ul class="ex-list" id="day1-list"></ul>
+        <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Resimli/GIF'li Egzersiz Ekle</button>
+        <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
+      </div>
     </div>
+
+    <!-- 2. GÜN -->
+    <div id="day2" class="tab-content">
+      <div class="card">
+        <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
+        <ul class="ex-list" id="day2-list"></ul>
+        <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Resimli/GIF'li Egzersiz Ekle</button>
+        <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
+      </div>
+    </div>
+
   </div>
 
   <!-- DİNLENME BAR -->
@@ -173,23 +184,29 @@
 
     document.addEventListener("DOMContentLoaded", async () => {
       await checkUserSession();
-      await fetchExercisesFromSupabase();
     });
 
-    /* OTURUM VE KULLANICI PROFİLİ YÖNETİMİ */
+    /* OTURUM KONTROLÜ VE EKRAN KİLİDİ */
     async function checkUserSession() {
       const { data: { user } } = await supabaseClient.auth.getUser();
       currentUser = user;
       
+      const authSection = document.getElementById('auth-section');
+      const appContent = document.getElementById('app-content');
+
       if (currentUser) {
-        document.getElementById('auth-logged-out').style.display = 'none';
-        document.getElementById('auth-logged-in').style.display = 'block';
+        // Kullanıcı giriş yaptıysa: Giriş panelini gizle, Uygulamayı aç
+        authSection.style.display = 'none';
+        appContent.style.display = 'block';
         document.getElementById('user-email-display').textContent = currentUser.email;
+        
         await loadUserProfile();
+        await fetchExercisesFromSupabase();
       } else {
-        document.getElementById('auth-logged-out').style.display = 'block';
-        document.getElementById('auth-logged-in').style.display = 'none';
-        userXP = 0; userLevel = 1; updateLevelUI();
+        // Giriş yapılmadıysa: Uygulamayı gizle, Giriş panelini göster
+        authSection.style.display = 'block';
+        appContent.style.display = 'none';
+        userXP = 0; userLevel = 1;
       }
     }
 
@@ -198,7 +215,6 @@
       let { data, error } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
       
       if (!data) {
-        // Profil yoksa ilk kez olustur
         await supabaseClient.from('profiles').insert([{ id: currentUser.id, email: currentUser.email, xp: 0, level: 1 }]);
         userXP = 0; userLevel = 1;
       } else {
@@ -254,37 +270,49 @@
       `;
     }
 
-    /* SET TAMAMLAMA VE KİŞİSEL VERİYİ VERİTABANINA YAZMA */
-    async function onSetCompleted(checkbox, exId, exTitle) {
-      if (!currentUser) {
-        alert("⚠️ Verilerinizin kaydolması için lütfen önce giriş yapın!");
-        checkbox.checked = false;
-        return;
-      }
+    /* AUTH İŞLEMLERİ */
+    async function handleSignUp() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      if (!email || !password) return alert("Lütfen e-posta ve şifre girin!");
 
-      if (checkbox.checked) {
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) alert("Kayıt Hatası: " + error.message);
+      else {
+        alert("✅ Kayıt başarılı! Oturum açılıyor...");
+        await handleSignIn();
+      }
+    }
+
+    async function handleSignIn() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      if (!email || !password) return alert("Lütfen e-posta ve şifre girin!");
+
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) alert("Giriş Hatası: " + error.message);
+      else await checkUserSession();
+    }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      await checkUserSession();
+    }
+
+    /* DİĞER FONKSİYONLAR */
+    async function onSetCompleted(checkbox, exId, exTitle) {
+      if (checkbox.checked && currentUser) {
         let row = checkbox.closest('tr');
         let weight = parseFloat(row.querySelector('.weight-input').value) || 0;
         let reps = parseInt(row.querySelector('.reps-input').value) || 0;
 
-        // Supabase'deki workout_logs tablosuna kisinin ID'si ile kaydet
-        const { error } = await supabaseClient.from('workout_logs').insert([{
-          user_id: currentUser.id,
-          exercise_id: exId,
-          exercise_title: exTitle,
-          weight: weight,
-          reps: reps
+        await supabaseClient.from('workout_logs').insert([{
+          user_id: currentUser.id, exercise_id: exId, exercise_title: exTitle, weight: weight, reps: reps
         }]);
-
-        if (error) {
-          console.error("Set kaydedilemedi:", error.message);
-        } else {
-          await addXP(10);
-        }
+        await addXP(10);
       }
     }
 
-    /* YENİ EGZERSİZ EKLEME */
     async function addNewExercisePrompt(dayTag) {
       let title = prompt("Egzersiz Adını Girin:");
       if (!title) return;
@@ -307,18 +335,15 @@
       else await fetchExercisesFromSupabase();
     }
 
-    /* XP VE SEVİYE SİSTEMİ (VERİTABANI ENTEGRELİ) */
     async function addXP(amount) {
       userXP += amount;
       let needed = userLevel * 100;
       if (userXP >= needed) {
-        userXP -= needed;
-        userLevel++;
+        userXP -= needed; userLevel++;
         alert(`🎉 TEBRİKLER! LEVEL ${userLevel} OLDU!`);
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
       updateLevelUI();
-
       if (currentUser) {
         await supabaseClient.from('profiles').update({ xp: userXP, level: userLevel }).eq('id', currentUser.id);
       }
@@ -332,29 +357,6 @@
       document.getElementById('xp-text').textContent = `${userXP} / ${needed} XP`;
     }
 
-    /* AUTH İŞLEMLERİ */
-    async function handleSignUp() {
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
-      const { error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) alert("Kayıt Hatası: " + error.message);
-      else alert("✅ Kayıt Başarılı! Oturum açabilirsiniz.");
-    }
-
-    async function handleSignIn() {
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert("Giriş Hatası: " + error.message);
-      else await checkUserSession();
-    }
-
-    async function handleSignOut() {
-      await supabaseClient.auth.signOut();
-      await checkUserSession();
-    }
-
-    /* YARDIMCI FONKSİYONLAR */
     function toggleGif(exId) {
       let el = document.getElementById(`gif-${exId}`);
       if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
@@ -370,8 +372,7 @@
       document.getElementById('timer-bar').style.display = 'flex';
       updateTimerDisplay(left);
       restTimerInterval = setInterval(() => {
-        left--;
-        updateTimerDisplay(left);
+        left--; updateTimerDisplay(left);
         if (left <= 0) { clearInterval(restTimerInterval); alert("⏱️ Dinlenme Süresi Bitti!"); stopTimer(); }
       }, 1000);
     }
