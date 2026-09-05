@@ -3,128 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FitPro AI - Ultimate Workout Platform</title>
+  <title>FitPro AI - Bulut Tabanlı Spor Platformu</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#d9534f">
   <link rel="apple-touch-icon" href="icon-192.png">
   
-  <!-- CDN Kütüphaneleri -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
     :root { 
-      --primary: #d9534f; 
-      --accent: #0275d8; 
-      --success: #28a745;
-      --warning: #f0ad4e;
-      --purple: #6f42c1;
-      --bg: #f4f6f8; 
-      --card-bg: #ffffff; 
-      --text: #2c3e50;
-      --border: #edf2f7;
-      --input-bg: #ffffff;
+      --primary: #d9534f; --accent: #0275d8; --success: #28a745;
+      --warning: #f0ad4e; --purple: #6f42c1; --bg: #f4f6f8; 
+      --card-bg: #ffffff; --text: #2c3e50; --border: #edf2f7; --input-bg: #ffffff;
     }
-
     body.dark-theme {
-      --bg: #121212;
-      --card-bg: #1e1e1e;
-      --text: #e0e0e0;
-      --border: #333333;
-      --input-bg: #2d2d2d;
+      --bg: #121212; --card-bg: #1e1e1e; --text: #e0e0e0;
+      --border: #333333; --input-bg: #2d2d2d;
     }
-
     body { 
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-      background-color: var(--bg); 
-      color: var(--text); 
-      margin: 0; 
-      padding: 12px; 
-      padding-bottom: 120px; 
-      transition: background 0.3s, color 0.3s;
+      background-color: var(--bg); color: var(--text); margin: 0; padding: 12px; 
+      padding-bottom: 120px; transition: background 0.3s, color 0.3s;
     }
-
     .header-bar { display: flex; justify-content: space-between; align-items: center; }
     h1 { color: var(--primary); font-size: 1.4rem; margin: 0; }
     .subtitle { font-size: 0.8rem; color: #7f8c8d; margin-bottom: 12px; }
     .theme-toggle { background: var(--border); border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; color: var(--text); font-weight: bold; font-size: 0.8rem; }
     
-    /* AUTH CARD */
-    .auth-card {
-      background: var(--card-bg); border-radius: 12px; padding: 15px;
-      margin-bottom: 15px; border: 1px solid var(--border); text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
+    .auth-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border); text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .auth-input { width: 80%; max-width: 300px; padding: 8px; margin: 5px 0; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
 
-    /* GAMIFICATION HEADER */
-    .user-level-card {
-      background: linear-gradient(135deg, #6f42c1, #a855f7);
-      color: white; border-radius: 12px; padding: 12px; margin-bottom: 12px;
-      display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
-    }
+    .user-level-card { background: linear-gradient(135deg, #6f42c1, #a855f7); color: white; border-radius: 12px; padding: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3); }
     .level-badge { background: #fff; color: #6f42c1; font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
     .xp-bar-bg { width: 100%; background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; margin-top: 6px; overflow: hidden; }
     .xp-bar-fill { height: 100%; background: #4ade80; width: 0%; transition: width 0.5s; }
 
-    .workout-timer-box {
-      background: var(--card-bg); border: 1px solid var(--border);
-      border-radius: 10px; padding: 10px; margin-bottom: 12px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-
-    .stats-card {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white; border-radius: 12px; padding: 12px; margin-bottom: 15px;
-      display: flex; justify-content: space-around; text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-    }
-    .stat-num { font-size: 1.4rem; font-weight: bold; }
-    .stat-label { font-size: 0.7rem; opacity: 0.9; }
+    .workout-timer-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
     .tab-container { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 4px; }
-    .tab-btn {
-      flex: 1; padding: 10px 8px; background: var(--border);
-      border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem;
-      color: var(--text); cursor: pointer; white-space: nowrap; transition: all 0.2s;
-    }
+    .tab-btn { flex: 1; padding: 10px 8px; background: var(--border); border: none; border-radius: 8px; font-weight: bold; font-size: 0.75rem; color: var(--text); cursor: pointer; white-space: nowrap; transition: all 0.2s; }
     .tab-btn.active { background: var(--primary); color: white; }
 
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .card { 
-      background: var(--card-bg); border-radius: 12px; padding: 14px; 
-      margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
-      border: 1px solid var(--border);
-    }
-    h2 { 
-      color: var(--accent); font-size: 1.1rem; 
-      border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 0; 
-    }
-
-    .ai-alert-box {
-      background: #fffbe3; border: 1px solid #ffe885; color: #856404;
-      padding: 10px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
-    }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 14px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid var(--border); }
+    h2 { color: var(--accent); font-size: 1.1rem; border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 0; }
 
     .ex-list { list-style: none; padding: 0; margin: 0; }
     .ex-item { border-bottom: 1px solid var(--border); padding: 12px 0; position: relative; }
     .ex-item:last-child { border-bottom: none; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; }
     .ex-title { font-weight: 700; font-size: 0.95rem; }
-    .pr-badge { font-size: 0.7rem; background: #fefcbf; color: #b7791f; border: 1px solid #f6e05e; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 
     .actions { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-    
-    .btn {
-      border: none; padding: 6px 10px; border-radius: 6px;
-      font-size: 0.75rem; font-weight: 600; cursor: pointer;
-      text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
-    }
+    .btn { border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
     .btn-timer { background: #ebf8ff; color: var(--accent); border: 1px solid #bee3f8; }
     .btn-db { background: #fff5f5; color: var(--primary); border: 1px solid #fed7d7; }
     .btn-mac { background: #f0fff4; color: var(--success); border: 1px solid #c6f6d5; }
@@ -137,30 +72,15 @@
     .set-table { width: 100%; margin-top: 8px; border-collapse: collapse; font-size: 0.78rem; }
     .set-table th { color: #718096; font-weight: 600; text-align: center; padding-bottom: 4px; }
     .set-table td { text-align: center; padding: 3px 0; }
-    .set-input {
-      width: 48px; padding: 4px; border: 1px solid var(--border);
-      background: var(--input-bg); color: var(--text); border-radius: 5px;
-      text-align: center; font-size: 0.78rem;
-    }
-    .set-type-btn { font-size: 0.65rem; padding: 2px 5px; border-radius: 4px; background: var(--border); color: var(--text); border: none; cursor: pointer; }
+    .set-input { width: 48px; padding: 4px; border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 5px; text-align: center; font-size: 0.78rem; }
     .set-check { width: 18px; height: 18px; accent-color: var(--success); cursor: pointer; }
 
     .gif-container { display: none; margin-top: 8px; text-align: center; background: var(--card-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); }
     .gif-container img { max-width: 100%; height: auto; max-height: 220px; border-radius: 6px; object-fit: contain; }
 
-    #timer-bar { 
-      position: fixed; bottom: 0; left: 0; right: 0; 
-      background: #1a202c; color: white; padding: 10px 15px; 
-      display: none; justify-content: space-between; align-items: center; 
-      box-shadow: 0 -3px 12px rgba(0,0,0,0.2); z-index: 1000;
-    }
+    #timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a202c; color: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 -3px 12px rgba(0,0,0,0.2); z-index: 1000; }
     #timer-display { font-size: 1.2rem; font-weight: bold; color: #48bb78; }
     .stop-btn { background: var(--primary); border: none; color: white; padding: 5px 10px; border-radius: 5px; font-weight: 600; }
-
-    /* FORM & GRAPH HELPER STYLES */
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 3px; }
-    .form-control { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid var(--border); border-radius: 6px; background: var(--input-bg); color: var(--text); }
   </style>
 </head>
 <body>
@@ -169,9 +89,9 @@
     <h1>FITPRO AI PLATFORM</h1>
     <button class="theme-toggle" onclick="toggleTheme()">🌙 Mod</button>
   </div>
-  <div class="subtitle">Supabase Destekli Ağır Kas Gelişimi Ekosistemi</div>
+  <div class="subtitle">Supabase Veritabanı Destekli Egzersiz Takibi</div>
 
-  <!-- AUTHENTICATION SECTION -->
+  <!-- AUTH SECTION -->
   <div class="auth-card" id="auth-section">
     <div id="auth-logged-out">
       <h3 style="margin-top:0; font-size:1rem;">Supabase Bulut Hesabı</h3>
@@ -181,42 +101,24 @@
       <button class="btn btn-timer" onclick="handleSignIn()" style="margin-top:5px;">Giriş Yap</button>
     </div>
     <div id="auth-logged-in" style="display:none;">
-      <span style="font-size:0.85rem;">Bulut Bağlantısı Aktif: <strong id="user-email-display"></strong></span>
+      <span style="font-size:0.85rem;">Giriş Yapıldı: <strong id="user-email-display"></strong></span>
       <button class="btn btn-db" onclick="handleSignOut()" style="margin-left:10px;">Çıkış Yap</button>
     </div>
   </div>
 
-  <!-- GAMIFICATION / LEVEL BAR -->
+  <!-- LEVEL CARD -->
   <div class="user-level-card">
     <div style="flex:1;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-right:10px;">
         <span style="font-size:0.85rem; font-weight:bold;">Unvan: <span id="user-title">Çaylak Sporcu</span></span>
         <span class="level-badge" id="user-level">LVL 1</span>
       </div>
-      <div class="xp-bar-bg">
-        <div class="xp-bar-fill" id="xp-fill"></div>
-      </div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-fill"></div></div>
       <div style="font-size:0.65rem; margin-top:3px; opacity:0.9;" id="xp-text">0 / 100 XP</div>
     </div>
   </div>
 
-  <!-- GENEL İSTATİSTİK KARTI -->
-  <div class="stats-card">
-    <div>
-      <div class="stat-num" id="total-workouts-num">0</div>
-      <div class="stat-label">Antrenman</div>
-    </div>
-    <div>
-      <div class="stat-num" id="total-volume-num">0 kg</div>
-      <div class="stat-label">Toplam Hacim</div>
-    </div>
-    <div>
-      <div class="stat-num" id="total-prs-num">0</div>
-      <div class="stat-label">Kırılan PR</div>
-    </div>
-  </div>
-
-  <!-- CANLI KRONOMETRE -->
+  <!-- KRONOMETRE -->
   <div class="workout-timer-box">
     <div>
       <span style="font-size:0.75rem; opacity:0.8;">Antrenman Süresi:</span>
@@ -225,77 +127,33 @@
     <button id="toggle-workout-btn" class="btn btn-mac" onclick="toggleWorkoutTimer()">▶️ Başlat</button>
   </div>
 
-  <!-- TAB SEÇİCİLERİ -->
-  <div class="tab-container" id="tab-buttons">
+  <!-- TAB SEÇİCİ -->
+  <div class="tab-container">
     <button class="tab-btn active" onclick="switchTab('day1', event)">1. GÜN: İTİŞ</button>
     <button class="tab-btn" onclick="switchTab('day2', event)">2. GÜN: ÇEKİŞ & BACAK</button>
-    <button class="tab-btn" onclick="switchTab('analytics', event)">📊 GRAFİKLER</button>
-    <button class="tab-btn" onclick="switchTab('body-metrics', event)">📏 ÖLÇÜLER</button>
-    <button class="tab-btn" onclick="switchTab('nutrition', event)">🥗 MAKRO TAKİBİ</button>
   </div>
 
-  <!-- 1. GÜN: İTİŞ PROGRAMI -->
+  <!-- 1. GÜN -->
   <div id="day1" class="tab-content active">
     <div class="card">
       <h2>1. GÜN: İTİŞ (Göğüs, Omuz, Arka Kol)</h2>
-      <div class="ai-alert-box">
-        💡 <strong>AI İpucu:</strong> Ağır kas yapımı için her sette tükenişe (RPE 8-9) yakın çalışın. Son seti Drop Set yapabilirsiniz.
-      </div>
       <ul class="ex-list" id="day1-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Yeni Egzersiz Ekle</button>
-      <button class="btn btn-finish" onclick="finishWorkout('day1')">🏁 Antrenmanı Tamamla (+50 XP)</button>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day1')">➕ Resimli/GIF'li Yeni Egzersiz Ekle</button>
+      <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
 
-  <!-- 2. GÜN: ÇEKİŞ & BACAK PROGRAMI -->
+  <!-- 2. GÜN -->
   <div id="day2" class="tab-content">
     <div class="card">
       <h2>2. GÜN: ÇEKİŞ & BACAK (Sırt, Bacak, Ön Kol, Karın)</h2>
-      <div class="ai-alert-box">
-        💡 <strong>AI İpucu:</strong> Sırt ve bacak hareketlerinde negatif (indiriş) fazını 3 saniyede yavaşça yapın.
-      </div>
       <ul class="ex-list" id="day2-list"></ul>
-      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Yeni Egzersiz Ekle</button>
-      <button class="btn btn-finish" onclick="finishWorkout('day2')">🏁 Antrenmanı Tamamla (+50 XP)</button>
+      <button class="btn btn-new-ex" onclick="addNewExercisePrompt('day2')">➕ Resimli/GIF'li Yeni Egzersiz Ekle</button>
+      <button class="btn btn-finish" onclick="finishWorkout()">🏁 Antrenmanı Tamamla (+50 XP)</button>
     </div>
   </div>
 
-  <!-- GRAFİKLER & ANALİZ -->
-  <div id="analytics" class="tab-content">
-    <div class="card">
-      <h2>Gelişim ve Hacim Grafiği</h2>
-      <div class="form-group">
-        <label>İncelenecek Egzersiz:</label>
-        <select id="chart-ex-select" class="form-control" onchange="updateChart()"></select>
-      </div>
-      <canvas id="progressChart" width="400" height="250"></canvas>
-    </div>
-  </div>
-
-  <!-- VÜCUT ÖLÇÜLERİ -->
-  <div id="body-metrics" class="tab-content">
-    <div class="card">
-      <h2>Vücut Ölçü Takibi</h2>
-      <div class="form-group"><label>Kilo (kg):</label><input type="number" id="m-weight" class="form-control" placeholder="90"></div>
-      <div class="form-group"><label>Göğüs (cm):</label><input type="number" id="m-chest" class="form-control"></div>
-      <div class="form-group"><label>Kol (cm):</label><input type="number" id="m-arm" class="form-control"></div>
-      <div class="form-group"><label>Bel (cm):</label><input type="number" id="m-waist" class="form-control"></div>
-      <button class="btn btn-mac" style="width:100%; margin-top:5px;" onclick="saveMetrics()">Ölçüleri Kaydet</button>
-    </div>
-  </div>
-
-  <!-- MAKRO VE BESLENME TAKİBİ -->
-  <div id="nutrition" class="tab-content">
-    <div class="card">
-      <h2>Günlük Makro Hedefleri</h2>
-      <div class="form-group"><label>Protein (gr):</label><input type="number" id="n-protein" class="form-control" value="180"></div>
-      <div class="form-group"><label>Karbonhidrat (gr):</label><input type="number" id="n-carb" class="form-control" value="250"></div>
-      <div class="form-group"><label>Yağ (gr):</label><input type="number" id="n-fat" class="form-control" value="70"></div>
-      <button class="btn btn-mac" style="width:100%; margin-top:5px;" onclick="saveNutrition()">Makro Hedeflerini Kaydet</button>
-    </div>
-  </div>
-
-  <!-- SABİT DİNLENME SÜRESİ BAR'I -->
+  <!-- REST TIMER BAR -->
   <div id="timer-bar">
     <div>
       <div style="font-size:0.7rem; color:#a0aec0;">DİNLENME SÜRESİ</div>
@@ -305,34 +163,11 @@
   </div>
 
   <script>
-    // SUPABASE YAPILANDIRMASI
     const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
     const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // EKSİKSİZ TAM EGZERSİZ LİSTELERİ
-    let day1Exercises = [
-      { id: "ex1", title: "1. Düz Göğüs Pres (Bench Press Machine)", timer: 90, gifUrl: "https://media.giphy.com/media/3o7TKSjRrfIPjeiVyM/giphy.gif" },
-      { id: "ex2", title: "2. Üst Göğüs Pres (Incline Chest Press)", timer: 90, gifUrl: "https://media.giphy.com/media/xT1R14bK3q9JjU6qU8/giphy.gif" },
-      { id: "ex3", title: "3. Göğüs Sıkıştırma (Pec Deck Fly)", timer: 60, gifUrl: "" },
-      { id: "ex4", title: "4. Oturarak Omuz Pres (Seated Shoulder Press Machine)", timer: 90, gifUrl: "" },
-      { id: "ex5", title: "5. Yana Omuz Açış (Lateral Raise Machine / Cable)", timer: 60, gifUrl: "" },
-      { id: "ex6", title: "6. Kablo ile Arka Kol İtiş (Triceps Rope Pushdown)", timer: 60, gifUrl: "" },
-      { id: "ex7", title: "7. Makine ile Arka Kol İtiş (Triceps Dip Machine)", timer: 60, gifUrl: "" }
-    ];
-
-    let day2Exercises = [
-      { id: "ex9", title: "1. Üstten Sırt Çekiş (Lat Pulldown Machine)", timer: 90, gifUrl: "" },
-      { id: "ex10", title: "2. Yatay Sırt Çekiş (Seated Cable Row)", timer: 90, gifUrl: "" },
-      { id: "ex11", title: "3. Makine Göğüs Destekli Sırt Çekiş (Machine Row)", timer: 90, gifUrl: "" },
-      { id: "ex12", title: "4. Bacak İtiş (Leg Press)", timer: 120, gifUrl: "" },
-      { id: "ex13", title: "5. Ön Bacak Uzatma (Leg Extension)", timer: 60, gifUrl: "" },
-      { id: "ex14", title: "6. Arka Bacak Bükme (Lying Leg Curl)", timer: 60, gifUrl: "" },
-      { id: "ex15", title: "7. Kablo ile Ön Kol Bükme (Cable Biceps Curl)", timer: 60, gifUrl: "" },
-      { id: "ex16", title: "8. Скот Makinesi Ön Kol (Preacher Curl Machine)", timer: 60, gifUrl: "" },
-      { id: "ex17", title: "9. Makine ile Karın Sıkıştırma (Machine Crunch)", timer: 45, gifUrl: "" }
-    ];
-
+    let allExercises = [];
     let userXP = 0;
     let userLevel = 1;
     let workoutTimerInterval = null;
@@ -343,140 +178,97 @@
     document.addEventListener("DOMContentLoaded", async () => {
       checkUserSession();
       loadLocalData();
-      renderAllExercises();
-      populateChartDropdown();
+      await fetchExercisesFromSupabase();
       updateLevelUI();
     });
 
-    /* OYUNLAŞTIRMA VE LEVEL MANTIĞI */
-    function addXP(amount) {
-      userXP += amount;
-      let needed = userLevel * 100;
-      if (userXP >= needed) {
-        userXP -= needed;
-        userLevel++;
-        alert(`🎉 TEBRİKLER! LEVEL SEVİYE ATLAYARAK ${userLevel}. SEVİYEYE ULAŞTINIZ!`);
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    /* SUPABASE'DEN EGZERSİZLERİ ÇEKME */
+    async function fetchExercisesFromSupabase() {
+      const { data, error } = await supabaseClient.from('exercises').select('*');
+      if (error) {
+        console.error("Egzersiz yükleme hatası:", error);
+        return;
       }
-      localStorage.setItem('fitpro_xp', userXP);
-      localStorage.setItem('fitpro_level', userLevel);
-      updateLevelUI();
+      allExercises = data || [];
+      renderAllExercises();
     }
 
-    function updateLevelUI() {
-      document.getElementById('user-level').textContent = `LVL ${userLevel}`;
-      let needed = userLevel * 100;
-      let pct = (userXP / needed) * 100;
-      document.getElementById('xp-fill').style.width = `${pct}%`;
-      document.getElementById('xp-text').textContent = `${userXP} / ${needed} XP`;
-      
-      let titles = ["Çaylak Sporcu", "Ağır Sıklet Adayı", "Makine Canavarı", "Kas Mimarisi Ustası", "Efsanevi Atlet"];
-      let tIndex = Math.min(Math.floor((userLevel - 1) / 2), titles.length - 1);
-      document.getElementById('user-title').textContent = titles[tIndex];
-    }
-
-    /* AUTHENTICATION İŞLEMLERİ (SUPABASE) */
-    async function handleSignUp() {
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
-      const { data, error } = await supabaseClient.auth.signUp({ email, password });
-      if (error) alert("Kayıt Hatası: " + error.message);
-      else alert("Kayıt Başarılı! Hesabınız oluşturuldu.");
-    }
-
-    async function handleSignIn() {
-      const email = document.getElementById('auth-email').value;
-      const password = document.getElementById('auth-password').value;
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if (error) alert("Giriş Hatası: " + error.message);
-      else checkUserSession();
-    }
-
-    async function handleSignOut() {
-      await supabaseClient.auth.signOut();
-      checkUserSession();
-    }
-
-    async function checkUserSession() {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
-        document.getElementById('auth-logged-out').style.display = 'none';
-        document.getElementById('auth-logged-in').style.display = 'block';
-        document.getElementById('user-email-display').textContent = user.email;
-      } else {
-        document.getElementById('auth-logged-out').style.display = 'block';
-        document.getElementById('auth-logged-in').style.display = 'none';
-      }
-    }
-
-    /* EGZERSİZ RENDER MANTIĞI VE DİNAMİK YAPI */
     function renderAllExercises() {
-      document.getElementById('day1-list').innerHTML = day1Exercises.map(ex => renderExHTML(ex, 'day1')).join('');
-      document.getElementById('day2-list').innerHTML = day2Exercises.map(ex => renderExHTML(ex, 'day2')).join('');
-      loadSavedSetValues();
+      const day1List = document.getElementById('day1-list');
+      const day2List = document.getElementById('day2-list');
+      
+      const day1Ex = allExercises.filter(e => e.day_type === 'day1');
+      const day2Ex = allExercises.filter(e => e.day_type === 'day2');
+
+      day1List.innerHTML = day1Ex.map(ex => renderExHTML(ex)).join('');
+      day2List.innerHTML = day2Ex.map(ex => renderExHTML(ex)).join('');
     }
 
-    function renderExHTML(ex, dayTag) {
+    function renderExHTML(ex) {
       return `
         <li class="ex-item" id="item-${ex.id}">
           <div class="ex-header">
             <div class="ex-title">${ex.title}</div>
-            <div>
-              <span class="pr-badge" id="pr-${ex.id}">PR: - kg</span>
-              <button class="btn btn-delete-ex" onclick="deleteExercise('${ex.id}', '${dayTag}')">🗑️</button>
-            </div>
+            <button class="btn btn-delete-ex" onclick="deleteExercise('${ex.id}')">🗑️ Sil</button>
           </div>
           <div class="actions">
             <button class="btn btn-timer" onclick="startTimer(${ex.timer})">⏱️ ${ex.timer}s Dinlen</button>
-            <button class="btn btn-yt" onclick="openYouTube('${ex.title}')">▶️ YouTube rehber</button>
-            ${ex.gifUrl ? `<button class="btn btn-db" onclick="toggleGif('${ex.id}')">🖼️ GIF</button>` : ''}
+            <button class="btn btn-yt" onclick="openYouTube('${ex.title}')">▶️ YouTube</button>
+            ${ex.gif_url ? `<button class="btn btn-db" onclick="toggleGif('${ex.id}')">🖼️ GIF / Resim</button>` : ''}
           </div>
-          ${ex.gifUrl ? `<div class="gif-container" id="gif-${ex.id}"><img src="${ex.gifUrl}" alt="Rehber GIF"></div>` : ''}
-          <table class="set-table" id="table-${ex.id}">
-            <thead>
+          ${ex.gif_url ? `<div class="gif-container" id="gif-${ex.id}"><img src="${ex.gif_url}" alt="Rehber Visual"></div>` : ''}
+          <table class="set-table">
+            <thead><tr><th>Ağırlık (kg)</th><th>Tekrar</th><th>Tamam</th></tr></thead>
+            <tbody>
               <tr>
-                <th>Tipi</th>
-                <th>Ağırlık (kg)</th>
-                <th>Tekrar</th>
-                <th>Tamam</th>
+                <td><input type="number" class="set-input" placeholder="kg"></td>
+                <td><input type="number" class="set-input" placeholder="tekrar"></td>
+                <td><input type="checkbox" class="set-check" onchange="onSetCompleted(this)"></td>
               </tr>
-            </thead>
-            <tbody id="sets-body-${ex.id}">
-              ${renderSetRowHTML(ex.id, 1)}
-              ${renderSetRowHTML(ex.id, 2)}
-              ${renderSetRowHTML(ex.id, 3)}
             </tbody>
           </table>
-          <button class="btn btn-add" onclick="addSetRow('${ex.id}')">➕ Set Ekle</button>
         </li>
       `;
     }
 
-    function renderSetRowHTML(exId, setNum) {
-      return `
-        <tr id="row-${exId}-${setNum}">
-          <td><button class="set-type-btn" id="type-${exId}-${setNum}" onclick="toggleSetType(this)">Normal</button></td>
-          <td><input type="number" class="set-input" id="${exId}-w-${setNum}" placeholder="kg" onchange="saveSetLocal('${exId}', ${setNum})"></td>
-          <td><input type="number" class="set-input" id="${exId}-r-${setNum}" placeholder="tekrar" onchange="saveSetLocal('${exId}', ${setNum})"></td>
-          <td><input type="checkbox" class="set-check" onchange="onSetCompleted('${exId}', ${setNum}, this)"></td>
-        </tr>
-      `;
+    /* YENİ EGZERSİZ VE RESİM/GIF EKLEME (SUPABASE'E YAZAR) */
+    async function addNewExercisePrompt(dayTag) {
+      let title = prompt("Egzersiz Adını Girin:");
+      if (!title) return;
+      
+      let gifUrl = prompt("Egzersiz Resim veya GIF Linkini Girin (İsteğe bağlı):") || "";
+      let timerVal = parseInt(prompt("Dinlenme Süresi (Saniye):", "60")) || 60;
+
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      let newId = "custom_" + Date.now();
+
+      const { data, error } = await supabaseClient.from('exercises').insert([{
+        id: newId,
+        title: title,
+        day_type: dayTag,
+        timer: timerVal,
+        gif_url: gifUrl,
+        user_id: user ? user.id : null
+      }]);
+
+      if (error) {
+        alert("Egzersiz eklenirken hata oluştu: " + error.message);
+      } else {
+        alert("✅ Egzersiz ve Resim/GIF veritabanına başarıyla kaydedildi!");
+        await fetchExercisesFromSupabase();
+      }
     }
 
-    function addSetRow(exId) {
-      let tbody = document.getElementById(`sets-body-${exId}`);
-      let nextIndex = tbody.children.length + 1;
-      let tr = document.createElement('tr');
-      tr.id = `row-${exId}-${nextIndex}`;
-      tr.innerHTML = renderSetRowHTML(exId, nextIndex);
-      tbody.appendChild(tr);
-    }
-
-    function toggleSetType(btn) {
-      const types = ["Normal", "Warmup", "DropSet", "Failure"];
-      let cur = btn.textContent;
-      let idx = (types.indexOf(cur) + 1) % types.length;
-      btn.textContent = types[idx];
+    /* EGZERSİZ SİLME */
+    async function deleteExercise(exId) {
+      if (!confirm("Bu egzersizi veritabanından silmek istediğinize emin misiniz?")) return;
+      
+      const { error } = await supabaseClient.from('exercises').delete().eq('id', exId);
+      if (error) {
+        alert("Silme hatası: " + error.message);
+      } else {
+        await fetchExercisesFromSupabase();
+      }
     }
 
     function toggleGif(exId) {
@@ -500,7 +292,7 @@
         updateTimerDisplay(left);
         if (left <= 0) {
           clearInterval(restTimerInterval);
-          alert("⏱️ Dinlenme Süresi Bitti! Sonraki Sete Başlayın.");
+          alert("⏱️ Dinlenme Süresi Bitti!");
           stopTimer();
         }
       }, 1000);
@@ -522,7 +314,6 @@
       if (!isWorkoutRunning) {
         isWorkoutRunning = true;
         btn.textContent = "⏸️ Duraklat";
-        btn.className = "btn btn-db";
         workoutTimerInterval = setInterval(() => {
           workoutSeconds++;
           let h = Math.floor(workoutSeconds / 3600);
@@ -534,72 +325,66 @@
       } else {
         isWorkoutRunning = false;
         btn.textContent = "▶️ Devam Et";
-        btn.className = "btn btn-mac";
         clearInterval(workoutTimerInterval);
       }
     }
 
-    /* YENİ EGZERSİZ VE SİLME İŞLEMLERİ */
-    function addNewExercisePrompt(dayTag) {
-      let title = prompt("Egzersiz Adını Girin:");
-      if (!title) return;
-      let newId = "custom_" + Date.now();
-      let newEx = { id: newId, title: title, timer: 60, gifUrl: "" };
-      
-      if (dayTag === 'day1') day1Exercises.push(newEx);
-      else day2Exercises.push(newEx);
-      
-      renderAllExercises();
-      populateChartDropdown();
+    function onSetCompleted(checkbox) {
+      if (checkbox.checked) addXP(10);
     }
 
-    function deleteExercise(exId, dayTag) {
-      if (!confirm("Bu egzersizi silmek istediğinize emin misiniz?")) return;
-      if (dayTag === 'day1') day1Exercises = day1Exercises.filter(e => e.id !== exId);
-      else day2Exercises = day2Exercises.filter(e => e.id !== exId);
-      renderAllExercises();
-    }
-
-    /* SET BİTTİ DÜĞMESİ & SUPABASE SENKRONİZASYONU */
-    async function onSetCompleted(exId, setNum, checkbox) {
-      if (checkbox.checked) {
-        addXP(10);
-        let weight = document.getElementById(`${exId}-w-${setNum}`).value;
-        let reps = document.getElementById(`${exId}-r-${setNum}`).value;
-        
-        // Supabase Oturumu kontrolü ve Kayıt
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        if (user && weight && reps) {
-          await supabaseClient.from('workouts').insert([{
-            user_id: user.id,
-            exercise_id: exId,
-            weight: parseFloat(weight),
-            reps: parseInt(reps)
-          }]);
-        }
+    function addXP(amount) {
+      userXP += amount;
+      let needed = userLevel * 100;
+      if (userXP >= needed) {
+        userXP -= needed;
+        userLevel++;
+        alert(`🎉 TEBRİKLER! LEVEL ${userLevel} OLDU!`);
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
+      localStorage.setItem('fitpro_xp', userXP);
+      localStorage.setItem('fitpro_level', userLevel);
+      updateLevelUI();
     }
 
-    /* LOKAL DATA KAYITLARI & TAB DEĞİŞİMİ */
-    function saveSetLocal(exId, setNum) {
-      let w = document.getElementById(`${exId}-w-${setNum}`).value;
-      let r = document.getElementById(`${exId}-r-${setNum}`).value;
-      localStorage.setItem(`data_${exId}_${setNum}`, JSON.stringify({ w, r }));
+    function updateLevelUI() {
+      document.getElementById('user-level').textContent = `LVL ${userLevel}`;
+      let needed = userLevel * 100;
+      let pct = (userXP / needed) * 100;
+      document.getElementById('xp-fill').style.width = `${pct}%`;
+      document.getElementById('xp-text').textContent = `${userXP} / ${needed} XP`;
     }
 
-    function loadSavedSetValues() {
-      for (let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        if (key.startsWith("data_")) {
-          let parts = key.split("_");
-          let exId = parts[1];
-          let setNum = parts[2];
-          let val = JSON.parse(localStorage.getItem(key));
-          let inputW = document.getElementById(`${exId}-w-${setNum}`);
-          let inputR = document.getElementById(`${exId}-r-${setNum}`);
-          if (inputW) inputW.value = val.w || "";
-          if (inputR) inputR.value = val.r || "";
-        }
+    async function handleSignUp() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const { error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) alert("Kayıt Hatası: " + error.message);
+      else alert("Kayıt Başarılı!");
+    }
+
+    async function handleSignIn() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) alert("Giriş Hatası: " + error.message);
+      else checkUserSession();
+    }
+
+    async function handleSignOut() {
+      await supabaseClient.auth.signOut();
+      checkUserSession();
+    }
+
+    async function checkUserSession() {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        document.getElementById('auth-logged-out').style.display = 'none';
+        document.getElementById('auth-logged-in').style.display = 'block';
+        document.getElementById('user-email-display').textContent = user.email;
+      } else {
+        document.getElementById('auth-logged-out').style.display = 'block';
+        document.getElementById('auth-logged-in').style.display = 'none';
       }
     }
 
@@ -615,39 +400,8 @@
       event.target.classList.add('active');
     }
 
-    function toggleTheme() {
-      document.body.classList.toggle('dark-theme');
-    }
-
-    function finishWorkout(dayTag) {
-      addXP(50);
-      confetti({ particleCount: 150, spread: 80, origin: { y: 0.5 } });
-      alert("🔥 TEBRİKLER! Antrenmanı başarıyla bitirdiniz ve +50 XP kazandınız!");
-    }
-
-    function saveMetrics() {
-      alert("Ölçüleriniz başarıyla kaydedildi!");
-    }
-
-    function saveNutrition() {
-      alert("Makro hedefleriniz kaydedildi!");
-    }
-
-    function populateChartDropdown() {
-      let select = document.getElementById('chart-ex-select');
-      if (!select) return;
-      select.innerHTML = "";
-      [...day1Exercises, ...day2Exercises].forEach(e => {
-        let opt = document.createElement('option');
-        opt.value = e.id;
-        opt.textContent = e.title;
-        select.appendChild(opt);
-      });
-    }
-
-    function updateChart() {
-      // Grafik Güncelleme Mantığı
-    }
+    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+    function finishWorkout() { addXP(50); confetti({ particleCount: 150 }); alert("🔥 Antrenman Tamamlandı!"); }
   </script>
 </body>
 </html>
