@@ -10,7 +10,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
-    /* (Aynen korunuyor, stil değişmedi) */
+    /* ---------------------- TEMA DEĞİŞKENLERİ ---------------------- */
     :root[data-theme="dark"] {
       --bg: #090d16;
       --card-bg: #131b2e;
@@ -41,6 +41,8 @@
       --input-bg: #f8fafc;
       --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
     }
+
+    /* ---------------------- GENEL STİLLER ---------------------- */
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background 0.3s, color 0.3s, border-color 0.3s; }
     body { background-color: var(--bg); color: var(--text); margin: 0; padding: 16px; padding-bottom: 110px; -webkit-tap-highlight-color: transparent; }
     .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -54,10 +56,14 @@
     .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---------------------- NAV BAR ---------------------- */
     .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 4px; z-index: 999; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); backdrop-filter: blur(10px); }
     .nav-item { background: none; border: none; color: var(--text-muted); font-size: 0.6rem; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; padding: 4px; border-radius: 12px; }
     .nav-item span { font-size: 1.1rem; }
     .nav-item.active { color: var(--primary); background: var(--primary-glow); }
+
+    /* ---------------------- KARTLAR VE BİLEŞENLER ---------------------- */
     .coach-card { background: linear-gradient(135deg, var(--primary-glow), rgba(56, 189, 248, 0.08)); border: 1px solid var(--primary); border-radius: 20px; padding: 18px; margin-bottom: 16px; display: flex; gap: 14px; align-items: center; box-shadow: var(--shadow); }
     .coach-avatar { font-size: 2.2rem; background: var(--card-bg); border-radius: 50%; width: 54px; height: 54px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid var(--border); }
     .coach-title { font-weight: 800; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -101,6 +107,18 @@
     .water-track { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
     .water-track progress { flex:1; height:12px; border-radius:6px; background:var(--border); }
     .water-track progress::-webkit-progress-value { background: var(--primary); border-radius:6px; }
+
+    /* ---------------------- MODAL (onboarding) ---------------------- */
+    #onboarding-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #onboarding-modal.show { display: flex; }
+    .onboarding-card {
+      background: var(--card-bg); border-radius: 24px; padding: 24px;
+      max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto;
+      border: 1px solid var(--border);
+    }
   </style>
 </head>
 <body>
@@ -113,8 +131,8 @@
     </div>
     <div class="header-actions">
       <div id="cloud-badge" class="sync-status" style="display:none;">☁️ Supabase Senkronize</div>
-      <button class="icon-btn" onclick="toggleTheme()" title="Tema Değiştir">☀️</button>
-      <button class="btn btn-danger" id="btn-logout" style="display:none; font-size:0.7rem; padding:8px 10px;" onclick="handleSignOut()">Çıkış</button>
+      <button class="icon-btn" onclick="window.toggleTheme()" title="Tema Değiştir">☀️</button>
+      <button class="btn btn-danger" id="btn-logout" style="display:none; font-size:0.7rem; padding:8px 10px;" onclick="window.handleSignOut()">Çıkış</button>
     </div>
   </div>
 
@@ -125,15 +143,15 @@
     <input type="email" id="auth-email" class="auth-input" placeholder="E-posta"><br>
     <input type="password" id="auth-password" class="auth-input" placeholder="Şifre"><br>
     <div style="display:flex; gap:8px; margin-top:14px;">
-      <button class="btn btn-primary" onclick="handleSignIn()" style="flex:1;">Giriş Yap</button>
-      <button class="btn btn-accent" onclick="handleSignUp()" style="flex:1;">Kayıt Ol</button>
+      <button class="btn btn-primary" onclick="window.handleSignIn()" style="flex:1;">Giriş Yap</button>
+      <button class="btn btn-accent" onclick="window.handleSignUp()" style="flex:1;">Kayıt Ol</button>
     </div>
   </div>
 
   <!-- MAIN APP CONTENT -->
   <div id="app-content">
 
-    <!-- TAB 1: WORKOUT & RECOVERY ENGINE -->
+    <!-- TAB 1: WORKOUT & RECOVERY -->
     <div id="tab-workout" class="tab-content active">
       <div class="coach-card">
         <div class="coach-avatar">🧠</div>
@@ -149,7 +167,7 @@
         <div class="readiness-grid">
           <div class="readiness-item">
             <div class="readiness-label">😴 Uyku (1-5)</div>
-            <select id="read-sleep" class="set-input" onchange="onRecoveryChange()">
+            <select id="read-sleep" class="set-input" onchange="window.onRecoveryChange()">
               <option value="5">5 - Mükemmel (8+ sa)</option>
               <option value="4" selected>4 - İyi (7 saat)</option>
               <option value="3">3 - Orta (6 saat)</option>
@@ -159,7 +177,7 @@
           </div>
           <div class="readiness-item">
             <div class="readiness-label">⚡ Enerji (1-5)</div>
-            <select id="read-energy" class="set-input" onchange="onRecoveryChange()">
+            <select id="read-energy" class="set-input" onchange="window.onRecoveryChange()">
               <option value="5">5 - Çok Dinç</option>
               <option value="4" selected>4 - Normal</option>
               <option value="3">3 - Düşük</option>
@@ -176,7 +194,7 @@
 
       <div class="cycle-control">
         <span style="color:var(--text-muted);">Antrenman Günü:</span>
-        <select id="manual-day-select" onchange="changeDayManually(this.value)" style="background:var(--input-bg); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; font-size:0.82rem; outline:none;">
+        <select id="manual-day-select" onchange="window.changeDayManually(this.value)" style="background:var(--input-bg); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; font-size:0.82rem; outline:none;">
           <option value="1">1. Gün: Göğüs / Omuz / Arka Kol</option>
           <option value="2">2. Gün: Dinlenme & Kas Büyütme</option>
           <option value="3">3. Gün: Sırt / Bacak / Ön Kol</option>
@@ -187,11 +205,11 @@
       <div class="card" id="workout-card">
         <h2>🔥 AI Koç Tarafından Belirlenen Antrenman Programı</h2>
         <div id="workout-list">Yükleniyor...</div>
-        <button class="btn btn-primary" id="btn-finish-workout" style="width:100%; padding:14px; font-size:0.9rem; margin-top:10px;" onclick="finishWorkout()">🏁 Antrenmanı Bitir & Supabase'e Kaydet</button>
+        <button class="btn btn-primary" id="btn-finish-workout" style="width:100%; padding:14px; font-size:0.9rem; margin-top:10px;" onclick="window.finishWorkout()">🏁 Antrenmanı Bitir & Supabase'e Kaydet</button>
       </div>
     </div>
 
-    <!-- TAB 2: NUTRITION & MACROS -->
+    <!-- TAB 2: NUTRITION -->
     <div id="tab-nutrition" class="tab-content">
       <div class="card">
         <h2>🥗 Günlük Beslenme & Makro Hedefleri</h2>
@@ -204,10 +222,9 @@
         <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Bugünkü Tüketim: <strong id="today-total" style="color:var(--text);">0 kcal / 0g Protein</strong></div>
         <div id="meal-list" style="margin-bottom:10px;"></div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-primary" style="flex:1;" onclick="addMealPrompt()">+ Öğün Ekle</button>
-          <button class="btn btn-accent" style="flex:1;" onclick="addWater()">💧 Su Ekle (+0.5L)</button>
+          <button class="btn btn-primary" style="flex:1;" onclick="window.addMealPrompt()">+ Öğün Ekle</button>
+          <button class="btn btn-accent" style="flex:1;" onclick="window.addWater()">💧 Su Ekle (+0.5L)</button>
         </div>
-        <!-- YENİ: Su Takibi -->
         <div class="water-track" style="margin-top:12px;">
           <span style="font-size:0.8rem;">💧 Su:</span>
           <progress id="water-progress" value="0" max="3" style="flex:1;"></progress>
@@ -216,38 +233,24 @@
       </div>
     </div>
 
-    <!-- TAB 3: ANALYTICS & TRENDS -->
+    <!-- TAB 3: ANALYTICS -->
     <div id="tab-analytics" class="tab-content">
       <div class="card">
         <h2>📊 Gelişim & Cloud Analitiği</h2>
         <div class="analytics-grid" id="analytics-stats">
-          <div class="stat-card">
-            <div class="stat-label">TOPLAM ANTRENMAN</div>
-            <div class="stat-value" id="stat-total-workouts">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">TOPLAM TONAJ (kg)</div>
-            <div class="stat-value" id="stat-total-tonnage">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">EN İYİ 1RM TAHMİNİ</div>
-            <div class="stat-value" id="stat-best-1rm">0 kg</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">KOÇ AĞIRLIK ARTIŞI</div>
-            <div class="stat-value" style="color:var(--accent);">Aktif ⚡</div>
-          </div>
+          <div class="stat-card"><div class="stat-label">TOPLAM ANTRENMAN</div><div class="stat-value" id="stat-total-workouts">0</div></div>
+          <div class="stat-card"><div class="stat-label">TOPLAM TONAJ (kg)</div><div class="stat-value" id="stat-total-tonnage">0</div></div>
+          <div class="stat-card"><div class="stat-label">EN İYİ 1RM TAHMİNİ</div><div class="stat-value" id="stat-best-1rm">0 kg</div></div>
+          <div class="stat-card"><div class="stat-label">KOÇ AĞIRLIK ARTIŞI</div><div class="stat-value" style="color:var(--accent);">Aktif ⚡</div></div>
         </div>
-        <div style="margin:16px 0;">
-          <canvas id="weeklyVolumeChart" height="150"></canvas>
-        </div>
+        <div style="margin:16px 0;"><canvas id="weeklyVolumeChart" height="150"></canvas></div>
         <div style="font-size:0.82rem; color:var(--text-muted); background:var(--card-inner); padding:12px; border-radius:12px; border:1px solid var(--border);">
           💡 <b>Otonom Koç Notu:</b> Geçmiş performanslarınızı analiz ederek her egzersizde kademeli yükleme (Progressive Overload) değerlerini ben belirliyorum.
         </div>
       </div>
     </div>
 
-    <!-- TAB 4: AI COACH BRAIN -->
+    <!-- TAB 4: AI COACH -->
     <div id="tab-coach" class="tab-content">
       <div class="card">
         <h2>🤖 AI Coach Brain (Gerçek OpenAI ile Sohbet)</h2>
@@ -256,7 +259,7 @@
         </div>
         <div style="display:flex; gap:8px;">
           <input type="text" id="chat-input" class="auth-input" placeholder="Örn: Bu antrenmanda neden bu ağırlığı seçtin?" style="margin:0;">
-          <button class="btn btn-primary" onclick="sendCoachMessage()">Sor</button>
+          <button class="btn btn-primary" onclick="window.sendCoachMessage()">Sor</button>
         </div>
         <p style="font-size:0.7rem; color:var(--text-muted); margin-top:8px;">🔑 OpenAI API anahtarını Profil sekmesinden eklemeyi unutma.</p>
       </div>
@@ -271,9 +274,9 @@
           <div>
             <label style="font-size:0.75rem; color:var(--text-muted);">OpenAI API Anahtarınız:</label>
             <input type="password" id="openai-key-input" class="auth-input" placeholder="sk-..." style="font-size:0.8rem;" />
-            <button class="btn btn-accent" style="width:100%; margin-top:4px;" onclick="saveOpenAIKey()">Anahtarı Kaydet</button>
+            <button class="btn btn-accent" style="width:100%; margin-top:4px;" onclick="window.saveOpenAIKey()">Anahtarı Kaydet</button>
           </div>
-          <button class="btn btn-danger" onclick="resetCloudData()">🔄 Bulut Verilerini Sıfırla</button>
+          <button class="btn btn-danger" onclick="window.resetCloudData()">🔄 Bulut Verilerini Sıfırla</button>
           <div style="font-size:0.7rem; color:var(--danger); border:1px solid var(--danger); border-radius:8px; padding:8px; background:rgba(239,68,68,0.05);">
             ⚠️ Güvenlik Uyarısı: <code>SUPABASE_KEY</code> şu an HTML içinde açıkta. Canlıya almadan önce bu anahtarı bir backend proxy ile korumalısın!
           </div>
@@ -285,11 +288,11 @@
 
   <!-- NAVIGATION BAR -->
   <nav class="nav-bar" id="bottom-nav" style="display:none;">
-    <button class="nav-item active" onclick="switchTab('workout', this)"><span>🏋️‍♂️</span>Antrenman</button>
-    <button class="nav-item" onclick="switchTab('nutrition', this)"><span>🥗</span>Beslenme</button>
-    <button class="nav-item" onclick="switchTab('analytics', this)"><span>📊</span>Analiz</button>
-    <button class="nav-item" onclick="switchTab('coach', this)"><span>🤖</span>AI Koç</button>
-    <button class="nav-item" onclick="switchTab('profile', this)"><span>⚙️</span>Profil</button>
+    <button class="nav-item active" onclick="window.switchTab('workout', this)"><span>🏋️‍♂️</span>Antrenman</button>
+    <button class="nav-item" onclick="window.switchTab('nutrition', this)"><span>🥗</span>Beslenme</button>
+    <button class="nav-item" onclick="window.switchTab('analytics', this)"><span>📊</span>Analiz</button>
+    <button class="nav-item" onclick="window.switchTab('coach', this)"><span>🤖</span>AI Koç</button>
+    <button class="nav-item" onclick="window.switchTab('profile', this)"><span>⚙️</span>Profil</button>
   </nav>
 
   <!-- REST TIMER BAR -->
@@ -298,404 +301,672 @@
       <div style="font-size:0.68rem; color:var(--text-muted); font-weight:700;">DİNLENME SÜRESİ</div>
       <div id="timer-display">02:00</div>
     </div>
-    <button class="btn btn-danger" onclick="stopTimer()">Kapat</button>
+    <button class="btn btn-danger" onclick="window.stopTimer()">Kapat</button>
   </div>
 
-  <script>
-    const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = null;
-    let restTimerInterval = null;
-    let userCycleState = { dayIndex: 1 };
-    let mealLog = [];
-    let waterLog = 0; // litre cinsinden
-    let weeklyChart = null;
-
-    // YENİ: Kullanıcı seviyesi ve başlangıç verileri
-    let userLevel = 'intermediate'; // beginner, intermediate, advanced
-    let userExperience = '1-3 years'; // none, <1, 1-3, 3+
-    let estimatedStrength = { bench: 30, squat: 40, deadlift: 50 }; // kg
-
-    // Koçun yöneteceği egzersiz geçmişi - başlangıç değerleri seviyeye göre ayarlanacak
-    let exerciseHistory = {};
-
-    const baseExercises = {
-      chest_shoulder: ['ex1', 'ex2', 'ex3', 'ex4', 'ex5', 'ex6'],
-      back_biceps_leg: ['ex7', 'ex8', 'ex9', 'ex10', 'ex11']
-    };
-
-    const exerciseDetails = {
-      'ex1': { title: '🎰 Incline Chest Press (Üst Göğüs)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Chest-Press-Machine.gif', guide: 'Üst göğüs odaklı.' },
-      'ex2': { title: '🎰 Flat Chest Press (Orta Göğüs)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Chest-Press-Machine.gif', guide: 'Orta göğüs için.' },
-      'ex3': { title: '🎰 Pec Deck Fly (Göğüs Sıkıştırma)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', guide: 'Sıkıştırma hareketi.' },
-      'ex4': { title: '🎰 Shoulder Press (Omuz Press)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lever-Seated-Shoulder-Press.gif', guide: 'Omuz gelişimi.' },
-      'ex5': { title: '🎰 Cable Lateral Raise (Yan Omuz)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Lateral-Raise.gif', guide: 'Yan omuz izolasyonu.' },
-      'ex6': { title: '🎰 Cable Triceps Pushdown (Arka Kol)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pushdown.gif', guide: 'Arka kol.' },
-      'ex7': { title: '🎰 Lat Pulldown (Sırt Genişletme)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif', guide: 'Sırt genişliği.' },
-      'ex8': { title: '🎰 Seated Cable Row (Sırt Kalınlaştırma)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif', guide: 'Sırt kalınlığı.' },
-      'ex9': { title: '🎰 Leg Press (Ön Bacak)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Press.gif', guide: 'Bacak hacmi.' },
-      'ex10': { title: '🎰 Lying Leg Curl (Arka Bacak)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lying-Leg-Curl.gif', guide: 'Hamstring.' },
-      'ex11': { title: '🎰 Cable Biceps Curl (Ön Kol)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Curl.gif', guide: 'Ön kol.' }
-    };
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      initTheme();
-      await checkUserSession();
-      loadOpenAIKey();
-    });
-
-    function initTheme() {
-      const savedTheme = localStorage.getItem('fitpro_theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeIcon(savedTheme);
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('fitpro_theme', next);
-      updateThemeIcon(next);
-    }
-
-    function updateThemeIcon(theme) {
-      const btn = document.querySelector('.icon-btn');
-      if(btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
-    }
-
-    // --- YENİ: Seviye bazlı başlangıç ağırlıkları ---
-    function getDefaultExerciseHistory(level, experience, strength) {
-      // level: beginner, intermediate, advanced
-      // experience: none, <1, 1-3, 3+
-      // strength: {bench, squat, deadlift}
-      const base = {
-        'ex1': 20, 'ex2': 25, 'ex3': 15, 'ex4': 15, 'ex5': 5, 'ex6': 10,
-        'ex7': 25, 'ex8': 25, 'ex9': 40, 'ex10': 15, 'ex11': 10
-      };
-      let multiplier = 1;
-      if (level === 'beginner') multiplier = 0.7;
-      else if (level === 'intermediate') multiplier = 1.0;
-      else if (level === 'advanced') multiplier = 1.3;
-
-      // Deneyime göre ince ayar
-      if (experience === 'none') multiplier *= 0.8;
-      else if (experience === '<1') multiplier *= 0.9;
-      else if (experience === '1-3') multiplier *= 1.0;
-      else if (experience === '3+') multiplier *= 1.1;
-
-      const history = {};
-      for (const [id, kg] of Object.entries(base)) {
-        const adjusted = Math.round(kg * multiplier / 2.5) * 2.5; // 2.5 katları
-        history[id] = {
-          lastKg: Math.max(2.5, adjusted),
-          lastReps: level === 'beginner' ? 12 : (level === 'intermediate' ? 10 : 8),
-          targetRepRange: level === 'beginner' ? [10, 15] : (level === 'intermediate' ? [8, 12] : [6, 10])
-        };
-      }
-      return history;
-    }
-
-    // --- SUPABASE CLOUD DATA SYNC ---
-    async function loadCloudUserData() {
-      if (!currentUser) return;
-      try {
-        const { data, error } = await supabaseClient
-          .from('user_profiles')
-          .select('state_data, ex_history, workout_logs, meal_log, water_log, user_level, user_experience, estimated_strength')
-          .eq('user_id', currentUser.id)
-          .single();
-
-        if (data) {
-          if (data.state_data) userCycleState = data.state_data;
-          if (data.ex_history) exerciseHistory = data.ex_history;
-          if (data.workout_logs) workoutLogs = data.workout_logs;
-          if (data.meal_log) mealLog = data.meal_log;
-          if (data.water_log) waterLog = data.water_log;
-          if (data.user_level) userLevel = data.user_level;
-          if (data.user_experience) userExperience = data.user_experience;
-          if (data.estimated_strength) estimatedStrength = data.estimated_strength;
-        } else {
-          // İlk kez giriş yapıyorsa anket yapılacak
-          openOnboardingModal();
-        }
-      } catch (err) {
-        console.log("Bulut verisi ilk kez yükleniyor.");
-        openOnboardingModal();
-      }
-
-      // Eğer exerciseHistory boşsa varsayılanı ata
-      if (Object.keys(exerciseHistory).length === 0) {
-        exerciseHistory = getDefaultExerciseHistory(userLevel, userExperience, estimatedStrength);
-        await saveCloudUserData();
-      }
-
-      calculateRecoveryScore();
-      renderDashboard();
-      renderMealList();
-      renderAnalytics();
-      updateWaterUI();
-    }
-
-    async function saveCloudUserData() {
-      if (!currentUser) return;
-      try {
-        await supabaseClient.from('user_profiles').upsert({
-          user_id: currentUser.id,
-          state_data: userCycleState,
-          ex_history: exerciseHistory,
-          workout_logs: workoutLogs,
-          meal_log: mealLog,
-          water_log: waterLog,
-          user_level: userLevel,
-          user_experience: userExperience,
-          estimated_strength: estimatedStrength,
-          updated_at: new Date()
-        }, { onConflict: 'user_id' });
-      } catch (err) {
-        console.error("Bulut senkronizasyon hatası:", err);
-      }
-    }
-
-    // --- YENİ: Onboarding Anketi (Modal) ---
-    function openOnboardingModal() {
-      const modal = document.createElement('div');
-      modal.id = 'onboarding-modal';
-      modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
-      modal.innerHTML = `
-        <div style="background:var(--card-bg);border-radius:24px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;border:1px solid var(--border);">
-          <h2 style="margin-top:0;">🧭 Başlangıç Analizi</h2>
-          <p style="font-size:0.85rem;color:var(--text-muted);">Antrenman programını kişiselleştirmek için birkaç soruyu yanıtla.</p>
-          <div style="margin:16px 0;">
-            <label style="font-size:0.75rem;color:var(--text-muted);">Spor geçmişin:</label>
-            <select id="onboard-experience" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
-              <option value="none">Hiç yapmadım</option>
-              <option value="<1">1 yıldan az</option>
-              <option value="1-3" selected>1-3 yıl</option>
-              <option value="3+">3+ yıl</option>
-            </select>
-          </div>
-          <div style="margin:16px 0;">
-            <label style="font-size:0.75rem;color:var(--text-muted);">Tahmini güç seviyen (kg):</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-              <div><label style="font-size:0.7rem;">Bench Press</label><input id="onboard-bench" type="number" value="30" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
-              <div><label style="font-size:0.7rem;">Squat</label><input id="onboard-squat" type="number" value="40" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
-              <div><label style="font-size:0.7rem;">Deadlift</label><input id="onboard-deadlift" type="number" value="50" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
-            </div>
-          </div>
-          <div style="margin:16px 0;">
-            <label style="font-size:0.75rem;color:var(--text-muted);">Haftada kaç gün antrenman yapabilirsin?</label>
-            <select id="onboard-days" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
-              <option value="3">3 gün</option>
-              <option value="4" selected>4 gün</option>
-              <option value="5">5 gün</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" style="width:100%;" onclick="saveOnboarding()">Başla</button>
+  <!-- ONBOARDING MODAL (başlangıçta gizli) -->
+  <div id="onboarding-modal">
+    <div class="onboarding-card">
+      <h2 style="margin-top:0;">🧑‍💻 Hoş Geldin! Hadi başlangıç analizini yapalım.</h2>
+      <p style="font-size:0.85rem;color:var(--text-muted);">Antrenman programını kişiselleştirmek için birkaç soruyu yanıtla.</p>
+      <div style="margin:16px 0;">
+        <label style="font-size:0.75rem;color:var(--text-muted);">Spor geçmişin:</label>
+        <select id="onboard-experience" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
+          <option value="none">Hiç yapmadım</option>
+          <option value="<1">1 yıldan az</option>
+          <option value="1-3" selected>1-3 yıl</option>
+          <option value="3+">3+ yıl</option>
+        </select>
+      </div>
+      <div style="margin:16px 0;">
+        <label style="font-size:0.75rem;color:var(--text-muted);">Tahmini güç seviyen (kg):</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div><label style="font-size:0.7rem;">Bench Press</label><input id="onboard-bench" type="number" value="30" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
+          <div><label style="font-size:0.7rem;">Squat</label><input id="onboard-squat" type="number" value="40" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
+          <div><label style="font-size:0.7rem;">Deadlift</label><input id="onboard-deadlift" type="number" value="50" step="2.5" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);"></div>
         </div>
-      `;
-      document.body.appendChild(modal);
-    }
+      </div>
+      <div style="margin:16px 0;">
+        <label style="font-size:0.75rem;color:var(--text-muted);">Haftada kaç gün antrenman yapabilirsin?</label>
+        <select id="onboard-days" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);">
+          <option value="3">3 gün</option>
+          <option value="4" selected>4 gün</option>
+          <option value="5">5 gün</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="window.saveOnboarding()">🚀 Başla</button>
+    </div>
+  </div>
 
-    window.saveOnboarding = async function() {
-      const experience = document.getElementById('onboard-experience').value;
-      const bench = parseFloat(document.getElementById('onboard-bench').value) || 30;
-      const squat = parseFloat(document.getElementById('onboard-squat').value) || 40;
-      const deadlift = parseFloat(document.getElementById('onboard-deadlift').value) || 50;
-      const days = parseInt(document.getElementById('onboard-days').value) || 4;
+  <!-- =========================== JAVASCRIPT =========================== -->
+  <script>
+    (function() {
+      // -------------------- SUPABASE BAĞLANTISI --------------------
+      const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
+      window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      // Seviye belirleme
-      let level = 'intermediate';
-      if (experience === 'none' || experience === '<1') level = 'beginner';
-      else if (experience === '3+') level = 'advanced';
+      // -------------------- GLOBAL DEĞİŞKENLER --------------------
+      let currentUser = null;
+      let restTimerInterval = null;
+      let userCycleState = { dayIndex: 1 };
+      let mealLog = [];
+      let waterLog = 0; // litre
+      let weeklyChart = null;
 
-      userLevel = level;
-      userExperience = experience;
-      estimatedStrength = { bench, squat, deadlift };
-      // Antrenman gün sayısını state'e kaydet
-      userCycleState.trainingDays = days;
+      // Seviye ve başlangıç verileri
+      let userLevel = 'intermediate';
+      let userExperience = '1-3';
+      let estimatedStrength = { bench: 30, squat: 40, deadlift: 50 };
 
-      // Egzersiz geçmişini oluştur
-      exerciseHistory = getDefaultExerciseHistory(level, experience, estimatedStrength);
-      await saveCloudUserData();
-      document.getElementById('onboarding-modal').remove();
-      renderDashboard();
-      renderAnalytics();
-      alert('✅ Analiz tamamlandı! Programın seviyene göre ayarlandı.');
-    };
+      let exerciseHistory = {}; // boş, onboarding'de doldurulacak
+      let workoutLogs = [];
 
-    // --- Geri kalan fonksiyonlar (öncekiyle aynı, sadece renderWorkoutExercises değişti) ---
+      // Egzersiz listeleri ve detaylar
+      const baseExercises = {
+        chest_shoulder: ['ex1','ex2','ex3','ex4','ex5','ex6'],
+        back_biceps_leg: ['ex7','ex8','ex9','ex10','ex11']
+      };
+      const exerciseDetails = {
+        'ex1': { title: '🎰 Incline Chest Press (Üst Göğüs)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Chest-Press-Machine.gif', guide: 'Üst göğüs odaklı.' },
+        'ex2': { title: '🎰 Flat Chest Press (Orta Göğüs)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Chest-Press-Machine.gif', guide: 'Orta göğüs için.' },
+        'ex3': { title: '🎰 Pec Deck Fly (Göğüs Sıkıştırma)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pec-Deck-Fly.gif', guide: 'Sıkıştırma hareketi.' },
+        'ex4': { title: '🎰 Shoulder Press (Omuz Press)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lever-Seated-Shoulder-Press.gif', guide: 'Omuz gelişimi.' },
+        'ex5': { title: '🎰 Cable Lateral Raise (Yan Omuz)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Lateral-Raise.gif', guide: 'Yan omuz izolasyonu.' },
+        'ex6': { title: '🎰 Cable Triceps Pushdown (Arka Kol)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pushdown.gif', guide: 'Arka kol.' },
+        'ex7': { title: '🎰 Lat Pulldown (Sırt Genişletme)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif', guide: 'Sırt genişliği.' },
+        'ex8': { title: '🎰 Seated Cable Row (Sırt Kalınlaştırma)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif', guide: 'Sırt kalınlığı.' },
+        'ex9': { title: '🎰 Leg Press (Ön Bacak)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Press.gif', guide: 'Bacak hacmi.' },
+        'ex10': { title: '🎰 Lying Leg Curl (Arka Bacak)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lying-Leg-Curl.gif', guide: 'Hamstring.' },
+        'ex11': { title: '🎰 Cable Biceps Curl (Ön Kol)', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Curl.gif', guide: 'Ön kol.' }
+      };
 
-    function calculateRecoveryScore() {
-      const sleep = parseInt(document.getElementById('read-sleep').value);
-      const energy = parseInt(document.getElementById('read-energy').value);
-      const score = Math.round(((sleep + energy) / 10) * 100);
-      const valEl = document.getElementById('recovery-score-val');
-      const adviceEl = document.getElementById('recovery-advice');
-      valEl.textContent = `${score} / 100`;
-      if (score >= 80) { valEl.style.color = 'var(--primary)'; adviceEl.textContent = "Harika toparlanma! Koç motoru ağırlıkları artırarak ilerliyor."; }
-      else if (score >= 60) { valEl.style.color = 'var(--warning)'; adviceEl.textContent = "Orta düzey toparlanma. Ağırlıklar sabit tutuldu."; }
-      else { valEl.style.color = 'var(--danger)'; adviceEl.textContent = "Düşük toparlanma! Koç motoru ağırlıkları %5 optimize etti."; }
-      if(currentUser) renderWorkoutExercises();
-    }
-    window.onRecoveryChange = calculateRecoveryScore;
+      // -------------------- YARDIMCI FONKSİYONLAR --------------------
+      function getDefaultExerciseHistory(level, experience, strength) {
+        const base = {
+          'ex1': 20, 'ex2': 25, 'ex3': 15, 'ex4': 15, 'ex5': 5, 'ex6': 10,
+          'ex7': 25, 'ex8': 25, 'ex9': 40, 'ex10': 15, 'ex11': 10
+        };
+        let multiplier = 1;
+        if (level === 'beginner') multiplier = 0.7;
+        else if (level === 'intermediate') multiplier = 1.0;
+        else if (level === 'advanced') multiplier = 1.3;
 
-    function switchTab(tabName, btnElement) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + tabName).classList.add('active');
-      if (btnElement) btnElement.classList.add('active');
-      const titles = { workout: 'Otonom Cloud Koçluk', nutrition: 'Beslenme & Makrolar', analytics: 'Gelişim Analitiği', coach: 'AI Coach Brain', profile: 'Profil & Ayarlar' };
-      document.getElementById('header-title').textContent = titles[tabName];
-      if(tabName === 'analytics') renderAnalytics();
-      if(tabName === 'nutrition') { renderMealList(); updateMacroTotals(); updateWaterUI(); }
-    }
-    window.switchTab = switchTab;
+        if (experience === 'none') multiplier *= 0.8;
+        else if (experience === '<1') multiplier *= 0.9;
+        else if (experience === '1-3') multiplier *= 1.0;
+        else if (experience === '3+') multiplier *= 1.1;
 
-    function renderDashboard() {
-      const daySelect = document.getElementById('manual-day-select');
-      daySelect.value = userCycleState.dayIndex;
-      renderWorkoutExercises();
-      updateMacroTotals();
-      updateWaterUI();
-    }
-
-    function renderWorkoutExercises() {
-      const coachTitle = document.getElementById('coach-day-title');
-      const coachTip = document.getElementById('coach-tip');
-      const workoutCard = document.getElementById('workout-card');
-
-      // Seviyeye göre set sayısı
-      let setCount = 4;
-      if (userLevel === 'beginner') setCount = 3;
-      else if (userLevel === 'intermediate') setCount = 4;
-      else if (userLevel === 'advanced') setCount = 5;
-
-      let groupKey = '';
-      if (userCycleState.dayIndex === 1) {
-        coachTitle.textContent = "💥 1. GÜN: GÖĞÜS, OMUZ & ARKA KOL";
-        coachTip.textContent = `Seviye: ${userLevel.toUpperCase()} · ${setCount} set · Hedef tekrar aralığı ${exerciseHistory['ex1']?.targetRepRange?.join('-') || '8-12'}`;
-        workoutCard.style.display = "block";
-        groupKey = 'chest_shoulder';
-      } else if (userCycleState.dayIndex === 2) {
-        coachTitle.textContent = "🛌 2. GÜN: DİNLENME VE KAS BÜYÜTME GÜNÜ";
-        coachTip.textContent = "Kaslar dinlenirken büyür. Protein ve su tüketimini eksik etme!";
-        workoutCard.style.display = "none";
-        return;
-      } else if (userCycleState.dayIndex === 3) {
-        coachTitle.textContent = "🦾 3. GÜN: SIRT, BACAK & ÖN KOL";
-        coachTip.textContent = `Seviye: ${userLevel.toUpperCase()} · ${setCount} set · Hedef tekrar aralığı ${exerciseHistory['ex7']?.targetRepRange?.join('-') || '8-12'}`;
-        workoutCard.style.display = "block";
-        groupKey = 'back_biceps_leg';
-      } else if (userCycleState.dayIndex === 4) {
-        coachTitle.textContent = "🛌 4. GÜN: DİNLENME VE KAS BÜYÜTME GÜNÜ";
-        coachTip.textContent = "Döngü başarıyla ilerliyor.";
-        workoutCard.style.display = "none";
-        return;
+        const history = {};
+        for (const [id, kg] of Object.entries(base)) {
+          const adjusted = Math.round(kg * multiplier / 2.5) * 2.5;
+          history[id] = {
+            lastKg: Math.max(2.5, adjusted),
+            lastReps: level === 'beginner' ? 12 : (level === 'intermediate' ? 10 : 8),
+            targetRepRange: level === 'beginner' ? [10, 15] : (level === 'intermediate' ? [8, 12] : [6, 10])
+          };
+        }
+        return history;
       }
 
-      const ids = baseExercises[groupKey];
-      const container = document.getElementById('workout-list');
+      function e1rm(weight, reps) { return reps <= 0 ? 0 : weight * (1 + reps / 30); }
 
-      const sleep = parseInt(document.getElementById('read-sleep').value);
-      const energy = parseInt(document.getElementById('read-energy').value);
-      const isLowRecovery = (sleep + energy) <= 5;
+      // -------------------- TEMA --------------------
+      function initTheme() {
+        const saved = localStorage.getItem('fitpro_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        updateThemeIcon(saved);
+      }
+      function updateThemeIcon(theme) {
+        const btn = document.querySelector('.icon-btn');
+        if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+      }
+      window.toggleTheme = function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('fitpro_theme', next);
+        updateThemeIcon(next);
+      };
 
-      container.innerHTML = ids.map(id => {
-        const hist = exerciseHistory[id] || { lastKg: 20, lastReps: 10, targetRepRange: [8, 12] };
-        const details = exerciseDetails[id];
+      // -------------------- SUPABASE VERİ İŞLEMLERİ --------------------
+      async function loadCloudUserData() {
+        if (!currentUser) return;
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('user_profiles')
+            .select('state_data, ex_history, workout_logs, meal_log, water_log, user_level, user_experience, estimated_strength')
+            .eq('user_id', currentUser.id)
+            .single();
 
-        let aiKg = hist.lastKg;
-        if (isLowRecovery) {
-          aiKg = Math.max(2.5, aiKg * 0.95);
-        } else if (hist.lastReps >= hist.targetRepRange[1]) {
-          aiKg += 2.5;
+          if (error && error.code !== 'PGRST116') {
+            console.warn('Profil verisi çekilemedi:', error);
+          }
+
+          if (data) {
+            if (data.state_data) userCycleState = data.state_data;
+            if (data.ex_history) exerciseHistory = data.ex_history;
+            if (data.workout_logs) workoutLogs = data.workout_logs;
+            if (data.meal_log) mealLog = data.meal_log;
+            if (data.water_log) waterLog = data.water_log;
+            if (data.user_level) userLevel = data.user_level;
+            if (data.user_experience) userExperience = data.user_experience;
+            if (data.estimated_strength) estimatedStrength = data.estimated_strength;
+          }
+
+          if (!data || Object.keys(exerciseHistory).length === 0) {
+            // onboarding aç
+            document.getElementById('onboarding-modal').classList.add('show');
+          } else {
+            document.getElementById('onboarding-modal').classList.remove('show');
+            calculateRecoveryScore();
+            renderDashboard();
+            renderMealList();
+            renderAnalytics();
+            updateWaterUI();
+          }
+        } catch (err) {
+          console.error('loadCloudUserData hatası:', err);
+          alert('Veriler yüklenirken hata oluştu. Yeni kullanıcıysanız onboarding başlatılıyor.');
+          document.getElementById('onboarding-modal').classList.add('show');
+        }
+      }
+
+      async function saveCloudUserData() {
+        if (!currentUser) return;
+        try {
+          await window.supabaseClient.from('user_profiles').upsert({
+            user_id: currentUser.id,
+            state_data: userCycleState,
+            ex_history: exerciseHistory,
+            workout_logs: workoutLogs,
+            meal_log: mealLog,
+            water_log: waterLog,
+            user_level: userLevel,
+            user_experience: userExperience,
+            estimated_strength: estimatedStrength,
+            updated_at: new Date()
+          }, { onConflict: 'user_id' });
+        } catch (err) {
+          console.error('Bulut senkronizasyon hatası:', err);
+        }
+      }
+
+      // -------------------- ONBOARDING --------------------
+      window.saveOnboarding = async function() {
+        try {
+          const experience = document.getElementById('onboard-experience').value;
+          const bench = parseFloat(document.getElementById('onboard-bench').value) || 30;
+          const squat = parseFloat(document.getElementById('onboard-squat').value) || 40;
+          const deadlift = parseFloat(document.getElementById('onboard-deadlift').value) || 50;
+          const days = parseInt(document.getElementById('onboard-days').value) || 4;
+
+          let level = 'intermediate';
+          if (experience === 'none' || experience === '<1') level = 'beginner';
+          else if (experience === '3+') level = 'advanced';
+
+          userLevel = level;
+          userExperience = experience;
+          estimatedStrength = { bench, squat, deadlift };
+          userCycleState.trainingDays = days;
+
+          exerciseHistory = getDefaultExerciseHistory(level, experience, estimatedStrength);
+          await saveCloudUserData();
+
+          document.getElementById('onboarding-modal').classList.remove('show');
+          renderDashboard();
+          renderAnalytics();
+          alert('✅ Analiz tamamlandı! Programın seviyene göre ayarlandı.');
+        } catch (err) {
+          alert('❌ Onboarding kaydedilemedi: ' + err.message);
+          console.error(err);
+        }
+      };
+
+      // -------------------- RECOVERY --------------------
+      function calculateRecoveryScore() {
+        const sleep = parseInt(document.getElementById('read-sleep').value);
+        const energy = parseInt(document.getElementById('read-energy').value);
+        const score = Math.round(((sleep + energy) / 10) * 100);
+        const valEl = document.getElementById('recovery-score-val');
+        const adviceEl = document.getElementById('recovery-advice');
+        valEl.textContent = `${score} / 100`;
+        if (score >= 80) { valEl.style.color = 'var(--primary)'; adviceEl.textContent = "Harika toparlanma! Koç motoru ağırlıkları artırarak ilerliyor."; }
+        else if (score >= 60) { valEl.style.color = 'var(--warning)'; adviceEl.textContent = "Orta düzey toparlanma. Ağırlıklar sabit tutuldu."; }
+        else { valEl.style.color = 'var(--danger)'; adviceEl.textContent = "Düşük toparlanma! Koç motoru ağırlıkları %5 optimize etti."; }
+        if (currentUser) renderWorkoutExercises();
+      }
+      window.onRecoveryChange = calculateRecoveryScore;
+
+      // -------------------- TAB SWITCH --------------------
+      window.switchTab = function(tabName, btnElement) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        if (btnElement) btnElement.classList.add('active');
+        const titles = { workout: 'Otonom Cloud Koçluk', nutrition: 'Beslenme & Makrolar', analytics: 'Gelişim Analitiği', coach: 'AI Coach Brain', profile: 'Profil & Ayarlar' };
+        document.getElementById('header-title').textContent = titles[tabName] || 'Otonom Cloud Koçluk';
+        if (tabName === 'analytics') renderAnalytics();
+        if (tabName === 'nutrition') { renderMealList(); updateMacroTotals(); updateWaterUI(); }
+      };
+
+      // -------------------- DASHBOARD & WORKOUT --------------------
+      function renderDashboard() {
+        const daySelect = document.getElementById('manual-day-select');
+        daySelect.value = userCycleState.dayIndex;
+        renderWorkoutExercises();
+        updateMacroTotals();
+        updateWaterUI();
+      }
+
+      function renderWorkoutExercises() {
+        const coachTitle = document.getElementById('coach-day-title');
+        const coachTip = document.getElementById('coach-tip');
+        const workoutCard = document.getElementById('workout-card');
+
+        let setCount = 4;
+        if (userLevel === 'beginner') setCount = 3;
+        else if (userLevel === 'intermediate') setCount = 4;
+        else if (userLevel === 'advanced') setCount = 5;
+
+        let groupKey = '';
+        if (userCycleState.dayIndex === 1) {
+          coachTitle.textContent = "💥 1. GÜN: GÖĞÜS, OMUZ & ARKA KOL";
+          coachTip.textContent = `Seviye: ${userLevel.toUpperCase()} · ${setCount} set · Hedef tekrar aralığı ${exerciseHistory['ex1']?.targetRepRange?.join('-') || '8-12'}`;
+          workoutCard.style.display = "block";
+          groupKey = 'chest_shoulder';
+        } else if (userCycleState.dayIndex === 2) {
+          coachTitle.textContent = "🛌 2. GÜN: DİNLENME VE KAS BÜYÜTME GÜNÜ";
+          coachTip.textContent = "Kaslar dinlenirken büyür. Protein ve su tüketimini eksik etme!";
+          workoutCard.style.display = "none";
+          return;
+        } else if (userCycleState.dayIndex === 3) {
+          coachTitle.textContent = "🦾 3. GÜN: SIRT, BACAK & ÖN KOL";
+          coachTip.textContent = `Seviye: ${userLevel.toUpperCase()} · ${setCount} set · Hedef tekrar aralığı ${exerciseHistory['ex7']?.targetRepRange?.join('-') || '8-12'}`;
+          workoutCard.style.display = "block";
+          groupKey = 'back_biceps_leg';
+        } else if (userCycleState.dayIndex === 4) {
+          coachTitle.textContent = "🛌 4. GÜN: DİNLENME VE KAS BÜYÜTME GÜNÜ";
+          coachTip.textContent = "Döngü başarıyla ilerliyor.";
+          workoutCard.style.display = "none";
+          return;
         }
 
-        // RIR seçeneği seviyeye göre
-        const rirOptions = userLevel === 'beginner' ? [3,2,1] : [2,1,0];
+        const ids = baseExercises[groupKey];
+        const container = document.getElementById('workout-list');
+        const sleep = parseInt(document.getElementById('read-sleep').value);
+        const energy = parseInt(document.getElementById('read-energy').value);
+        const isLowRecovery = (sleep + energy) <= 5;
 
-        return `
-          <div class="ex-item" id="ex-box-${id}" data-id="${id}">
-            <div class="ex-header"><div class="ex-title">${details.title}</div></div>
-            <div class="ex-media-box"><img src="${details.img}" alt="${details.title}" loading="lazy"></div>
-            <div class="ex-guide"><b>🤖 Koç Notu:</b> Geçmiş (${hist.lastKg} kg / ${hist.lastReps} tekrar) analiz edildi. ${isLowRecovery ? '⚠️ Düşük toparlanma nedeniyle ağırlık optimize edildi.' : '🚀 Progresif yükleme ile ağırlık artırıldı.'}<br>${details.guide}</div>
+        container.innerHTML = ids.map(id => {
+          const hist = exerciseHistory[id] || { lastKg: 20, lastReps: 10, targetRepRange: [8, 12] };
+          const details = exerciseDetails[id];
 
-            <table class="set-table">
-              <thead><tr><th>SET</th><th style="text-align:center;">ÖNERİLEN KG</th><th style="text-align:center;">HEDEF TEKRAR</th><th style="text-align:center;">RIR</th></tr></thead>
-              <tbody>
-                ${[...Array(setCount)].map((_, idx) => {
-                  const setNum = idx + 1;
-                  return `
-                    <tr>
-                      <td style="font-weight:800; color:var(--text);">Set ${setNum}</td>
-                      <td><input type="number" class="set-input input-kg" value="${aiKg}" step="0.5" readonly style="color:var(--primary); background:var(--card-bg);"></td>
-                      <td><input type="number" class="set-input input-reps" value="${hist.targetRepRange[0]}"></td>
-                      <td>
-                        <select class="set-input input-rir" style="padding:6px;">
-                          ${rirOptions.map(r => `<option value="${r}" ${r===2?'selected':''}>${r} RIR</option>`).join('')}
-                        </select>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-            <input type="text" class="auth-input input-note" placeholder="Örn: Form harikaydı, zorlanma olmadı..." style="font-size:0.78rem; margin-top:8px;" />
-            <button class="btn btn-accent" style="width:100%; margin-top:8px; font-size:0.75rem;" onclick="startTimer(120)">⏱️ 2 Dk Dinlenme Başlat</button>
-          </div>
-        `;
-      }).join('');
-    }
+          let aiKg = hist.lastKg;
+          if (isLowRecovery) aiKg = Math.max(2.5, aiKg * 0.95);
+          else if (hist.lastReps >= hist.targetRepRange[1]) aiKg += 2.5;
 
-    // changeDayManually, finishWorkout, addMealPrompt, renderMealList, removeMeal, updateMacroTotals, addWater, renderAnalytics, saveOpenAIKey, loadOpenAIKey, sendCoachMessage, auth fonksiyonları aynen kalıyor (önceki sürümle aynı). Sadece addWater su takibini güncelliyor.
-    // (Bu fonksiyonlar uzun olduğu için kısaca belirtiyorum, ancak kodun tamamı aşağıda verilecek)
+          const rirOptions = userLevel === 'beginner' ? [3,2,1] : [2,1,0];
 
-    // --- SU TAKİBİ ---
-    function addWater() {
-      waterLog += 0.5;
-      saveCloudUserData();
-      updateWaterUI();
-      alert('💧 +0.5L su eklendi.');
-    }
-
-    function updateWaterUI() {
-      const progress = document.getElementById('water-progress');
-      const label = document.getElementById('water-label');
-      if (progress) {
-        progress.value = waterLog;
-        progress.max = 3; // günlük hedef 3L
+          return `
+            <div class="ex-item" id="ex-box-${id}" data-id="${id}">
+              <div class="ex-header"><div class="ex-title">${details.title}</div></div>
+              <div class="ex-media-box"><img src="${details.img}" alt="${details.title}" loading="lazy"></div>
+              <div class="ex-guide"><b>🤖 Koç Notu:</b> Geçmiş (${hist.lastKg} kg / ${hist.lastReps} tekrar) analiz edildi. ${isLowRecovery ? '⚠️ Düşük toparlanma nedeniyle ağırlık optimize edildi.' : '🚀 Progresif yükleme ile ağırlık artırıldı.'}<br>${details.guide}</div>
+              <table class="set-table">
+                <thead><tr><th>SET</th><th style="text-align:center;">ÖNERİLEN KG</th><th style="text-align:center;">HEDEF TEKRAR</th><th style="text-align:center;">RIR</th></tr></thead>
+                <tbody>
+                  ${[...Array(setCount)].map((_, idx) => {
+                    const setNum = idx + 1;
+                    return `
+                      <tr>
+                        <td style="font-weight:800; color:var(--text);">Set ${setNum}</td>
+                        <td><input type="number" class="set-input input-kg" value="${aiKg}" step="0.5" readonly style="color:var(--primary); background:var(--card-bg);"></td>
+                        <td><input type="number" class="set-input input-reps" value="${hist.targetRepRange[0]}"></td>
+                        <td>
+                          <select class="set-input input-rir" style="padding:6px;">
+                            ${rirOptions.map(r => `<option value="${r}" ${r===2?'selected':''}>${r} RIR</option>`).join('')}
+                          </select>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+              <input type="text" class="auth-input input-note" placeholder="Örn: Form harikaydı, zorlanma olmadı..." style="font-size:0.78rem; margin-top:8px;" />
+              <button class="btn btn-accent" style="width:100%; margin-top:8px; font-size:0.75rem;" onclick="window.startTimer(120)">⏱️ 2 Dk Dinlenme Başlat</button>
+            </div>
+          `;
+        }).join('');
       }
-      if (label) label.textContent = `${waterLog.toFixed(1)} / 3 L`;
-    }
 
-    // --- Diğer fonksiyonlar (aynı) ---
-    // Burada önceki sürümdeki tüm fonksiyonlar (finishWorkout, renderAnalytics, sendCoachMessage, vs.) yer alıyor.
-    // Dosyanın tamamını göndereceğim için burada tekrar yazmıyorum.
+      window.changeDayManually = async function(newDay) {
+        userCycleState.dayIndex = parseInt(newDay);
+        await saveCloudUserData();
+        renderDashboard();
+      };
 
-    // Global'ler
-    window.toggleTheme = toggleTheme;
-    window.handleSignIn = handleSignIn;
-    window.handleSignUp = handleSignUp;
-    window.handleSignOut = handleSignOut;
-    window.resetCloudData = resetCloudData;
-    window.startTimer = startTimer;
-    window.stopTimer = stopTimer;
-    window.changeDayManually = changeDayManually;
-    window.finishWorkout = finishWorkout;
-    window.addMealPrompt = addMealPrompt;
-    window.removeMeal = removeMeal;
-    window.addWater = addWater;
-    window.sendCoachMessage = sendCoachMessage;
-    window.saveOpenAIKey = saveOpenAIKey;
-    window.loadOpenAIKey = loadOpenAIKey;
-    window.renderAnalytics = renderAnalytics;
-    window.renderMealList = renderMealList;
-    window.updateMacroTotals = updateMacroTotals;
-    window.loadCloudUserData = loadCloudUserData;
-    window.saveCloudUserData = saveCloudUserData;
-    window.saveOnboarding = saveOnboarding;
+      // -------------------- ANTRENMAN KAYDI --------------------
+      window.finishWorkout = async function() {
+        if (!currentUser) return alert('Önce giriş yapmalısın.');
+        const activeBoxes = document.querySelectorAll('.ex-item');
+        if (!activeBoxes.length) return alert('Antrenman yapılacak egzersiz yok.');
+
+        confetti({ particleCount: 150 });
+
+        let workoutRecord = { date: new Date().toISOString(), exercises: [] };
+        activeBoxes.forEach(box => {
+          const id = box.getAttribute('data-id');
+          const repsInputs = box.querySelectorAll('.input-reps');
+          const kgInputs = box.querySelectorAll('.input-kg');
+          const noteInput = box.querySelector('.input-note');
+          const performedKg = parseFloat(kgInputs[0].value) || 20;
+          const performedReps = parseInt(repsInputs[repsInputs.length - 1].value) || 10;
+          if (!exerciseHistory[id]) exerciseHistory[id] = {};
+          exerciseHistory[id].lastKg = performedKg;
+          exerciseHistory[id].lastReps = performedReps;
+          workoutRecord.exercises.push({ id, performedKg, performedReps, note: noteInput.value });
+        });
+
+        workoutLogs.push(workoutRecord);
+
+        if (userCycleState.dayIndex === 1) userCycleState.dayIndex = 2;
+        else if (userCycleState.dayIndex === 2) userCycleState.dayIndex = 3;
+        else if (userCycleState.dayIndex === 3) userCycleState.dayIndex = 4;
+        else if (userCycleState.dayIndex === 4) userCycleState.dayIndex = 1;
+
+        await saveCloudUserData();
+        alert('🏁 Antrenman Supabase bulut veritabanına kaydedildi! Koç sonraki antrenman için ağırlıkları şimdiden güncelledi.');
+        renderDashboard();
+        renderAnalytics();
+      };
+
+      // -------------------- BESLENME --------------------
+      window.addMealPrompt = function() {
+        const name = prompt("Öğün adı (örn: Tavuk göğsü + pilav):");
+        if (!name) return;
+        const kcal = parseInt(prompt("Kalori (kcal):")) || 0;
+        const protein = parseInt(prompt("Protein (g):")) || 0;
+        const carbs = parseInt(prompt("Karbonhidrat (g):")) || 0;
+        const fat = parseInt(prompt("Yağ (g):")) || 0;
+        mealLog.push({ name, kcal, protein, carbs, fat, timestamp: new Date().toISOString() });
+        saveCloudUserData();
+        renderMealList();
+        updateMacroTotals();
+      };
+
+      function renderMealList() {
+        const container = document.getElementById('meal-list');
+        if (!container) return;
+        if (mealLog.length === 0) {
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">Bugün hiç öğün eklenmemiş.</p>';
+          return;
+        }
+        container.innerHTML = mealLog.map((m, i) => `
+          <div class="meal-item">
+            <span>${m.name}</span>
+            <span class="kcal">${m.kcal} kcal · ${m.protein}g P</span>
+            <button class="btn btn-danger" style="padding:2px 8px; font-size:0.7rem;" onclick="window.removeMeal(${i})">✕</button>
+          </div>
+        `).join('');
+      }
+      window.removeMeal = function(index) {
+        mealLog.splice(index, 1);
+        saveCloudUserData();
+        renderMealList();
+        updateMacroTotals();
+      };
+
+      function updateMacroTotals() {
+        const total = mealLog.reduce((acc, m) => {
+          acc.kcal += m.kcal;
+          acc.protein += m.protein;
+          acc.carbs += m.carbs;
+          acc.fat += m.fat;
+          return acc;
+        }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+        document.getElementById('today-total').textContent = `${total.kcal} kcal / ${total.protein}g Protein`;
+        // Hedefler (profilden gelen veri yoksa varsayılan)
+        // Burada basitçe statik gösteriyoruz, geliştirilebilir.
+      }
+
+      window.addWater = function() {
+        waterLog += 0.5;
+        saveCloudUserData();
+        updateWaterUI();
+        alert('💧 +0.5L su eklendi.');
+      };
+
+      function updateWaterUI() {
+        const progress = document.getElementById('water-progress');
+        const label = document.getElementById('water-label');
+        if (progress) { progress.value = waterLog; progress.max = 3; }
+        if (label) label.textContent = `${waterLog.toFixed(1)} / 3 L`;
+      }
+
+      // -------------------- ANALİTİK --------------------
+      async function renderAnalytics() {
+        if (!currentUser) return;
+        try {
+          const { data: sets, error } = await window.supabaseClient
+            .from('workout_sets')
+            .select('weight_kg, reps, exercise_id, created_at')
+            .eq('user_id', currentUser.id)
+            .eq('completed', true)
+            .order('created_at', { ascending: true });
+
+          if (error || !sets || sets.length === 0) {
+            document.getElementById('stat-total-workouts').textContent = '0';
+            document.getElementById('stat-total-tonnage').textContent = '0';
+            document.getElementById('stat-best-1rm').textContent = '0 kg';
+            return;
+          }
+
+          const totalTonnage = sets.reduce((sum, s) => sum + (s.weight_kg || 0) * (s.reps || 0), 0);
+          document.getElementById('stat-total-tonnage').textContent = Math.round(totalTonnage);
+
+          let best1RM = 0;
+          sets.forEach(s => {
+            const est = (s.weight_kg || 0) * (1 + (s.reps || 0) / 30);
+            if (est > best1RM) best1RM = est;
+          });
+          document.getElementById('stat-best-1rm').textContent = best1RM.toFixed(1) + ' kg';
+
+          // Haftalık hacim grafiği
+          const last7Days = [];
+          const today = new Date();
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            last7Days.push(d.toISOString().slice(0,10));
+          }
+          const grouped = {};
+          sets.forEach(s => {
+            const date = s.created_at.slice(0,10);
+            if (last7Days.includes(date)) {
+              grouped[date] = (grouped[date] || 0) + (s.weight_kg || 0) * (s.reps || 0);
+            }
+          });
+          const labels = last7Days.map(d => d.slice(5));
+          const data = last7Days.map(d => grouped[d] || 0);
+
+          const ctx = document.getElementById('weeklyVolumeChart').getContext('2d');
+          if (weeklyChart) weeklyChart.destroy();
+          weeklyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Günlük Hacim (kg)',
+                data: data,
+                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                borderColor: '#10b981',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true } }
+            }
+          });
+
+          document.getElementById('stat-total-workouts').textContent = workoutLogs.length;
+        } catch (err) {
+          console.error('Analitik hatası:', err);
+        }
+      }
+
+      // -------------------- AI COACH (OpenAI) --------------------
+      window.saveOpenAIKey = function() {
+        const key = document.getElementById('openai-key-input').value.trim();
+        if (key) { localStorage.setItem('openai_api_key', key); alert('✅ OpenAI anahtarı kaydedildi!'); }
+        else { localStorage.removeItem('openai_api_key'); alert('Anahtar kaldırıldı.'); }
+      };
+
+      function loadOpenAIKey() {
+        const key = localStorage.getItem('openai_api_key') || '';
+        document.getElementById('openai-key-input').value = key;
+      }
+
+      window.sendCoachMessage = async function() {
+        const input = document.getElementById('chat-input');
+        const box = document.getElementById('coach-chat-box');
+        const val = input.value.trim();
+        if (!val) return;
+
+        box.innerHTML += `<div class="chat-msg user">${val}</div>`;
+        input.value = '';
+        box.scrollTop = box.scrollHeight;
+
+        const apiKey = localStorage.getItem('openai_api_key');
+        if (!apiKey) {
+          box.innerHTML += `<div class="chat-msg ai">⚠️ Lütfen önce Profil sekmesinden OpenAI API anahtarınızı kaydedin.</div>`;
+          box.scrollTop = box.scrollHeight;
+          return;
+        }
+
+        try {
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+              model: 'gpt-3.5-turbo',
+              messages: [
+                { role: 'system', content: 'Sen bir fitness koçusun. Kullanıcının antrenman geçmişine ve toparlanma verilerine göre tavsiyeler ver.' },
+                { role: 'user', content: val }
+              ],
+              temperature: 0.7,
+              max_tokens: 300
+            })
+          });
+          const data = await response.json();
+          const reply = data.choices?.[0]?.message?.content || 'Üzgünüm, bir hata oluştu.';
+          box.innerHTML += `<div class="chat-msg ai">${reply}</div>`;
+          box.scrollTop = box.scrollHeight;
+        } catch (err) {
+          box.innerHTML += `<div class="chat-msg ai">⚠️ API çağrısı başarısız: ${err.message}</div>`;
+          box.scrollTop = box.scrollHeight;
+        }
+      };
+
+      // -------------------- ZAMANLAYICI (TIMER) --------------------
+      window.startTimer = function(seconds) {
+        clearInterval(restTimerInterval);
+        let left = seconds;
+        document.getElementById('timer-bar').style.display = 'flex';
+        restTimerInterval = setInterval(() => {
+          left--;
+          let m = Math.floor(left / 60), s = left % 60;
+          document.getElementById('timer-display').textContent = `${m<10?'0':''}${m}:${s<10?'0':''}${s}`;
+          if (left <= 0) { window.stopTimer(); alert('⏱️ Dinlenme Süresi Bitti!'); }
+        }, 1000);
+      };
+      window.stopTimer = function() {
+        clearInterval(restTimerInterval);
+        document.getElementById('timer-bar').style.display = 'none';
+      };
+
+      // -------------------- AUTH --------------------
+      async function checkUserSession() {
+        try {
+          const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+          if (error) throw error;
+          currentUser = user;
+
+          document.getElementById('auth-section').style.display = currentUser ? 'none' : 'block';
+          document.getElementById('app-content').style.display = currentUser ? 'block' : 'none';
+          document.getElementById('bottom-nav').style.display = currentUser ? 'flex' : 'none';
+          document.getElementById('btn-logout').style.display = currentUser ? 'inline-flex' : 'none';
+          document.getElementById('cloud-badge').style.display = currentUser ? 'inline-flex' : 'none';
+
+          if (currentUser) {
+            document.getElementById('user-email-display').textContent = `Oturum Açık: ${currentUser.email}`;
+            await loadCloudUserData();
+          }
+        } catch (err) {
+          console.error('checkUserSession hatası:', err);
+          alert('Oturum kontrolü sırasında hata oluştu. Sayfayı yenileyip tekrar deneyin.');
+        }
+      }
+
+      window.handleSignIn = async function() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) { alert('Lütfen e-posta ve şifreyi girin.'); return; }
+        try {
+          const { error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) { alert('❌ Giriş başarısız: ' + error.message); console.error(error); return; }
+          await checkUserSession();
+        } catch (err) { alert('❌ Beklenmeyen hata: ' + err.message); console.error(err); }
+      };
+
+      window.handleSignUp = async function() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (!email || !password) { alert('Lütfen e-posta ve şifreyi girin.'); return; }
+        try {
+          const { error } = await window.supabaseClient.auth.signUp({ email, password });
+          if (error) { alert('❌ Kayıt başarısız: ' + error.message); console.error(error); return; }
+          alert('✅ Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+        } catch (err) { alert('❌ Beklenmeyen hata: ' + err.message); console.error(err); }
+      };
+
+      window.handleSignOut = async function() {
+        await window.supabaseClient.auth.signOut();
+        currentUser = null;
+        await checkUserSession();
+      };
+
+      window.resetCloudData = async function() {
+        if (confirm('Supabase bulutundaki tüm verileriniz sıfırlanacak. Emin misiniz?')) {
+          userCycleState = { dayIndex: 1 };
+          workoutLogs = [];
+          mealLog = [];
+          waterLog = 0;
+          exerciseHistory = {};
+          await saveCloudUserData();
+          location.reload();
+        }
+      };
+
+      // -------------------- BAŞLATMA --------------------
+      document.addEventListener('DOMContentLoaded', async () => {
+        initTheme();
+        loadOpenAIKey();
+        await checkUserSession();
+        // Eğer onboarding açık değilse ve veri varsa, dashboard'u render et
+        if (currentUser && Object.keys(exerciseHistory).length > 0) {
+          renderDashboard();
+          renderAnalytics();
+        }
+      });
+
+    })(); // IIFE sonu
   </script>
 </body>
 </html>
