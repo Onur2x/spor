@@ -1,6 +1,7 @@
 /* FitPro ELITE v4 - Coach Engine
    Deterministic decision-support layer: readiness, overload, fatigue, deload,
    weekly volume, PR/1RM trends and next-session recommendations.
+   (Seviye bilgisi entegre edildi)
 */
 (function(){
   const muscles={ex1:'chest',ex2:'chest',ex3:'chest',ex4:'shoulders',ex5:'shoulders',ex6:'triceps',ex7:'back',ex8:'back',ex9:'legs',ex10:'hamstrings',ex11:'biceps',ex12:'biceps'};
@@ -44,11 +45,15 @@
   function coachDecision({score,sets,volume}){
     const rir=avgRir(sets), trend=trendScore(sets), total=Object.values(volume).reduce((a,b)=>a+b,0);
     let mode='progress', title='🟢 Normal ilerleme', bullets=[];
+    // Seviyeye göre hassasiyet ayarı (örnek)
+    const userLevel = window.userLevel || 'intermediate';
+    const intensity = { beginner: 0.8, intermediate: 1.0, advanced: 1.2 }[userLevel] || 1.0;
+
     if(score!=null&&score<=5){mode='recovery';title='🔴 Recovery öncelikli';bullets=['Ana hareketlerde hedef ağırlığı yaklaşık %5 azalt.','Setleri failure’a götürme; RIR 3 civarında kal.','İzolasyon hareketlerinden 1 set azaltmayı düşün.']}
     else if(score!=null&&score<=7){mode='moderate';title='🟡 Kontrollü ilerleme';bullets=['Planlanan ağırlığı koru veya küçük artış yap.','Çoğu sette RIR 2–3 hedefle.','Teknik bozuluyorsa yük artırma.']}
     else {bullets=['Üst tekrar sınırına ulaşan hareketlerde küçük yük artışı dene.','RIR 1–2 aralığını koru.','Performans yükseliyorsa mevcut hacmi koru.']}
     if(rir!=null&&rir<1.2&&mode==='progress'){bullets.push('Son seanslarda RIR çok düşük: toparlanmayı korumak için ekstra failure setlerinden kaçın.');}
-    if(trend<-10){title='🟠 Performans düşüşü';bullets=['Son kayıtlarında hacim düşmüş. Bugün ağırlığı zorlamadan kaliteyi koru.','Uyku ve beslenme hedeflerini kontrol et.'];mode='fatigue'}
+    if(trend<-10*intensity){title='🟠 Performans düşüşü';bullets=['Son kayıtlarında hacim düşmüş. Bugün ağırlığı zorlamadan kaliteyi koru.','Uyku ve beslenme hedeflerini kontrol et.'];mode='fatigue'}
     return {mode,title,bullets,trend,rir,total}
   }
   function deloadNeeded({sets,score}){
