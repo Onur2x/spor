@@ -102,15 +102,37 @@
       html+='</div></div>';
     }c.innerHTML=html;
   };
+  
+  
+  
+  
   window.startFitProWorkout = async function(){
-  // Eğer window.currentUser boşsa, Supabase'den anlık oturumu sorgula
-  if (!window.currentUser && window.supabaseClient) {
-    const { data: { user } } = await window.supabaseClient.auth.getUser();
-    if (user) window.currentUser = user;
+  // Supabase istemcisinin yüklenmesini birkaç milisaniye bekle (asenkron yüklenme ihtimaline karşı)
+  let attempts = 0;
+  while (!window.supabaseClient && attempts < 5) {
+    await new Promise(r => setTimeout(r, 200));
+    attempts++;
+  }
+
+  if (!window.supabaseClient) {
+    alert('Supabase istemcisi yüklenemedi. Lütfen internet bağlantınızı kontrol edin veya sayfanın en üstünde Supabase scriptinin yüklü olduğundan emin olun.');
+    return null;
+  }
+
+  // Oturum kontrolü
+  if (!window.currentUser) {
+    try {
+      const { data: { session } } = await window.supabaseClient.auth.getSession();
+      if (session && session.user) {
+        window.currentUser = session.user;
+      }
+    } catch (e) {
+      console.warn('Oturum alınamadı:', e);
+    }
   }
 
   if (!window.currentUser) {
-    alert('Oturum bulunamadı. Lütfen tekrar giriş yapın.');
+    alert('Oturum bulunamadı. Lütfen giriş yapın.');
     const authSec = document.getElementById('auth-section');
     if (authSec) authSec.scrollIntoView({ behavior: 'smooth' });
     return null;
@@ -141,6 +163,9 @@
   
   return data.id;
 };
+  
+  
+  
 /*
   window.startFitProWorkout=async function(){
     if(!window.currentUser)return alert('Önce giriş yapmalısın.');if(activeWorkoutId)return activeWorkoutId;
