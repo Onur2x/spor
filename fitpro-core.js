@@ -102,12 +102,52 @@
       html+='</div></div>';
     }c.innerHTML=html;
   };
+  window.startFitProWorkout = async function(){
+  // Eğer window.currentUser boşsa, Supabase'den anlık oturumu sorgula
+  if (!window.currentUser && window.supabaseClient) {
+    const { data: { user } } = await window.supabaseClient.auth.getUser();
+    if (user) window.currentUser = user;
+  }
 
+  if (!window.currentUser) {
+    alert('Oturum bulunamadı. Lütfen tekrar giriş yapın.');
+    const authSec = document.getElementById('auth-section');
+    if (authSec) authSec.scrollIntoView({ behavior: 'smooth' });
+    return null;
+  }
+
+  if (activeWorkoutId) return activeWorkoutId;
+
+  const names = { 1: '1. Gün: Göğüs / Omuz / Arka Kol', 3: '3. Gün: Sırt / Bacak / Ön Kol' };
+  const name = names[window.userCycleState?.dayIndex || 1] || 'FitPro Antrenmanı';
+
+  const { data, error } = await window.supabaseClient.from('workouts').insert({
+    user_id: window.currentUser.id,
+    cycle_day: window.userCycleState?.dayIndex || 1,
+    name,
+    started_at: new Date().toISOString()
+  }).select().single();
+
+  if (error) {
+    alert('Antrenman başlatılamadı: ' + error.message);
+    return null;
+  }
+
+  activeWorkoutId = data.id;
+  activeWorkoutStartedAt = Date.now();
+  
+  const b = document.getElementById('fp-start-workout');
+  if (b) b.textContent = '● ANTRENMAN AKTİF';
+  
+  return data.id;
+};
+/*
   window.startFitProWorkout=async function(){
     if(!window.currentUser)return alert('Önce giriş yapmalısın.');if(activeWorkoutId)return activeWorkoutId;
     const names={1:'1. Gün: Göğüs / Omuz / Arka Kol',3:'3. Gün: Sırt / Bacak / Ön Kol'};const name=names[window.userCycleState.dayIndex]||'FitPro Antrenmanı';
     const {data,error}=await window.supabaseClient.from('workouts').insert({user_id:window.currentUser.id,cycle_day:window.userCycleState.dayIndex,name,started_at:new Date().toISOString()}).select().single();if(error){alert('Antrenman başlatılamadı: '+error.message);return null}activeWorkoutId=data.id;activeWorkoutStartedAt=Date.now();const b=document.getElementById('fp-start-workout');if(b)b.textContent='● ANTRENMAN AKTİF';return data.id;
   };
+  */
 
   window.finishWorkout=async function(){
     if(!window.currentUser)return;const rows=[...document.querySelectorAll('.fp-set')],done=rows.filter(r=>r.querySelector('.fp-done')?.checked);if(!done.length)return alert('En az bir seti tamamlandı olarak işaretle.');
