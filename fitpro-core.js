@@ -107,19 +107,19 @@
   
   
   window.startFitProWorkout = async function(){
-  // Supabase istemcisinin yüklenmesini birkaç milisaniye bekle (asenkron yüklenme ihtimaline karşı)
+  // 1. İstemci kontrolü
   let attempts = 0;
-  while (!window.supabaseClient && attempts < 5) {
+  while (!window.supabaseClient && attempts < 15) {
     await new Promise(r => setTimeout(r, 200));
     attempts++;
   }
 
   if (!window.supabaseClient) {
-    alert('Supabase istemcisi yüklenemedi. Lütfen internet bağlantınızı kontrol edin veya sayfanın en üstünde Supabase scriptinin yüklü olduğundan emin olun.');
+    alert('Supabase istemcisi yüklenemedi. Sayfayı yenileyin.');
     return null;
   }
 
-  // Oturum kontrolü
+  // 2. Oturum kontrolü
   if (!window.currentUser) {
     try {
       const { data: { session } } = await window.supabaseClient.auth.getSession();
@@ -140,12 +140,21 @@
 
   if (activeWorkoutId) return activeWorkoutId;
 
+  // 3. Egzersiz listesi boşsa varsayılan listeyi yükle (Eğer başka bir yerde tanımlı değilse)
+  if (!window.currentExercises || window.currentExercises.length === 0) {
+    // Projendeki varsayılan egzersiz havuzunu burada tetikleyebilirsin
+    if (typeof window.loadDefaultExercises === 'function') {
+      window.loadDefaultExercises();
+    }
+  }
+
   const names = { 1: '1. Gün: Göğüs / Omuz / Arka Kol', 3: '3. Gün: Sırt / Bacak / Ön Kol' };
-  const name = names[window.userCycleState?.dayIndex || 1] || 'FitPro Antrenmanı';
+  const dayIdx = window.userCycleState?.dayIndex || 1;
+  const name = names[dayIdx] || 'FitPro Antrenmanı';
 
   const { data, error } = await window.supabaseClient.from('workouts').insert({
     user_id: window.currentUser.id,
-    cycle_day: window.userCycleState?.dayIndex || 1,
+    cycle_day: dayIdx,
     name,
     started_at: new Date().toISOString()
   }).select().single();
@@ -160,10 +169,14 @@
   
   const b = document.getElementById('fp-start-workout');
   if (b) b.textContent = '● ANTRENMAN AKTİF';
+
+  // 4. EKRANDA HAREKETLERİN GÖRÜNMESİNİ SAĞLAYAN KRİTİK TETİKLEME:
+  if (typeof window.renderWorkoutList === 'function') {
+    await window.renderWorkoutList();
+  }
   
   return data.id;
 };
-  
   
   
 /*

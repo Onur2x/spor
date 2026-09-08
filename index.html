@@ -384,7 +384,16 @@
   <script>
     const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
     const SUPABASE_KEY = "sb_publishable_6eCdmaaJmZpiJ1cw3-pYyA_vuqgME9a";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+   // const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+	
+	
+	
+	
+	try {
+    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    console.error("Supabase başlatılamadı:", e);
+  }
 
     let currentUser = null;
     let restTimerInterval = null;
