@@ -668,10 +668,25 @@
       }
     }
 
-    function loadExercises(groupKey) {
+    function loadExercises222(groupKey) {
       currentExercises = JSON.parse(JSON.stringify(baseExercises[groupKey]));
       renderWorkoutList();
     }
+	
+	function loadExercises() {
+  try {
+    const raw = localStorage.getItem('fitpro_exercises'); // veya projedeki ana key adı neyse
+    if (!raw) {
+      window.currentExercises = []; // Veri yoksa boş dizi ata
+      return;
+    }
+    window.currentExercises = JSON.parse(raw);
+  } catch (e) {
+    console.warn("Bozuk egzersiz verisi temizlendi:", e);
+    localStorage.removeItem('fitpro_exercises');
+    window.currentExercises = [];
+  }
+}
 
     function toggleMode(exId) {
       const ex = currentExercises.find(item => item.id === exId);

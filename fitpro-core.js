@@ -93,6 +93,137 @@
     if(reps<min||rir<0)return Math.max(0,Math.round((kg-2.5)*2)/2);
     return kg;
   }
+  
+  
+  
+window.renderWorkoutList = async function(){
+  const c = document.getElementById('workout-list');
+  if (!c) {
+    console.warn("Hata: #workout-list elementi bulunamadı!");
+    return;
+  }
+  
+  c.innerHTML = '<div class="fp-progress">⏳ Kapsamlı günlük antrenman programı yükleniyor...</div>';
+
+  // Her gün için 7-8 hareketlik zenginleştirilmiş ve GIF destekli havuz
+  const exercisePool = {
+    1: [ // 1. Gün: Göğüs, Omuz, Arka Kol (İtme Günü)
+      {
+        id: 'chest_press', mode: 'machine',
+        machine: { title: 'Chest Press Makinesi', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Sırtını pedden ayırma, dirsekleri hafif içeri alarak it.', sets: 4, baseKg: 50, reps: 10 },
+        dumbbell: { title: 'Dumbbell Bench Press', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Kürek kemiklerini banka sabitle, kontrollü indir.', sets: 4, baseKg: 35, reps: 10 }
+      },
+      {
+        id: 'incline_press', mode: 'machine',
+        machine: { title: 'Incline Chest Press (Üst Göğüs)', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&auto=format&fit=crop&q=60', guide: 'Sehpayı 30-45 derece yap, köprücük kemiğine doğru it.', sets: 4, baseKg: 40, reps: 10 },
+        dumbbell: { title: 'Incline Dumbbell Press', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Yukarıda dambılları hafifçe birbirine yaklaştır.', sets: 4, baseKg: 25, reps: 10 }
+      },
+      {
+        id: 'chest_fly', mode: 'machine',
+        machine: { title: 'Pec Deck Fly (Göğüs Açış)', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Göğsü kabart, kolları hafif kırık tutarak kucaklar gibi kapat.', sets: 3, baseKg: 30, reps: 12 },
+        dumbbell: { title: 'Dumbbell Fly', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Dirseklerdeki açı hiç değişmesin, sarılma hareketi yap.', sets: 3, baseKg: 15, reps: 12 }
+      },
+      {
+        id: 'shoulder_press', mode: 'machine',
+        machine: { title: 'Shoulder Press Makinesi', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Omuz başlarını sıkıştırarak yukarı it, tam kilitleme.', sets: 4, baseKg: 35, reps: 10 },
+        dumbbell: { title: 'Dumbbell Shoulder Press', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&auto=format&fit=crop&q=60', guide: 'Karını sıkı tut, belini çukurlaştırma.', sets: 4, baseKg: 20, reps: 10 }
+      },
+      {
+        id: 'lateral_raise', mode: 'machine',
+        machine: { title: 'Cable Lateral Raise', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Kabloyu arkadan geçir, dirsek önde yukarı kaldır.', sets: 4, baseKg: 10, reps: 12 },
+        dumbbell: { title: 'Dumbbell Lateral Raise (Yan Omuz)', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Suyu döker gibi serçe parmağı hafif yukarıda tut.', sets: 4, baseKg: 10, reps: 15 }
+      },
+      {
+        id: 'triceps_pushdown', mode: 'machine',
+        machine: { title: 'Triceps Pushdown (Kablo)', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Dirsekler gövdeye sabitlensin, sadece aşağı it.', sets: 3, baseKg: 25, reps: 12 },
+        dumbbell: { title: 'Dumbbell Overhead Extension', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Dumbbellu iki elle kavra, başın arkasına esnet.', sets: 3, baseKg: 15, reps: 12 }
+      },
+      {
+        id: 'triceps_dips', mode: 'machine',
+        machine: { title: 'Assisted Dips / Makine Dips', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Gövdeyi hafif öne eğerek triceps ve alt göğsü çalıştır.', sets: 3, baseKg: 0, reps: 10 },
+        dumbbell: { title: 'Skull Crusher', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Sır üstü yat, dirsekleri sabit tutarak alna indir.', sets: 3, baseKg: 20, reps: 10 }
+      }
+    ],
+    2: [ // 2. Gün: Sırt, Bacak, Ön Kol (Çekme & Alt Vücut Günü)
+      {
+        id: 'lat_pulldown', mode: 'machine',
+        machine: { title: 'Lat Pulldown (Geniş Tutuş)', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Göğsü kabartarak barı köprücük kemiğine doğru çek.', sets: 4, baseKg: 50, reps: 10 },
+        dumbbell: { title: 'Dumbbell Row (Tek Kol Sırt)', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Diz ve eli sehpaya koy, dirseği kalçaya doğru çek.', sets: 4, baseKg: 25, reps: 10 }
+      },
+      {
+        id: 'seated_row', mode: 'machine',
+        machine: { title: 'Seated Cable Row', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Belini dik tut, kürek kemiklerini arkada sıkıştır.', sets: 4, baseKg: 45, reps: 10 },
+        dumbbell: { title: 'Barbell Row', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Gövdeyi 45 derece öne eğ, karın sıkı olsun.', sets: 4, baseKg: 40, reps: 10 }
+      },
+      {
+        id: 'leg_press', mode: 'machine',
+        machine: { title: 'Leg Press (Bacak Makinesi)', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Ayakları platformun ortasına koy, dizleri tam kilitleme.', sets: 4, baseKg: 100, reps: 10 },
+        dumbbell: { title: 'Goblet Squat', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Dumbbellu göğsüne yakın tut, derinçe çömel.', sets: 4, baseKg: 30, reps: 12 }
+      },
+      {
+        id: 'leg_extension', mode: 'machine',
+        machine: { title: 'Leg Extension (Ön Bacak)', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Yukarıda bacakları tam gerginleştirip 1 saniye sıkıştır.', sets: 3, baseKg: 40, reps: 12 },
+        dumbbell: { title: 'Dumbbell Lunges (Adımlama)', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Öne adım at, arka diz yere hafif değsin kalk.', sets: 3, baseKg: 15, reps: 10 }
+      },
+      {
+        id: 'leg_curl', mode: 'machine',
+        machine: { title: 'Seated Leg Curl (Arka Bacak)', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Pedi bacağın alt kısmına sabitle, topukları kalçaya çek.', sets: 3, baseKg: 35, reps: 12 },
+        dumbbell: { title: 'Romanian Deadlift (Dumbbell)', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Sırtı düz tutarak kalçayı arkaya doğru esnet.', sets: 3, baseKg: 30, reps: 10 }
+      },
+      {
+        id: 'calf_raise', mode: 'machine',
+        machine: { title: 'Standing Calf Raise', img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&auto=format&fit=crop&q=60', guide: 'Topukları tamamen aşağı esnetip parmak ucunda yüksel.', sets: 3, baseKg: 50, reps: 15 },
+        dumbbell: { title: 'Dumbbell Calf Raise', img: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&auto=format&fit=crop&q=60', guide: 'Elinde dambıllarla basamakta parmak ucunda kalk.', sets: 3, baseKg: 20, reps: 15 }
+      },
+      {
+        id: 'biceps_curl', mode: 'machine',
+        machine: { title: 'Preacher Curl Makinesi', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&auto=format&fit=crop&q=60', guide: 'Kolları yastığa tam yasla, bileği bükmeden yukarı kaldır.', sets: 3, baseKg: 25, reps: 12 },
+        dumbbell: { title: 'Dumbbell Biceps Curl', img: 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=400&auto=format&fit=crop&q=60', guide: 'Dirsekler sabit kalsın, tepe noktada bicepsleri sık.', sets: 3, baseKg: 14, reps: 12 }
+      }
+    ]
+  };
+
+  const currentDay = window.userCycleState?.dayIndex || 1;
+  window.currentExercises = exercisePool[currentDay] || exercisePool[1];
+
+  const items = window.currentExercises;
+  let html = '<div class="fp-progress">Her seti kg + tekrar + RIR ile kaydet. Hareket görselleri ve rehberler aktif.</div>';
+  
+  for(const ex of items){
+    const d = ex[ex.mode] || ex.machine || ex.dumbbell;
+    if(!d) continue;
+    
+    const h = typeof getHistory === 'function' ? await getHistory(ex.id) : [];
+    const target = typeof targetFromHistory === 'function' ? targetFromHistory(d.baseKg, h, Math.max(1, d.reps - 2), d.reps) : d.baseKg;
+    
+    html += `<div class="ex-item">
+      <div class="ex-header"><div class="ex-title">${d.title}</div><button class="btn btn-switch" onclick="toggleMode('${ex.id}')">🔄 Makine / Dambıl Değiş</button></div>
+      ${d.img ? `<div class="ex-media-box" style="margin:8px 0;border-radius:10px;overflow:hidden;max-height:160px;"><img src="${d.img}" alt="${d.title}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"></div>` : ''}
+      <div class="ex-guide"><b>Nasıl Yapılır? / Antrenör Notu:</b> ${d.guide}</div>
+      <div class="fp-prev">${h.length ? `Son set: ${h[0].weight_kg} kg × ${h[0].reps} · RIR ${h[0].rir??'-'}` : 'İlk kayıt — kontrollü başla.'}</div>
+      <div class="target-set-list">`;
+      
+    for(let i = 1; i <= (d.sets || 3); i++) {
+      html += `<div class="fp-set" data-ex="${ex.id}" data-set="${i}">
+        <span class="setno">${i}.S</span>
+        <input class="fp-kg" type="number" step="0.5" value="${target}" placeholder="kg">
+        <input class="fp-reps" type="number" min="0" value="${d.reps || 10}" placeholder="rep">
+        <input class="fp-rir" type="number" min="0" max="5" step="0.5" value="2" placeholder="RIR">
+        <input type="checkbox" class="fp-done" onchange="this.closest('.fp-set').classList.toggle('done',this.checked); if(this.checked && typeof startTimer==='function') startTimer(90)">
+      </div>`;
+    }
+    html += '</div></div>';
+  }
+  c.innerHTML = html;
+}; 
+    
+  
+  
+  
+  
+  
+  
+  /*
 
   window.renderWorkoutList=async function(){
     const c=document.getElementById('workout-list');if(!c)return;c.innerHTML='<div class="fp-progress">⏳ Performans geçmişin analiz ediliyor...</div>';
@@ -102,7 +233,7 @@
       html+='</div></div>';
     }c.innerHTML=html;
   };
-  
+  */
   
   
   
@@ -170,9 +301,17 @@
   const b = document.getElementById('fp-start-workout');
   if (b) b.textContent = '● ANTRENMAN AKTİF';
 
-  // 4. EKRANDA HAREKETLERİN GÖRÜNMESİNİ SAĞLAYAN KRİTİK TETİKLEME:
+  // HAREKETLERİN GELMESİNİ GARANTİLEYEN KONTROL:
+  // Eğer global currentExercises boşsa, sistemin ana egzersiz listesini tetikle veya doldur
+  if ((!window.currentExercises || window.currentExercises.length === 0) && typeof window.loadExercises === 'function') {
+    window.loadExercises();
+  }
+
+  // Listeyi ekrana bas
   if (typeof window.renderWorkoutList === 'function') {
     await window.renderWorkoutList();
+  } else {
+    console.warn("renderWorkoutList fonksiyonu bulunamadı.");
   }
   
   return data.id;
