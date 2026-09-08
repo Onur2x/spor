@@ -2,7 +2,6 @@
    Adds: profile onboarding, readiness/recovery, real set logging,
    history-based progressive overload, PR/1RM, body measurements,
    personalized calorie/macro targets and weekly coach summary.
-   (Seviye ve başlangıç anketi desteği eklendi)
 */
 (function(){
   const originalCheckUserSession = window.checkUserSession;
