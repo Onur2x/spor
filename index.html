@@ -383,17 +383,8 @@
 
   <script>
     const SUPABASE_URL = "https://mbmzxmogkydyotfdajim.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_6eCdmaaJmZpiJ1cw3-pYyA_vuqgME9a";
-   // const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-	
-	
-	
-	
-	try {
-    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  } catch (e) {
-    console.error("Supabase başlatılamadı:", e);
-  }
+    const SUPABASE_KEY = "sb_publishable_xwY6oGTchcUV4GR2P-vKyQ_DdhrYeIm";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentUser = null;
     let restTimerInterval = null;
@@ -668,25 +659,10 @@
       }
     }
 
-    function loadExercises222(groupKey) {
+    function loadExercises(groupKey) {
       currentExercises = JSON.parse(JSON.stringify(baseExercises[groupKey]));
       renderWorkoutList();
     }
-	
-	function loadExercises() {
-  try {
-    const raw = localStorage.getItem('fitpro_exercises'); // veya projedeki ana key adı neyse
-    if (!raw) {
-      window.currentExercises = []; // Veri yoksa boş dizi ata
-      return;
-    }
-    window.currentExercises = JSON.parse(raw);
-  } catch (e) {
-    console.warn("Bozuk egzersiz verisi temizlendi:", e);
-    localStorage.removeItem('fitpro_exercises');
-    window.currentExercises = [];
-  }
-}
 
     function toggleMode(exId) {
       const ex = currentExercises.find(item => item.id === exId);
@@ -829,5 +805,6 @@
 <script src="fitpro-coach.js"></script>
 <script src="fitpro-v5.js"></script>
 <script src="fitpro-v6.js"></script>
+<script src="fitpro-v7.js"></script>
 </body>
 </html>
