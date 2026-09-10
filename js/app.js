@@ -1,4 +1,10 @@
 let user=null,profile=null,plan=null,recovery=null,weightChart=null;
+// Explicit DOM bindings: do not rely on browser-created global IDs.
+const $ = (id) => document.getElementById(id);
+const auth = $('auth'), app = $('app'), nav = $('nav'), logout = $('logout');
+const email = $('email'), password = $('password'), authMsg = $('authMsg');
+
+
 const key=k=>`fp11:${user?.id||'local'}:${k}`;
 const ls=(k,v)=>localStorage.setItem(key(k),JSON.stringify(v));
 const lg=k=>{try{return JSON.parse(localStorage.getItem(key(k)))}catch{return null}};
@@ -10,15 +16,15 @@ const levelText=x=>({beginner:'Acemi',novice:'Başlangıç',intermediate:'Orta',
 
 async function init(){
   document.body.classList.toggle('light',localStorage.getItem('fp11theme')==='light');
-  if(!window.supabase||!sb){showAuth();authMsg.textContent='Supabase bağlantısı yüklenemedi.';return;}
+  if(!window.supabase||!sb){showAuth();if(authMsg)authMsg.textContent='Supabase bağlantısı yüklenemedi. Sayfayı yenile ve internet/CDN erişimini kontrol et.';return;}
   const {data,error}=await sb.auth.getSession();
   if(error) console.error(error);
   user=data?.session?.user||null;
   if(user){showApp();await load();}else showAuth();
   sb.auth.onAuthStateChange(async(_e,s)=>{user=s?.user||null;if(user){showApp();setTimeout(()=>load(),0)}else showAuth()});
 }
-function showAuth(){auth.style.display='block';app.style.display='none';nav.style.display='none';logout.style.display='none'}
-function showApp(){auth.style.display='none';app.style.display='block';nav.style.display='flex';logout.style.display='block'}
+function showAuth(){if(auth)auth.style.display='block';if(app)app.style.display='none';if(nav)nav.style.display='none';if(logout)logout.style.display='none'}
+function showApp(){if(auth)auth.style.display='none';if(app)app.style.display='block';if(nav)nav.style.display='flex';if(logout)logout.style.display='block'}
 async function signIn(){const em=email.value.trim(),pw=password.value;if(!em||!pw){authMsg.textContent='E-posta ve şifre gerekli.';return}authMsg.textContent='Giriş yapılıyor…';const {error}=await sb.auth.signInWithPassword({email:em,password:pw});authMsg.textContent=error?friendlyAuth(error):'Giriş başarılı.'}
 async function signUp(){const em=email.value.trim(),pw=password.value;if(!em||pw.length<6){authMsg.textContent='Geçerli e-posta ve en az 6 karakter şifre gir.';return}authMsg.textContent='Kayıt oluşturuluyor…';const {data,error}=await sb.auth.signUp({email:em,password:pw});if(error){authMsg.textContent=friendlyAuth(error);return}authMsg.textContent=data.session?'Kayıt ve giriş başarılı.':'Kayıt oluşturuldu. E-posta doğrulamasını tamamlayıp giriş yap.'}
 function friendlyAuth(e){const m=e?.message||String(e);if(/Invalid login credentials/i.test(m))return'Giriş bilgileri hatalı veya e-posta doğrulanmamış.';if(/Email not confirmed/i.test(m))return'E-posta doğrulanmamış. Gelen doğrulama bağlantısını aç.';if(/already registered/i.test(m))return'Bu e-posta zaten kayıtlı. Giriş yapmayı dene.';return m}
@@ -69,4 +75,23 @@ function syncDayChecks(){const days=Math.max(2,Math.min(6,+pDays.value||3)),boxe
 async function saveProfile(){const days=Math.max(2,Math.min(6,+pDays.value||3));let weekdays=[...document.querySelectorAll('#daysGrid input[type=checkbox]:checked')].map(x=>+x.value);if(weekdays.length!==days)weekdays=normalizeWeekdays(weekdays,days);profile={id:user.id,fullName:pName.value.trim(),age:+pAge.value||null,sex:document.getElementById('pSex')?.value||'male',heightCm:+pHeight.value||null,weightKg:+pWeight.value||null,goal:pGoal.value,level:pLevel.value,daysPerWeek:days,sessionMinutes:+pMinutes.value,equipment:pEquipment.value,activity:pActivity.value,weekdays};if(!isProfileComplete(profile)){alert('Ad, yaş, boy ve kilo alanlarını doldur.');return}const row={id:user.id,full_name:profile.fullName,age:profile.age,sex:profile.sex,height_cm:profile.heightCm,weight_kg:profile.weightKg,goal:profile.goal,level:profile.level,days_per_week:profile.daysPerWeek,weekdays:profile.weekdays,equipment:profile.equipment,session_minutes:profile.sessionMinutes,activity:profile.activity};const {error}=await sb.from('profiles').upsert(row,{onConflict:'id'});if(error){alert('Profil kaydedilemedi: '+error.message);return}ls('profile',profile);plan=buildPlan(profile);ls('plan',plan);await renderAll();alert('Profil ve program hazır.');tab('home')}
 async function askAI(q){q=q||aiQuestion.value.trim();if(!q)return;aiAnswer.textContent='AI Coach düşünüyor…';try{const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error('Oturum bulunamadı');const res=await fetch(`${SUPABASE_URL}/functions/v1/fitpro-coach`,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${session.access_token}`},body:JSON.stringify({question:q,profile,plan,recovery,performance:{readiness:calcReadiness(recovery)}})});const j=await res.json();if(!res.ok)throw new Error(j.error||'AI servisi hata verdi');aiAnswer.textContent=j.answer||'Yanıt alınamadı.'}catch(e){aiAnswer.textContent='AI Coach bağlantısı kurulamadı: '+e.message}}
 document.addEventListener('change',e=>{if(e.target?.id==='pDays')syncDayChecks()});
-window.addEventListener('load',init);
+// Make inline HTML buttons reliable even if the browser does not expose function declarations globally.
+Object.assign(window,{signIn,signUp,signOut,openProfileSetup,saveProfile,tab,toggleTheme});
+
+function authDiagnostics(){
+  if(!window.supabase){
+    if(authMsg) authMsg.textContent='Supabase kütüphanesi yüklenemedi. İnternet bağlantısını ve CDN erişimini kontrol et.';
+    return false;
+  }
+  if(!sb){
+    if(authMsg) authMsg.textContent='Supabase istemcisi başlatılamadı.';
+    return false;
+  }
+  return true;
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(email) email.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
+  if(password) password.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
+  init();
+});
