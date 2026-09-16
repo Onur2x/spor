@@ -1,0 +1,42 @@
+{
+  "name": "FitPro - Spor Antreman Takip",
+  "short_name": "FitPro",
+  "description": "Kişisel spor antrenman, beslenme ve gelişim takip uygulaması",
+  "theme_color": "#22c55e",
+  "background_color": "#07101d",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Bugünkü Antrenman",
+      "short_name": "Antrenman",
+      "description": "Bugünkü antrenman programını gör",
+      "url": "/?tab=home",
+      "icons": [{ "src": "pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Egzersiz Kütüphanesi",
+      "short_name": "Egzersizler",
+      "description": "Tüm egzersizleri ve GIF'leri gör",
+      "url": "/?tab=exercises",
+      "icons": [{ "src": "pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
