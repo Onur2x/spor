@@ -16,8 +16,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script type="module" crossorigin src="/spor/assets/index-DOEhqe_O.js"></script>
-  <link rel="stylesheet" crossorigin href="/spor/assets/index-DiqFhNc1.css">
+  <script type="module" crossorigin src="/spor/assets/index-CYCGPrb4.js"></script>
+  <link rel="stylesheet" crossorigin href="/spor/assets/index-CgPt9s1R.css">
 <link rel="manifest" href="/spor/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/spor/registerSW.js"></script></head>
 <body>
   <!-- Theme toggle and auth state header -->
@@ -252,13 +252,13 @@
           <strong id="totalWorkouts">0</strong>
         </div>
         <div class="stat-card">
-          <span class="stat-label">Kişisel Rekorlar</span>
+          <span class="stat-label">Toplam Set</span>
           <strong id="prCount">0</strong>
         </div>
         <div class="stat-card">
           <span class="stat-label">Toplam Tonaj</span>
           <strong id="totalVolume">0</strong>
-          <span class="stat-unit">kg</span>
+          <span class="stat-unit">kg×tek</span>
         </div>
         <div class="stat-card">
           <span class="stat-label">Son Kilo</span>
@@ -270,16 +270,16 @@
       <div class="charts-grid">
         <div class="card chart-card">
           <div class="section-title" style="margin:0 0 16px">Kilo Trendi</div>
-          <canvas id="weightChart" height="200"></canvas>
+          <canvas id="weightChart" height="180"></canvas>
         </div>
         <div class="card chart-card">
-          <div class="section-title" style="margin:0 0 16px">Haftalık Set Sayısı</div>
-          <canvas id="weeklySetsChart" height="200"></canvas>
+          <div class="section-title" style="margin:0 0 16px">Antrenman Başına Tonaj</div>
+          <canvas id="volumeChart" height="180"></canvas>
         </div>
       </div>
 
-      <div class="section-title">Kişisel Rekorlar (e1RM)</div>
-      <div id="prList" class="history-list"></div>
+      <div class="section-title">Egzersiz Tarihi</div>
+      <div id="exerciseHistory"></div>
 
       <div class="section-title">Vücut Ölçümleri</div>
       <div class="card measurements-card">
